@@ -218,7 +218,10 @@ main(int argc, char ** argv)
     exit(1);
   }
 
-  if (!osr.writeToRGB(snapshotdump)) {
+  SbString filename(snapshotdump);
+//   filename += ".ps"; // XXX
+  if (!osr.writeToRGB(filename.getString())) {
+//   if (!osr.writeToPostScript(filename.getString())) {
     (void)fprintf(stderr, "Couldn't write file '%s'.\n", snapshotdump);
   }
   else {
