@@ -46,6 +46,9 @@ void
 usage(const char * invname)
 {
 #if HAVE_GETOPT
+  // FIXME: the -r option is not activated yet (don't know how to have
+  // multiple values on an option with getopt(). 20011024 mortene.
+//    fprintf(stderr, "\nUsage: %s [-h] [-x width] [-y height] [-c components] [-r x y z a] <modelfile.iv> <snapshot.rgb>\n\n", invname);
   fprintf(stderr, "\nUsage: %s [-h] [-x width] [-y height] [-c components] <modelfile.iv> <snapshot.rgb>\n\n", invname);
   fprintf(stderr, "\t-h:\tshow usage\n");
   fprintf(stderr, "\t-x:\tset width in pixels (default 640)\n");
@@ -56,6 +59,8 @@ usage(const char * invname)
   fprintf(stderr, "\t\t\t3 = RGB\n");
   fprintf(stderr, "\t\t\t4 = RGB with transparency\n");
   fprintf(stderr, "\t\t(default is RGB)\n");
+  // FIXME: see FIXME above about "-r". 20011024 mortene.
+//    fprintf(stderr, "\t-r:\tcamera rotation, axis plus angle (default none)\n");
   fprintf(stderr, "\n");
 #else // !HAVE_GETOPT
   fprintf(stderr, "\nUsage: %s <modelfile.iv> <snapshot.rgb>\n\n", invname);
@@ -73,9 +78,9 @@ main(int argc, char ** argv)
   /* Parse command line. */
   int getoptchar;
   while ((getoptchar = getopt(argc, argv, "?hx:y:c:")) != EOF) {
-    char c = (char)getoptchar;
-    switch (c) {
+    switch (getoptchar) {
     case '?':
+    case ':':
     case 'h':
       usage(argv[0]);
       exit(0);
