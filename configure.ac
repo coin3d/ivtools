@@ -10,14 +10,7 @@ AC_CONFIG_AUX_DIR(cfg)
 # If the Microsoft Visual C++ cl.exe compiler is available, set us up for
 # compiling with it.
 
-SIM_AC_SETUP_MSVC_IFELSE([
-], [
-  case $host in
-  *-cygwin)
-    AC_MSG_ERROR([You need Microsoft Visual C++ to build on Cygwin])
-    ;;
-  esac
-])
+SIM_AC_SETUP_MSVCPP_IFELSE
 
 # *******************************************************************
 
