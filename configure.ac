@@ -111,6 +111,29 @@ else
 
 fi
 
+# **************************************************************************
+# Use SmallChange if available.
+
+sim_ac_smallchange_desired=false
+
+SIM_AC_HAVE_SMALLCHANGE_IFELSE([
+  CPPFLAGS="$CPPFLAGS `$sim_ac_smallchange_configcmd $alternate_option --cppflags`"
+  CXXFLAGS="$CXXFLAGS `$sim_ac_smallchange_configcmd $alternate_option --cxxflags`"
+  CFLAGS="$CFLAGS `$sim_ac_smallchange_configcmd $alternate_option --cflags`"
+  LDFLAGS="$LDFLAGS `$sim_ac_smallchange_configcmd $alternate_option --ldflags`"
+  LIBS="`$sim_ac_smallchange_configcmd $alternate_option --libs` $LIBS"
+  AC_DEFINE(HAVE_SMALLCHANGE_LIBRARY, 1, [Define to enable use of SmallChange library])
+  SIM_AC_CONFIGURATION_SETTING([SmallChange], [is being used])
+], [
+  if $sim_ac_smallchange_desired; then
+    SIM_AC_ERROR([smallchange-unavailable])
+  else
+    SIM_AC_CONFIGURATION_SETTING([SmallChange], [not used (enable with --with-smallchange)])
+  fi
+])
+
+AM_CONDITIONAL(HAVE_SMALLCHANGE, $sim_ac_smallchange_avail)
+
 # *******************************************************************
 # ** Generate output files.
 # *******************************************************************
@@ -124,3 +147,16 @@ AC_OUTPUT([
         ivperf/Makefile
         renderos/Makefile
 ])
+
+# *******************************************************************
+
+SIM_AC_CONFIGURATION_SUMMARY
+
+echo ""
+echo "Now run 'make' to build the examples."
+echo ""
+echo "(Note that they are not installed, so after building you should"
+echo "execute them straight from this directory's subdirectories.)"
+echo ""
+
+# **************************************************************************
