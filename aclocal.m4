@@ -43,12 +43,15 @@ AC_ARG_ENABLE([msvc],
 AC_DEFUN([SIM_AC_SETUP_MSVCPP_IFELSE],
 [
 AC_REQUIRE([SIM_AC_MSVC_DISABLE_OPTION])
+AC_REQUIRE([SIM_AC_SPACE_IN_PATHS])
 
 : ${BUILD_WITH_MSVC=false}
 if $sim_ac_try_msvc; then
-  sim_ac_wrapmsvc=`cd $ac_aux_dir; pwd`/wrapmsvc.exe
   if test -z "$CC" -a -z "$CXX"; then
-    if $sim_ac_wrapmsvc >/dev/null 2>&1; then
+    sim_ac_wrapmsvc=`cd $ac_aux_dir; pwd`/wrapmsvc.exe
+    echo "$as_me:$LINENO: sim_ac_wrapmsvc=$sim_ac_wrapmsvc" >&AS_MESSAGE_LOG_FD
+    AC_MSG_CHECKING([setup for wrapmsvc.exe])
+    if $sim_ac_wrapmsvc >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD; then
       m4_ifdef([$0_VISITED],
         [AC_FATAL([Macro $0 invoked multiple times])])
       m4_define([$0_VISITED], 1)
@@ -56,9 +59,15 @@ if $sim_ac_try_msvc; then
       CXX=$sim_ac_wrapmsvc
       export CC CXX
       BUILD_WITH_MSVC=true
+      AC_MSG_RESULT([working])
     else
       case $host in
-      *-cygwin) SIM_AC_ERROR([no-msvc++]) ;;
+      *-cygwin)
+        AC_MSG_RESULT([not working])
+        SIM_AC_ERROR([no-msvc++]) ;;
+      *)
+        AC_MSG_RESULT([not working (as expected)])
+        ;;
       esac
     fi
   fi
@@ -129,6 +138,22 @@ AC_MSG_RESULT([$sim_ac_msvcrt])
 $1
 ]) # SIM_AC_SETUP_MSVCRT
 
+# **************************************************************************
+# SIM_AC_SPACE_IN_PATHS
+
+AC_DEFUN([SIM_AC_SPACE_IN_PATHS], [
+sim_ac_full_builddir=`pwd`
+sim_ac_full_srcdir=`cd $srcdir; pwd`
+if test -z "`echo $sim_ac_full_srcdir | tr -cd ' '`"; then :; else
+  AC_MSG_WARN([Detected space character in the path leading up to the Coin source directory - this will probably cause random problems later. You are advised to move the Coin source directory to another location.])
+  SIM_AC_CONFIGURATION_WARNING([Detected space character in the path leading up to the Coin source directory - this will probably cause random problems later. You are advised to move the Coin source directory to another location.])
+fi
+if test -z "`echo $sim_ac_full_builddir | tr -cd ' '`"; then :; else
+  AC_MSG_WARN([Detected space character in the path leading up to the Coin build directory - this will probably cause random problems later. You are advised to move the Coin build directory to another location.])
+  SIM_AC_CONFIGURATION_WARNING([Detected space character in the path leading up to the Coin build directory - this will probably cause random problems later. You are advised to move the Coin build directory to another location.])
+fi
+]) # SIM_AC_SPACE_IN_PATHS
+
 # EOF **********************************************************************
 
 # **************************************************************************
@@ -137,7 +162,10 @@ $1
 #
 # SIM_AC_ERROR( ERROR [, ERROR ...] )
 #   Fetches the error messages from the error message file and displays
-#   them on stderr.
+#   them on stderr. The configure process will subsequently exit.
+#
+# SIM_AC_WARN( ERROR [, ERROR ...] )
+#   As SIM_AC_ERROR, but will not exit after displaying the message(s).
 #
 # SIM_AC_WITH_ERROR( WITHARG )
 #   Invokes AC_MSG_ERROR in a consistent way for problems with the --with-*
@@ -182,6 +210,12 @@ echo >&2 ""
 AC_MSG_ERROR([aborting])
 ]) # SIM_AC_ERROR
 
+AC_DEFUN([SIM_AC_WARN], [
+echo >&2 ""
+_SIM_AC_ERROR($@)
+echo >&2 ""
+]) # SIM_AC_WARN
+
 AC_DEFUN([SIM_AC_WITH_ERROR], [
 AC_MSG_ERROR([invalid value "${withval}" for "$1" configure argument])
 ]) # SIM_AC_WITH_ERROR
@@ -189,6 +223,98 @@ AC_MSG_ERROR([invalid value "${withval}" for "$1" configure argument])
 AC_DEFUN([SIM_AC_ENABLE_ERROR], [
 AC_MSG_ERROR([invalid value "${enableval}" for "$1" configure argument])
 ]) # SIM_AC_ENABLE_ERROR
+
+
+# **************************************************************************
+# configuration_summary.m4
+#
+# This file contains some utility macros for making it easy to have a short
+# summary of the important configuration settings printed at the end of the
+# configure run.
+#
+# Authors:
+#   Lars J. Aas <larsa@sim.no>
+#
+
+# **************************************************************************
+# SIM_AC_CONFIGURATION_SETTING( DESCRIPTION, SETTING )
+#
+# This macro registers a configuration setting to be dumped by the
+# SIM_AC_CONFIGURATION_SUMMARY macro.
+
+AC_DEFUN([SIM_AC_CONFIGURATION_SETTING],
+[ifelse($#, 2, [], [m4_fatal([SIM_AC_CONFIGURATION_SETTING: takes two arguments])])
+if test x"${sim_ac_configuration_settings+set}" = x"set"; then
+  sim_ac_configuration_settings="$sim_ac_configuration_settings|$1:$2"
+else
+  sim_ac_configuration_settings="$1:$2"
+fi
+]) # SIM_AC_CONFIGURATION_SETTING
+
+# **************************************************************************
+# SIM_AC_CONFIGURATION_WARNING( WARNING )
+#
+# This macro registers a configuration warning to be dumped by the
+# SIM_AC_CONFIGURATION_SUMMARY macro.
+
+AC_DEFUN([SIM_AC_CONFIGURATION_WARNING],
+[ifelse($#, 1, [], [m4_fatal([SIM_AC_CONFIGURATION_WARNING: takes one argument])])
+if test x"${sim_ac_configuration_warnings+set}" = x"set"; then
+  sim_ac_configuration_warnings="$sim_ac_configuration_warnings|$1"
+else
+  sim_ac_configuration_warnings="$1"
+fi
+]) # SIM_AC_CONFIGURATION_WARNING
+
+# **************************************************************************
+# SIM_AC_CONFIGURATION_SUMMARY
+#
+# This macro dumps the settings and warnings summary.
+
+AC_DEFUN([SIM_AC_CONFIGURATION_SUMMARY],
+[ifelse($#, 0, [], [m4_fatal([SIM_AC_CONFIGURATION_SUMMARY: takes no arguments])])
+sim_ac_settings="$sim_ac_configuration_settings"
+sim_ac_num_settings=`echo "$sim_ac_settings" | tr -d -c "|" | wc -c`
+sim_ac_maxlength=0
+while test $sim_ac_num_settings -ge 0; do
+  sim_ac_description=`echo "$sim_ac_settings" | cut -d: -f1`
+  sim_ac_length=`echo "$sim_ac_description" | wc -c`
+  if test $sim_ac_length -gt $sim_ac_maxlength; then
+    sim_ac_maxlength=`expr $sim_ac_length + 0`
+  fi
+  sim_ac_settings=`echo $sim_ac_settings | cut -d"|" -f2-`
+  sim_ac_num_settings=`expr $sim_ac_num_settings - 1`
+done
+
+sim_ac_maxlength=`expr $sim_ac_maxlength + 3`
+sim_ac_padding=`echo "                                             " |
+  cut -c1-$sim_ac_maxlength`
+
+sim_ac_num_settings=`echo "$sim_ac_configuration_settings" | tr -d -c "|" | wc -c`
+echo ""
+echo "$PACKAGE configuration settings:"
+while test $sim_ac_num_settings -ge 0; do
+  sim_ac_setting=`echo $sim_ac_configuration_settings | cut -d"|" -f1`
+  sim_ac_description=`echo "$sim_ac_setting" | cut -d: -f1`
+  sim_ac_status=`echo "$sim_ac_setting" | cut -d: -f2-`
+  # hopefully not too many terminals are too dumb for this
+  echo -e "$sim_ac_padding $sim_ac_status\r  $sim_ac_description:"
+  sim_ac_configuration_settings=`echo $sim_ac_configuration_settings | cut -d"|" -f2-`
+  sim_ac_num_settings=`expr $sim_ac_num_settings - 1`
+done
+
+if test x${sim_ac_configuration_warnings+set} = xset; then
+sim_ac_num_warnings=`echo "$sim_ac_configuration_warnings" | tr -d -c "|" | wc -c`
+echo ""
+echo "$PACKAGE configuration warnings:"
+while test $sim_ac_num_warnings -ge 0; do
+  sim_ac_warning=`echo "$sim_ac_configuration_warnings" | cut -d"|" -f1`
+  echo "  * $sim_ac_warning"
+  sim_ac_configuration_warnings=`echo $sim_ac_configuration_warnings | cut -d"|" -f2-`
+  sim_ac_num_warnings=`expr $sim_ac_num_warnings - 1`
+done
+fi
+]) # SIM_AC_CONFIGURATION_SUMMARY
 
 
 # Do all the work for Automake.                            -*- Autoconf -*-
@@ -1208,7 +1334,7 @@ if test x"$with_dl" != xno; then
     if ! $sim_ac_dl_avail; then
       LIBS="$sim_ac_dl_libcheck $sim_ac_save_libs"
       AC_TRY_LINK([
-#if HAVE_DLFCN_H
+#ifdef HAVE_DLFCN_H
 #include <dlfcn.h>
 #endif /* HAVE_DLFCN_H */
 ],
@@ -1266,7 +1392,7 @@ if $sim_ac_win32_loadlibrary; then
   AC_CACHE_CHECK([whether the Win32 LoadLibrary() method is available],
     sim_cv_lib_loadlibrary_avail,
     [AC_TRY_LINK([
-#if HAVE_WINDOWS_H
+#ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #endif /* HAVE_WINDOWS_H */
 ],
@@ -1342,7 +1468,7 @@ if $sim_ac_dyld; then
   AC_CACHE_CHECK([whether we can use Mach-O dyld],
     sim_cv_dyld_avail,
     [AC_TRY_LINK([
-#if HAVE_MACH_O_DYLD_H
+#ifdef HAVE_MACH_O_DYLD_H
 #include <mach-o/dyld.h>
 #endif /* HAVE_MACH_O_DYLD_H */
 ],
@@ -1843,15 +1969,15 @@ if test x"$with_opengl" != x"no"; then
 
   CPPFLAGS="$CPPFLAGS $sim_ac_gl_cppflags"
 
-  SIM_AC_CHECK_HEADER_SILENT([GL/gl.h], [
+  SIM_AC_CHECK_HEADER_SILENT([OpenGL/gl.h], [
     sim_ac_gl_header_avail=true
-    sim_ac_gl_header=GL/gl.h
-    AC_DEFINE([HAVE_GL_GL_H], 1, [define if the GL header should be included as GL/gl.h])
+    sim_ac_gl_header=OpenGL/gl.h
+    AC_DEFINE([HAVE_OPENGL_GL_H], 1, [define if the GL header should be included as OpenGL/gl.h])
   ], [
-    SIM_AC_CHECK_HEADER_SILENT([OpenGL/gl.h], [
+    SIM_AC_CHECK_HEADER_SILENT([GL/gl.h], [
       sim_ac_gl_header_avail=true
-      sim_ac_gl_header=OpenGL/gl.h
-      AC_DEFINE([HAVE_OPENGL_GL_H], 1, [define if the GL header should be included as OpenGL/gl.h])
+      sim_ac_gl_header=GL/gl.h
+      AC_DEFINE([HAVE_GL_GL_H], 1, [define if the GL header should be included as GL/gl.h])
     ])
   ])
 
@@ -1900,15 +2026,15 @@ if test x"$with_opengl" != x"no"; then
 
   CPPFLAGS="$CPPFLAGS $sim_ac_glu_cppflags"
 
-  SIM_AC_CHECK_HEADER_SILENT([GL/glu.h], [
+  SIM_AC_CHECK_HEADER_SILENT([OpenGL/glu.h], [
     sim_ac_glu_header_avail=true
-    sim_ac_glu_header=GL/glu.h
-    AC_DEFINE([HAVE_GL_GLU_H], 1, [define if the GLU header should be included as GL/glu.h])
+    sim_ac_glu_header=OpenGL/glu.h
+    AC_DEFINE([HAVE_OPENGL_GLU_H], 1, [define if the GLU header should be included as OpenGL/glu.h])
   ], [
-    SIM_AC_CHECK_HEADER_SILENT([OpenGL/glu.h], [
+    SIM_AC_CHECK_HEADER_SILENT([GL/glu.h], [
       sim_ac_glu_header_avail=true
-      sim_ac_glu_header=OpenGL/glu.h
-      AC_DEFINE([HAVE_OPENGL_GLU_H], 1, [define if the GLU header should be included as OpenGL/glu.h])
+      sim_ac_glu_header=GL/glu.h
+      AC_DEFINE([HAVE_GL_GLU_H], 1, [define if the GLU header should be included as GL/glu.h])
     ])
   ])
 
@@ -1957,15 +2083,15 @@ if test x"$with_opengl" != x"no"; then
 
   CPPFLAGS="$CPPFLAGS $sim_ac_glext_cppflags"
 
-  SIM_AC_CHECK_HEADER_SILENT([GL/glext.h], [
+  SIM_AC_CHECK_HEADER_SILENT([OpenGL/glext.h], [
     sim_ac_glext_header_avail=true
-    sim_ac_glext_header=GL/glext.h
-    AC_DEFINE([HAVE_GL_GLEXT_H], 1, [define if the GLEXT header should be included as GL/glext.h])
+    sim_ac_glext_header=OpenGL/glext.h
+    AC_DEFINE([HAVE_OPENGL_GLEXT_H], 1, [define if the GLEXT header should be included as OpenGL/glext.h])
   ], [
-    SIM_AC_CHECK_HEADER_SILENT([OpenGL/gl.h], [
+    SIM_AC_CHECK_HEADER_SILENT([GL/gl.h], [
       sim_ac_glext_header_avail=true
-      sim_ac_glext_header=OpenGL/glext.h
-      AC_DEFINE([HAVE_OPENGL_GLEXT_H], 1, [define if the GLEXT header should be included as OpenGL/glext.h])
+      sim_ac_glext_header=GL/glext.h
+      AC_DEFINE([HAVE_GL_GLEXT_H], 1, [define if the GLEXT header should be included as GL/glext.h])
     ])
   ])
 
@@ -2495,7 +2621,7 @@ fi
 # **************************************************************************
 # SIM_AC_HAVE_AGL_IFELSE( IF-FOUND, IF-NOT-FOUND )
 #
-# Check whether WGL is on the system.
+# Check whether AGL is on the system.
 
 AC_DEFUN([SIM_AC_HAVE_AGL_IFELSE], [
 sim_ac_save_ldflags=$LDFLAGS
@@ -2520,6 +2646,22 @@ else
   ifelse([$2], , :, [$2])
 fi
 ]) # SIM_AC_HAVE_AGL_IFELSE()
+ 
+
+AC_DEFUN([SIM_AC_HAVE_AGL_PBUFFER], [
+  AC_CACHE_CHECK([whether we can use AGL pBuffers],
+    sim_cv_agl_pbuffer_avail,
+    [AC_TRY_LINK([ #include <AGL/agl.h> ],
+                 [AGLPbuffer pbuffer;],
+                 [sim_cv_agl_pbuffer_avail=yes],
+                 [sim_cv_agl_pbuffer_avail=no])])
+  
+  if test x"$sim_cv_agl_pbuffer_avail" = xyes; then
+    ifelse([$1], , :, [$1])
+  else
+    ifelse([$2], , :, [$2])
+  fi
+])
 
 
 #   Use this file to store miscellaneous macros related to checking
@@ -2547,27 +2689,55 @@ CPPFLAGS="$CPPFLAGS $1"
 AC_TRY_COMPILE([], [], [sim_ac_accept_result=yes], [sim_ac_accept_result=no])
 AC_MSG_RESULT([$sim_ac_accept_result])
 CPPFLAGS=$sim_ac_save_cppflags
-# This need to go last, in case CPPFLAGS is modified in $2 or $3.
+# This need to go last, in case CPPFLAGS is modified in arg 2 or arg 3.
 if test $sim_ac_accept_result = yes; then
-  ifelse($2, , :, $2)
+  ifelse([$2], , :, [$2])
 else
-  ifelse($3, , :, $3)
+  ifelse([$3], , :, [$3])
 fi
 ])
 
+AC_DEFUN([SIM_AC_COMPILER_BEHAVIOR_OPTION_QUIET], [
+sim_ac_save_cppflags=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS $1"
+AC_TRY_COMPILE([], [$2], [sim_ac_accept_result=yes], [sim_ac_accept_result=no])
+CPPFLAGS=$sim_ac_save_cppflags
+# This need to go last, in case CPPFLAGS is modified in arg 3 or arg 4.
+if test $sim_ac_accept_result = yes; then
+  ifelse([$3], , :, [$3])
+else
+  ifelse([$4], , :, [$4])
+fi
+])
+
+
 AC_DEFUN([SIM_AC_CC_COMPILER_OPTION], [
 AC_LANG_SAVE
-AC_LANG_C
+AC_LANG(C)
 AC_MSG_CHECKING([whether $CC accepts $1])
-SIM_AC_COMPILER_OPTION($1, $2, $3)
+SIM_AC_COMPILER_OPTION([$1], [$2], [$3])
+AC_LANG_RESTORE
+])
+
+AC_DEFUN([SIM_AC_CC_COMPILER_BEHAVIOR_OPTION_QUIET], [
+AC_LANG_SAVE
+AC_LANG(C)
+SIM_AC_COMPILER_BEHAVIOR_OPTION_QUIET([$1], [$2], [$3], [$4])
 AC_LANG_RESTORE
 ])
 
 AC_DEFUN([SIM_AC_CXX_COMPILER_OPTION], [
 AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG(C++)
 AC_MSG_CHECKING([whether $CXX accepts $1])
-SIM_AC_COMPILER_OPTION($1, $2, $3)
+SIM_AC_COMPILER_OPTION([$1], [$2], [$3])
+AC_LANG_RESTORE
+])
+
+AC_DEFUN([SIM_AC_CXX_COMPILER_BEHAVIOR_OPTION_QUIET], [
+AC_LANG_SAVE
+AC_LANG(C++)
+SIM_AC_COMPILER_BEHAVIOR_OPTION_QUIET([$1], [$2], [$3], [$4])
 AC_LANG_RESTORE
 ])
 
@@ -3187,30 +3357,52 @@ if $sim_ac_coin_desired; then
     sim_ac_coin_msvcrt=`$sim_ac_coin_configcmd --msvcrt 2>/dev/null`
     sim_ac_coin_cflags=`$sim_ac_coin_configcmd --cflags 2>/dev/null`
     AC_CACHE_CHECK(
-      [whether libCoin is available],
+      [if we can compile and link with the Coin library],
       sim_cv_coin_avail,
       [sim_ac_save_cppflags=$CPPFLAGS
+      sim_ac_save_cxxflags=$CXXFLAGS
       sim_ac_save_ldflags=$LDFLAGS
       sim_ac_save_libs=$LIBS
       CPPFLAGS="$CPPFLAGS $sim_ac_coin_cppflags"
+      CXXFLAGS="$CXXFLAGS $sim_ac_coin_cxxflags"
       LDFLAGS="$LDFLAGS $sim_ac_coin_ldflags"
       LIBS="$sim_ac_coin_libs $LIBS"
       AC_LANG_PUSH(C++)
+
       AC_TRY_LINK(
         [#include <Inventor/SoDB.h>],
         [SoDB::init();],
         [sim_cv_coin_avail=true],
         [sim_cv_coin_avail=false])
+
       AC_LANG_POP
       CPPFLAGS=$sim_ac_save_cppflags
+      CXXFLAGS=$sim_ac_save_cxxflags
       LDFLAGS=$sim_ac_save_ldflags
       LIBS=$sim_ac_save_libs
     ])
     sim_ac_coin_avail=$sim_cv_coin_avail
-  else
+    if ! $sim_ac_coin_avail; then
+      AC_MSG_WARN([
+Compilation and/or linking with the Coin main library SDK failed, for
+unknown reason. If you are familiar with configure-based configuration
+and building, investigate the 'config.log' file for clues.
+
+If you can not figure out what went wrong, please forward the 'config.log'
+file to the email address <coin-support@coin3d.org> and ask for help by
+describing the situation where this failed.
+])
+    fi
+  else # no 'coin-config' found
     locations=`IFS="${sim_ac_pathsep}"; for p in $sim_ac_path; do echo " -> $p/coin-config"; done`
     AC_MSG_WARN([cannot find 'coin-config' at any of these locations:
 $locations])
+    AC_MSG_WARN([
+Need to be able to run 'coin-config' to figure out how to build and link
+against the Coin library. To rectify this problem, you most likely need
+to a) install Coin if it has not been installed, b) add the Coin install
+bin/ directory to your PATH environment variable.
+])
   fi
 fi
 
@@ -3220,5 +3412,135 @@ else
   ifelse([$2], , :, [$2])
 fi
 ]) # SIM_AC_HAVE_COIN_IFELSE()
+
+
+# Usage:
+#   SIM_AC_HAVE_SMALLCHANGE_IFELSE( IF-FOUND, IF-NOT-FOUND )
+#
+# Description:
+#   This macro locates the SmallChange development system.  If it is found,
+#   the set of variables listed below are set up as described and made
+#   available to the configure script.
+#
+#   The $sim_ac_smallchange_desired variable can be set to false externally to
+#   make SmallChange default to be excluded.
+#
+# Autoconf Variables:
+# > $sim_ac_smallchange_desired     true | false (defaults to false)
+# < $sim_ac_smallchange_avail       true | false
+# < $sim_ac_smallchange_cppflags    (extra flags the preprocessor needs)
+# < $sim_ac_smallchange_cflags      (extra flags the C compiler needs)
+# < $sim_ac_smallchange_cxxflags    (extra flags the C++ compiler needs)
+# < $sim_ac_smallchange_ldflags     (extra flags the linker needs)
+# < $sim_ac_smallchange_libs        (link library flags the linker needs)
+# < $sim_ac_smallchange_datadir     (location of SmallChange data files)
+# < $sim_ac_smallchange_includedir  (location of SmallChange headers)
+# < $sim_ac_smallchange_version     (the libSmallChange version)
+# < $sim_ac_smallchange_msvcrt      (the MSVC++ C library SmallChange was built with)
+# < $sim_ac_smallchange_configcmd   (the path to smallchange-config or "false")
+#
+# Authors:
+#   Lars J. Aas, <larsa@sim.no>
+#   Morten Eriksen, <mortene@sim.no>
+#
+# TODO:
+#
+
+AC_DEFUN([SIM_AC_HAVE_SMALLCHANGE_IFELSE], [
+AC_PREREQ([2.14a])
+
+# official variables
+sim_ac_smallchange_avail=false
+sim_ac_smallchange_cppflags=
+sim_ac_smallchange_cflags=
+sim_ac_smallchange_cxxflags=
+sim_ac_smallchange_ldflags=
+sim_ac_smallchange_libs=
+sim_ac_smallchange_datadir=
+sim_ac_smallchange_includedir=
+sim_ac_smallchange_version=
+
+# internal variables
+: ${sim_ac_smallchange_desired=true}
+sim_ac_smallchange_extrapath=
+
+AC_ARG_WITH([smallchange],
+AC_HELP_STRING([--with-smallchange], [enable use of SmallChange [[default=no]]])
+AC_HELP_STRING([--with-smallchange=DIR], [give prefix location of SmallChange]),
+  [ case $withval in
+    no)  sim_ac_smallchange_desired=false ;;
+    yes) sim_ac_smallchange_desired=true ;;
+    *)   sim_ac_smallchange_desired=false
+         sim_ac_smallchange_extrapath=$withval ;;
+    esac],
+  [])
+
+case $build in
+*-mks ) sim_ac_pathsep=";" ;;
+* )     sim_ac_pathsep="${PATH_SEPARATOR}" ;;
+esac
+
+if $sim_ac_smallchange_desired; then
+  sim_ac_path=$PATH
+  test -z "$sim_ac_smallchange_extrapath" || ## search in --with-smallchange path
+    sim_ac_path="$sim_ac_smallchange_extrapath/bin${sim_ac_pathsep}$sim_ac_path"
+  test x"$prefix" = xNONE ||          ## search in --prefix path
+    sim_ac_path="$sim_ac_path${sim_ac_pathsep}$prefix/bin"
+
+  AC_PATH_PROG(sim_ac_smallchange_configcmd, smallchange-config, false, $sim_ac_path)
+
+  if ! test "X$sim_ac_smallchange_configcmd" = "Xfalse"; then
+    test -n "$CONFIG" &&
+      $sim_ac_smallchange_configcmd --alternate=$CONFIG >/dev/null 2>/dev/null &&
+      sim_ac_smallchange_configcmd="$sim_ac_smallchange_configcmd --alternate=$CONFIG"
+  fi
+
+  if $sim_ac_smallchange_configcmd; then
+    sim_ac_smallchange_version=`$sim_ac_smallchange_configcmd --version`
+    sim_ac_smallchange_cppflags=`$sim_ac_smallchange_configcmd --cppflags`
+    sim_ac_smallchange_cflags=`$sim_ac_smallchange_configcmd --cflags 2>/dev/null`
+    sim_ac_smallchange_cxxflags=`$sim_ac_smallchange_configcmd --cxxflags`
+    sim_ac_smallchange_ldflags=`$sim_ac_smallchange_configcmd --ldflags`
+    sim_ac_smallchange_libs=`$sim_ac_smallchange_configcmd --libs`
+    sim_ac_smallchange_datadir=`$sim_ac_smallchange_configcmd --datadir`
+    # Hide stderr on the following, as ``--includedir'', ``--msvcrt''
+    # and ``--cflags'' options were added late to smallchange-config.
+    sim_ac_smallchange_includedir=`$sim_ac_smallchange_configcmd --includedir 2>/dev/null`
+    sim_ac_smallchange_msvcrt=`$sim_ac_smallchange_configcmd --msvcrt 2>/dev/null`
+    sim_ac_smallchange_cflags=`$sim_ac_smallchange_configcmd --cflags 2>/dev/null`
+    AC_CACHE_CHECK(
+      [whether libSmallChange is available],
+      sim_cv_smallchange_avail,
+      [sim_ac_save_cppflags=$CPPFLAGS
+      sim_ac_save_ldflags=$LDFLAGS
+      sim_ac_save_libs=$LIBS
+      CPPFLAGS="$CPPFLAGS $sim_ac_smallchange_cppflags"
+      LDFLAGS="$LDFLAGS $sim_ac_smallchange_ldflags"
+      LIBS="$sim_ac_smallchange_libs $LIBS"
+      AC_LANG_PUSH(C++)
+      AC_TRY_LINK(
+        [#include <SmallChange/misc/Init.h>],
+        [smallchange_init();],
+        [sim_cv_smallchange_avail=true],
+        [sim_cv_smallchange_avail=false])
+      AC_LANG_POP
+      CPPFLAGS=$sim_ac_save_cppflags
+      LDFLAGS=$sim_ac_save_ldflags
+      LIBS=$sim_ac_save_libs
+    ])
+    sim_ac_smallchange_avail=$sim_cv_smallchange_avail
+  else
+    locations=`IFS="${sim_ac_pathsep}"; for p in $sim_ac_path; do echo " -> $p/smallchange-config"; done`
+    AC_MSG_WARN([cannot find 'smallchange-config' at any of these locations:
+$locations])
+  fi
+fi
+
+if $sim_ac_smallchange_avail; then
+  ifelse([$1], , :, [$1])
+else
+  ifelse([$2], , :, [$2])
+fi
+]) # SIM_AC_HAVE_SMALLCHANGE_IFELSE()
 
 

@@ -274,10 +274,10 @@ ac_unique_file="ivcat/ivcat.cpp"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
-#if HAVE_SYS_TYPES_H
+#ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
-#if HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
 #if STDC_HEADERS
@@ -288,27 +288,27 @@ ac_includes_default="\
 #  include <stdlib.h>
 # endif
 #endif
-#if HAVE_STRING_H
-# if !STDC_HEADERS && HAVE_MEMORY_H
+#ifdef HAVE_STRING_H
+# if !STDC_HEADERS && defined(HAVE_MEMORY_H)
 #  include <memory.h>
 # endif
 # include <string.h>
 #endif
-#if HAVE_STRINGS_H
+#ifdef HAVE_STRINGS_H
 # include <strings.h>
 #endif
-#if HAVE_INTTYPES_H
+#ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
 # if HAVE_STDINT_H
 #  include <stdint.h>
 # endif
 #endif
-#if HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS BUILD_WITH_MSVC INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP EGREP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS sim_ac_coin_configcmd LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS BUILD_WITH_MSVC INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP EGREP X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS sim_ac_coin_configcmd sim_ac_smallchange_configcmd HAVE_SMALLCHANGE_TRUE HAVE_SMALLCHANGE_FALSE LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -866,6 +866,8 @@ Optional Packages:
   --with-inventor=PATH    specify where Open Inventor and InventorXt resides
   --with-coin             enable use of Coin [default=yes]
   --with-coin=DIR         give prefix location of Coin
+  --with-smallchange      enable use of SmallChange [default=no]
+  --with-smallchange=DIR  give prefix location of SmallChange
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -1325,22 +1327,57 @@ else
 fi;
 
 
+sim_ac_full_builddir=`pwd`
+sim_ac_full_srcdir=`cd $srcdir; pwd`
+if test -z "`echo $sim_ac_full_srcdir | tr -cd ' '`"; then :; else
+  { echo "$as_me:$LINENO: WARNING: Detected space character in the path leading up to the Coin source directory - this will probably cause random problems later. You are advised to move the Coin source directory to another location." >&5
+echo "$as_me: WARNING: Detected space character in the path leading up to the Coin source directory - this will probably cause random problems later. You are advised to move the Coin source directory to another location." >&2;}
+
+if test x"${sim_ac_configuration_warnings+set}" = x"set"; then
+  sim_ac_configuration_warnings="$sim_ac_configuration_warnings|Detected space character in the path leading up to the Coin source directory - this will probably cause random problems later. You are advised to move the Coin source directory to another location."
+else
+  sim_ac_configuration_warnings="Detected space character in the path leading up to the Coin source directory - this will probably cause random problems later. You are advised to move the Coin source directory to another location."
+fi
+
+fi
+if test -z "`echo $sim_ac_full_builddir | tr -cd ' '`"; then :; else
+  { echo "$as_me:$LINENO: WARNING: Detected space character in the path leading up to the Coin build directory - this will probably cause random problems later. You are advised to move the Coin build directory to another location." >&5
+echo "$as_me: WARNING: Detected space character in the path leading up to the Coin build directory - this will probably cause random problems later. You are advised to move the Coin build directory to another location." >&2;}
+
+if test x"${sim_ac_configuration_warnings+set}" = x"set"; then
+  sim_ac_configuration_warnings="$sim_ac_configuration_warnings|Detected space character in the path leading up to the Coin build directory - this will probably cause random problems later. You are advised to move the Coin build directory to another location."
+else
+  sim_ac_configuration_warnings="Detected space character in the path leading up to the Coin build directory - this will probably cause random problems later. You are advised to move the Coin build directory to another location."
+fi
+
+fi
+
+
+
 
 
 : ${BUILD_WITH_MSVC=false}
 if $sim_ac_try_msvc; then
-  sim_ac_wrapmsvc=`cd $ac_aux_dir; pwd`/wrapmsvc.exe
   if test -z "$CC" -a -z "$CXX"; then
-    if $sim_ac_wrapmsvc >/dev/null 2>&1; then
+    sim_ac_wrapmsvc=`cd $ac_aux_dir; pwd`/wrapmsvc.exe
+    echo "$as_me:$LINENO: sim_ac_wrapmsvc=$sim_ac_wrapmsvc" >&5
+    echo "$as_me:$LINENO: checking setup for wrapmsvc.exe" >&5
+echo $ECHO_N "checking setup for wrapmsvc.exe... $ECHO_C" >&6
+    if $sim_ac_wrapmsvc >&5 2>&5; then
 
 
       CC=$sim_ac_wrapmsvc
       CXX=$sim_ac_wrapmsvc
       export CC CXX
       BUILD_WITH_MSVC=true
+      echo "$as_me:$LINENO: result: working" >&5
+echo "${ECHO_T}working" >&6
     else
       case $host in
       *-cygwin)
+        echo "$as_me:$LINENO: result: not working" >&5
+echo "${ECHO_T}not working" >&6
+
 echo >&2 ""
 
 
@@ -1367,6 +1404,10 @@ echo >&2 ""
 echo "$as_me: error: aborting" >&2;}
    { (exit 1); exit 1; }; }
  ;;
+      *)
+        echo "$as_me:$LINENO: result: not working (as expected)" >&5
+echo "${ECHO_T}not working (as expected)" >&6
+        ;;
       esac
     fi
   fi
@@ -3498,7 +3539,7 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-#if HAVE_DLFCN_H
+#ifdef HAVE_DLFCN_H
 #include <dlfcn.h>
 #endif /* HAVE_DLFCN_H */
 
@@ -5252,53 +5293,6 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <GL/glu.h>
-_ACEOF
-if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
-  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null; then
-  if test -s conftest.err; then
-    ac_cpp_err=$ac_cxx_preproc_warn_flag
-  else
-    ac_cpp_err=
-  fi
-else
-  ac_cpp_err=yes
-fi
-if test -z "$ac_cpp_err"; then
-  ac_cv_header_GL_glu_h=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  ac_cv_header_GL_glu_h=no
-fi
-rm -f conftest.err conftest.$ac_ext
-if test $ac_cv_header_GL_glu_h = yes; then
-
-    sim_ac_glu_header_avail=true
-    sim_ac_glu_header=GL/glu.h
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_GL_GLU_H 1
-_ACEOF
-
-
-else
-
-
-cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
 #include <OpenGL/glu.h>
 _ACEOF
 if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
@@ -5328,11 +5322,58 @@ fi
 rm -f conftest.err conftest.$ac_ext
 if test $ac_cv_header_OpenGL_glu_h = yes; then
 
-      sim_ac_glu_header_avail=true
-      sim_ac_glu_header=OpenGL/glu.h
+    sim_ac_glu_header_avail=true
+    sim_ac_glu_header=OpenGL/glu.h
 
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_OPENGL_GLU_H 1
+_ACEOF
+
+
+else
+
+
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <GL/glu.h>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_cxx_preproc_warn_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_cv_header_GL_glu_h=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_cv_header_GL_glu_h=no
+fi
+rm -f conftest.err conftest.$ac_ext
+if test $ac_cv_header_GL_glu_h = yes; then
+
+      sim_ac_glu_header_avail=true
+      sim_ac_glu_header=GL/glu.h
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GL_GLU_H 1
 _ACEOF
 
 
@@ -6006,15 +6047,17 @@ fi
     sim_ac_coin_includedir=`$sim_ac_coin_configcmd --includedir 2>/dev/null`
     sim_ac_coin_msvcrt=`$sim_ac_coin_configcmd --msvcrt 2>/dev/null`
     sim_ac_coin_cflags=`$sim_ac_coin_configcmd --cflags 2>/dev/null`
-    echo "$as_me:$LINENO: checking whether libCoin is available" >&5
-echo $ECHO_N "checking whether libCoin is available... $ECHO_C" >&6
+    echo "$as_me:$LINENO: checking if we can compile and link with the Coin library" >&5
+echo $ECHO_N "checking if we can compile and link with the Coin library... $ECHO_C" >&6
 if test "${sim_cv_coin_avail+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   sim_ac_save_cppflags=$CPPFLAGS
+      sim_ac_save_cxxflags=$CXXFLAGS
       sim_ac_save_ldflags=$LDFLAGS
       sim_ac_save_libs=$LIBS
       CPPFLAGS="$CPPFLAGS $sim_ac_coin_cppflags"
+      CXXFLAGS="$CXXFLAGS $sim_ac_coin_cxxflags"
       LDFLAGS="$LDFLAGS $sim_ac_coin_ldflags"
       LIBS="$sim_ac_coin_libs $LIBS"
       ac_ext=cc
@@ -6022,6 +6065,7 @@ ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
 
       cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
@@ -6059,6 +6103,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 sim_cv_coin_avail=false
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+
       ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -6066,6 +6111,7 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
       CPPFLAGS=$sim_ac_save_cppflags
+      CXXFLAGS=$sim_ac_save_cxxflags
       LDFLAGS=$sim_ac_save_ldflags
       LIBS=$sim_ac_save_libs
 
@@ -6073,12 +6119,44 @@ fi
 echo "$as_me:$LINENO: result: $sim_cv_coin_avail" >&5
 echo "${ECHO_T}$sim_cv_coin_avail" >&6
     sim_ac_coin_avail=$sim_cv_coin_avail
-  else
+    if ! $sim_ac_coin_avail; then
+      { echo "$as_me:$LINENO: WARNING:
+Compilation and/or linking with the Coin main library SDK failed, for
+unknown reason. If you are familiar with configure-based configuration
+and building, investigate the 'config.log' file for clues.
+
+If you can not figure out what went wrong, please forward the 'config.log'
+file to the email address <coin-support@coin3d.org> and ask for help by
+describing the situation where this failed.
+" >&5
+echo "$as_me: WARNING:
+Compilation and/or linking with the Coin main library SDK failed, for
+unknown reason. If you are familiar with configure-based configuration
+and building, investigate the 'config.log' file for clues.
+
+If you can not figure out what went wrong, please forward the 'config.log'
+file to the email address <coin-support@coin3d.org> and ask for help by
+describing the situation where this failed.
+" >&2;}
+    fi
+  else # no 'coin-config' found
     locations=`IFS="${sim_ac_pathsep}"; for p in $sim_ac_path; do echo " -> $p/coin-config"; done`
     { echo "$as_me:$LINENO: WARNING: cannot find 'coin-config' at any of these locations:
 $locations" >&5
 echo "$as_me: WARNING: cannot find 'coin-config' at any of these locations:
 $locations" >&2;}
+    { echo "$as_me:$LINENO: WARNING:
+Need to be able to run 'coin-config' to figure out how to build and link
+against the Coin library. To rectify this problem, you most likely need
+to a) install Coin if it has not been installed, b) add the Coin install
+bin/ directory to your PATH environment variable.
+" >&5
+echo "$as_me: WARNING:
+Need to be able to run 'coin-config' to figure out how to build and link
+against the Coin library. To rectify this problem, you most likely need
+to a) install Coin if it has not been installed, b) add the Coin install
+bin/ directory to your PATH environment variable.
+" >&2;}
   fi
 fi
 
@@ -6095,6 +6173,263 @@ fi
 
 
 fi
+
+# **************************************************************************
+# Use SmallChange if available.
+
+sim_ac_smallchange_desired=false
+
+
+
+
+# official variables
+sim_ac_smallchange_avail=false
+sim_ac_smallchange_cppflags=
+sim_ac_smallchange_cflags=
+sim_ac_smallchange_cxxflags=
+sim_ac_smallchange_ldflags=
+sim_ac_smallchange_libs=
+sim_ac_smallchange_datadir=
+sim_ac_smallchange_includedir=
+sim_ac_smallchange_version=
+
+# internal variables
+: ${sim_ac_smallchange_desired=true}
+sim_ac_smallchange_extrapath=
+
+
+# Check whether --with-smallchange or --without-smallchange was given.
+if test "${with_smallchange+set}" = set; then
+  withval="$with_smallchange"
+   case $withval in
+    no)  sim_ac_smallchange_desired=false ;;
+    yes) sim_ac_smallchange_desired=true ;;
+    *)   sim_ac_smallchange_desired=false
+         sim_ac_smallchange_extrapath=$withval ;;
+    esac
+fi;
+
+case $build in
+*-mks ) sim_ac_pathsep=";" ;;
+* )     sim_ac_pathsep="${PATH_SEPARATOR}" ;;
+esac
+
+if $sim_ac_smallchange_desired; then
+  sim_ac_path=$PATH
+  test -z "$sim_ac_smallchange_extrapath" || ## search in --with-smallchange path
+    sim_ac_path="$sim_ac_smallchange_extrapath/bin${sim_ac_pathsep}$sim_ac_path"
+  test x"$prefix" = xNONE ||          ## search in --prefix path
+    sim_ac_path="$sim_ac_path${sim_ac_pathsep}$prefix/bin"
+
+  # Extract the first word of "smallchange-config", so it can be a program name with args.
+set dummy smallchange-config; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_sim_ac_smallchange_configcmd+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $sim_ac_smallchange_configcmd in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_sim_ac_smallchange_configcmd="$sim_ac_smallchange_configcmd" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $sim_ac_path
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_sim_ac_smallchange_configcmd="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_sim_ac_smallchange_configcmd" && ac_cv_path_sim_ac_smallchange_configcmd="false"
+  ;;
+esac
+fi
+sim_ac_smallchange_configcmd=$ac_cv_path_sim_ac_smallchange_configcmd
+
+if test -n "$sim_ac_smallchange_configcmd"; then
+  echo "$as_me:$LINENO: result: $sim_ac_smallchange_configcmd" >&5
+echo "${ECHO_T}$sim_ac_smallchange_configcmd" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+  if ! test "X$sim_ac_smallchange_configcmd" = "Xfalse"; then
+    test -n "$CONFIG" &&
+      $sim_ac_smallchange_configcmd --alternate=$CONFIG >/dev/null 2>/dev/null &&
+      sim_ac_smallchange_configcmd="$sim_ac_smallchange_configcmd --alternate=$CONFIG"
+  fi
+
+  if $sim_ac_smallchange_configcmd; then
+    sim_ac_smallchange_version=`$sim_ac_smallchange_configcmd --version`
+    sim_ac_smallchange_cppflags=`$sim_ac_smallchange_configcmd --cppflags`
+    sim_ac_smallchange_cflags=`$sim_ac_smallchange_configcmd --cflags 2>/dev/null`
+    sim_ac_smallchange_cxxflags=`$sim_ac_smallchange_configcmd --cxxflags`
+    sim_ac_smallchange_ldflags=`$sim_ac_smallchange_configcmd --ldflags`
+    sim_ac_smallchange_libs=`$sim_ac_smallchange_configcmd --libs`
+    sim_ac_smallchange_datadir=`$sim_ac_smallchange_configcmd --datadir`
+    # Hide stderr on the following, as ``--includedir'', ``--msvcrt''
+    # and ``--cflags'' options were added late to smallchange-config.
+    sim_ac_smallchange_includedir=`$sim_ac_smallchange_configcmd --includedir 2>/dev/null`
+    sim_ac_smallchange_msvcrt=`$sim_ac_smallchange_configcmd --msvcrt 2>/dev/null`
+    sim_ac_smallchange_cflags=`$sim_ac_smallchange_configcmd --cflags 2>/dev/null`
+    echo "$as_me:$LINENO: checking whether libSmallChange is available" >&5
+echo $ECHO_N "checking whether libSmallChange is available... $ECHO_C" >&6
+if test "${sim_cv_smallchange_avail+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  sim_ac_save_cppflags=$CPPFLAGS
+      sim_ac_save_ldflags=$LDFLAGS
+      sim_ac_save_libs=$LIBS
+      CPPFLAGS="$CPPFLAGS $sim_ac_smallchange_cppflags"
+      LDFLAGS="$LDFLAGS $sim_ac_smallchange_ldflags"
+      LIBS="$sim_ac_smallchange_libs $LIBS"
+      ac_ext=cc
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+      cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <SmallChange/misc/Init.h>
+int
+main ()
+{
+smallchange_init();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  sim_cv_smallchange_avail=true
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+sim_cv_smallchange_avail=false
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+      ac_ext=cc
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+      CPPFLAGS=$sim_ac_save_cppflags
+      LDFLAGS=$sim_ac_save_ldflags
+      LIBS=$sim_ac_save_libs
+
+fi
+echo "$as_me:$LINENO: result: $sim_cv_smallchange_avail" >&5
+echo "${ECHO_T}$sim_cv_smallchange_avail" >&6
+    sim_ac_smallchange_avail=$sim_cv_smallchange_avail
+  else
+    locations=`IFS="${sim_ac_pathsep}"; for p in $sim_ac_path; do echo " -> $p/smallchange-config"; done`
+    { echo "$as_me:$LINENO: WARNING: cannot find 'smallchange-config' at any of these locations:
+$locations" >&5
+echo "$as_me: WARNING: cannot find 'smallchange-config' at any of these locations:
+$locations" >&2;}
+  fi
+fi
+
+if $sim_ac_smallchange_avail; then
+
+  CPPFLAGS="$CPPFLAGS `$sim_ac_smallchange_configcmd $alternate_option --cppflags`"
+  CXXFLAGS="$CXXFLAGS `$sim_ac_smallchange_configcmd $alternate_option --cxxflags`"
+  CFLAGS="$CFLAGS `$sim_ac_smallchange_configcmd $alternate_option --cflags`"
+  LDFLAGS="$LDFLAGS `$sim_ac_smallchange_configcmd $alternate_option --ldflags`"
+  LIBS="`$sim_ac_smallchange_configcmd $alternate_option --libs` $LIBS"
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_SMALLCHANGE_LIBRARY 1
+_ACEOF
+
+
+if test x"${sim_ac_configuration_settings+set}" = x"set"; then
+  sim_ac_configuration_settings="$sim_ac_configuration_settings|SmallChange:is being used"
+else
+  sim_ac_configuration_settings="SmallChange:is being used"
+fi
+
+
+else
+
+  if $sim_ac_smallchange_desired; then
+
+echo >&2 ""
+
+
+: ${sim_ac_message_file=$ac_aux_dir/errors.txt}
+if test -f $sim_ac_message_file; then
+  sim_ac_message="`sed -n -e '/^!smallchange-unavailable$/,/^!/ { /^!/ d; p; }' <$sim_ac_message_file`"
+  if test x"$sim_ac_message" = x""; then
+    { { echo "$as_me:$LINENO: error: no message named 'smallchange-unavailable' in '$sim_ac_message_file' - notify the $PACKAGE_NAME maintainer(s)" >&5
+echo "$as_me: error: no message named 'smallchange-unavailable' in '$sim_ac_message_file' - notify the $PACKAGE_NAME maintainer(s)" >&2;}
+   { (exit 1); exit 1; }; }
+  else
+    eval "echo >&2 \"$sim_ac_message\""
+  fi
+else
+  { { echo "$as_me:$LINENO: error: file '$sim_ac_message_file' not found - notify the $PACKAGE_NAME maintainer(s)" >&5
+echo "$as_me: error: file '$sim_ac_message_file' not found - notify the $PACKAGE_NAME maintainer(s)" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+
+echo >&2 ""
+{ { echo "$as_me:$LINENO: error: aborting" >&5
+echo "$as_me: error: aborting" >&2;}
+   { (exit 1); exit 1; }; }
+
+  else
+
+if test x"${sim_ac_configuration_settings+set}" = x"set"; then
+  sim_ac_configuration_settings="$sim_ac_configuration_settings|SmallChange:not used (enable with --with-smallchange)"
+else
+  sim_ac_configuration_settings="SmallChange:not used (enable with --with-smallchange)"
+fi
+
+  fi
+
+fi
+
+
+
+
+if $sim_ac_smallchange_avail; then
+  HAVE_SMALLCHANGE_TRUE=
+  HAVE_SMALLCHANGE_FALSE='#'
+else
+  HAVE_SMALLCHANGE_TRUE='#'
+  HAVE_SMALLCHANGE_FALSE=
+fi
+
 
 # *******************************************************************
 # ** Generate output files.
@@ -6210,6 +6545,13 @@ if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${HAVE_SMALLCHANGE_TRUE}" && test -z "${HAVE_SMALLCHANGE_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"HAVE_SMALLCHANGE\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"HAVE_SMALLCHANGE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -6796,6 +7138,9 @@ s,@X_PRE_LIBS@,$X_PRE_LIBS,;t t
 s,@X_LIBS@,$X_LIBS,;t t
 s,@X_EXTRA_LIBS@,$X_EXTRA_LIBS,;t t
 s,@sim_ac_coin_configcmd@,$sim_ac_coin_configcmd,;t t
+s,@sim_ac_smallchange_configcmd@,$sim_ac_smallchange_configcmd,;t t
+s,@HAVE_SMALLCHANGE_TRUE@,$HAVE_SMALLCHANGE_TRUE,;t t
+s,@HAVE_SMALLCHANGE_FALSE@,$HAVE_SMALLCHANGE_FALSE,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
@@ -7429,3 +7774,58 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
+
+# *******************************************************************
+
+
+sim_ac_settings="$sim_ac_configuration_settings"
+sim_ac_num_settings=`echo "$sim_ac_settings" | tr -d -c "|" | wc -c`
+sim_ac_maxlength=0
+while test $sim_ac_num_settings -ge 0; do
+  sim_ac_description=`echo "$sim_ac_settings" | cut -d: -f1`
+  sim_ac_length=`echo "$sim_ac_description" | wc -c`
+  if test $sim_ac_length -gt $sim_ac_maxlength; then
+    sim_ac_maxlength=`expr $sim_ac_length + 0`
+  fi
+  sim_ac_settings=`echo $sim_ac_settings | cut -d"|" -f2-`
+  sim_ac_num_settings=`expr $sim_ac_num_settings - 1`
+done
+
+sim_ac_maxlength=`expr $sim_ac_maxlength + 3`
+sim_ac_padding=`echo "                                             " |
+  cut -c1-$sim_ac_maxlength`
+
+sim_ac_num_settings=`echo "$sim_ac_configuration_settings" | tr -d -c "|" | wc -c`
+echo ""
+echo "$PACKAGE configuration settings:"
+while test $sim_ac_num_settings -ge 0; do
+  sim_ac_setting=`echo $sim_ac_configuration_settings | cut -d"|" -f1`
+  sim_ac_description=`echo "$sim_ac_setting" | cut -d: -f1`
+  sim_ac_status=`echo "$sim_ac_setting" | cut -d: -f2-`
+  # hopefully not too many terminals are too dumb for this
+  echo -e "$sim_ac_padding $sim_ac_status\r  $sim_ac_description:"
+  sim_ac_configuration_settings=`echo $sim_ac_configuration_settings | cut -d"|" -f2-`
+  sim_ac_num_settings=`expr $sim_ac_num_settings - 1`
+done
+
+if test x${sim_ac_configuration_warnings+set} = xset; then
+sim_ac_num_warnings=`echo "$sim_ac_configuration_warnings" | tr -d -c "|" | wc -c`
+echo ""
+echo "$PACKAGE configuration warnings:"
+while test $sim_ac_num_warnings -ge 0; do
+  sim_ac_warning=`echo "$sim_ac_configuration_warnings" | cut -d"|" -f1`
+  echo "  * $sim_ac_warning"
+  sim_ac_configuration_warnings=`echo $sim_ac_configuration_warnings | cut -d"|" -f2-`
+  sim_ac_num_warnings=`expr $sim_ac_num_warnings - 1`
+done
+fi
+
+
+echo ""
+echo "Now run 'make' to build the examples."
+echo ""
+echo "(Note that they are not installed, so after building you should"
+echo "execute them straight from this directory's subdirectories.)"
+echo ""
+
+# **************************************************************************

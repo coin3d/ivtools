@@ -24,6 +24,9 @@
 /* define if the GLU header should be included as OpenGL/glu.h */
 #undef HAVE_OPENGL_GLU_H
 
+/* Define to enable use of SmallChange library */
+#undef HAVE_SMALLCHANGE_LIBRARY
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
