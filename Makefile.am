@@ -1,1 +1,1 @@
-SUBDIRS = ivcat ivfix ivhierarchy ivNodeKitStructure renderos
+SUBDIRS = ivcat ivfix ivhierarchy ivNodeKitStructure renderos # ivperf

@@ -118,5 +118,6 @@ AC_OUTPUT([
         ivcat/Makefile
         ivfix/Makefile
         ivhierarchy/Makefile
+        ivperf/Makefile
         renderos/Makefile
         ])
