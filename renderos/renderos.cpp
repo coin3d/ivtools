@@ -22,6 +22,7 @@
 #include <Inventor/SoInteraction.h>
 #include <Inventor/SoOffscreenRenderer.h>
 #include <Inventor/actions/SoGLRenderAction.h>
+#include <Inventor/actions/SoSearchAction.h>
 #include <Inventor/nodekits/SoNodeKit.h>
 #include <Inventor/nodes/SoDirectionalLight.h>
 #include <Inventor/nodes/SoPerspectiveCamera.h>
@@ -149,6 +150,8 @@ main(int argc, char ** argv)
   SoNodeKit::init();
   SoInteraction::init();
 
+  SbViewportRegion vp(width, height);
+
   SoInput in;
   if (!in.openFile(modelfile)) {
     (void)fprintf(stderr, "Couldn't open file '%s'.\n", modelfile);
@@ -161,20 +164,45 @@ main(int argc, char ** argv)
     exit(1);
   }
 
-  SoSeparator * root = new SoSeparator;
+  SoSeparator * root = NULL;
+
+  fileroot->ref(); // Since we're applying the (search) action.
+
+  // If there's no camera in the scene graph already, set up a "super
+  // graph" above the one loaded from file, and add a camera.
+
+  SoSearchAction searchaction;
+  searchaction.setType(SoCamera::getClassTypeId());
+  searchaction.setInterest(SoSearchAction::FIRST);
+  searchaction.apply(fileroot);
+
+  if (searchaction.getPath() == NULL) {
+    root = new SoSeparator;
+
+    SoPerspectiveCamera * camera = new SoPerspectiveCamera;
+    camera->viewAll(root, vp);
+    root->addChild(camera);
+
+    searchaction.reset();
+    searchaction.setType(SoLight::getClassTypeId());
+    searchaction.setInterest(SoSearchAction::FIRST);
+    searchaction.apply(fileroot);
+
+    // Add in a (head) light aswell, if there was none in the scene.
+    if (searchaction.getPath() == NULL) {
+      SoDirectionalLight * light = new SoDirectionalLight;
+      light->direction.setValue(0.5, 0.5, -0.8);
+      root->addChild(light);
+    }
+
+    root->addChild(fileroot);
+  }
+  else {
+    root = fileroot;
+  }
+
   root->ref();
-
-  SoPerspectiveCamera * camera = new SoPerspectiveCamera;
-  root->addChild(camera);
-
-  SoDirectionalLight * light = new SoDirectionalLight;
-  light->direction.setValue(0.5, 0.5, -0.8);
-  root->addChild(light);
-
-  root->addChild(fileroot);
-
-  SbViewportRegion vp(width, height);
-  camera->viewAll(root, vp);
+  fileroot->unrefNoDelete();
 
   SoOffscreenRenderer osr(vp);
   osr.setComponents(components);
