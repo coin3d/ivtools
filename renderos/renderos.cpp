@@ -159,13 +159,7 @@ main(int argc, char ** argv)
     exit(1);
   }
 
-  FILE * snapfp = fopen(snapshotdump, "wb");
-  if (!snapfp) {
-    (void)fprintf(stderr, "Couldn't open file '%s'.\n", snapshotdump);
-    exit(1);
-  }
-
-  if (!osr.writeToRGB(snapfp)) {
+  if (!osr.writeToRGB(snapshotdump)) {
     (void)fprintf(stderr, "Couldn't write file '%s'.\n", snapshotdump);
   }
   else {
@@ -173,6 +167,5 @@ main(int argc, char ** argv)
                   snapshotdump);
   }
 
-  (void)fclose(snapfp);
   return 0;
 }
