@@ -161,7 +161,8 @@ IfStripper::createVertexList()
     // we can find is the number of coordinate values - 1.)
     int numCoords = holder->coords->point.getNum();
     StripVertex **table = new StripVertex *[numCoords];
-    for (int i = 0; i < numCoords; i++)
+    int i;
+    for (i = 0; i < numCoords; i++)
 	table[i] = NULL;
 
     // Step 4: Also create an array of indices into the StripVertex
@@ -420,7 +421,8 @@ IfStripper::hashEdge(StripEdge *edge)
 void
 IfStripper::setUpPendingTriangleLists()
 {
-    for (int i = 0; i < 4; i++)
+    int i;
+    for (i = 0; i < 4; i++)
 	pendingTriList[i] = NULL;
 
     // Now that all neighbors are known, figure out how many neighbors
