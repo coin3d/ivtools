@@ -68,8 +68,8 @@ usage(const char * argv_0)
   do { \
     if (isatty(fileno(fileptr))) { \
       usage(argv[0]); \
-      fprintf(stderr, "Trying to read from standard input, but standard " \
-              "input is a tty!\n\n"); \
+      fprintf(stderr, "Error: trying to read from standard input, but " \
+              "standard input is a tty!\n\n"); \
       exit(1); \
     } \
   } while (0)
