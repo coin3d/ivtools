@@ -17,6 +17,7 @@
  *
 \**************************************************************************/
 
+#include <string.h>
 #include <Inventor/SoDB.h>
 #include <Inventor/nodekits/SoNodeKit.h>
 #include <Inventor/SoInteraction.h>

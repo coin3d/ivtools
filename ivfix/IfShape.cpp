@@ -34,6 +34,7 @@
  *
  */
 
+#include <string.h>
 #include <Inventor/SoLists.h>
 #include <Inventor/nodes/SoCamera.h>
 #include <Inventor/nodes/SoComplexity.h>
