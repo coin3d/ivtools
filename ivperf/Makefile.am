@@ -1,2 +1,2 @@
 bin_PROGRAMS = ivperf
-ivperf_SOURCES = ivperf.cpp
+ivperf_SOURCES = ivperf.cpp BarChart.cpp

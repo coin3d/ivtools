@@ -76,7 +76,7 @@ install_sh = @install_sh@
 sim_ac_coin_configcmd = @sim_ac_coin_configcmd@
 
 bin_PROGRAMS = ivperf
-ivperf_SOURCES = ivperf.cpp
+ivperf_SOURCES = ivperf.cpp BarChart.cpp
 subdir = ivperf
 mkinstalldirs = $(SHELL) $(top_srcdir)/cfg/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -84,7 +84,7 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = ivperf$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
-am_ivperf_OBJECTS = ivperf.$(OBJEXT)
+am_ivperf_OBJECTS = ivperf.$(OBJEXT) BarChart.$(OBJEXT)
 ivperf_OBJECTS = $(am_ivperf_OBJECTS)
 ivperf_LDADD = $(LDADD)
 ivperf_DEPENDENCIES =
@@ -96,7 +96,7 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 depcomp = $(SHELL) $(top_srcdir)/cfg/depcomp
-@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/ivperf.Po
+@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/BarChart.Po $(DEPDIR)/ivperf.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
@@ -104,7 +104,7 @@ CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 CXXFLAGS = @CXXFLAGS@
 DIST_SOURCES = $(ivperf_SOURCES)
-DIST_COMMON = Makefile.am Makefile.in
+DIST_COMMON = README Makefile.am Makefile.in
 SOURCES = $(ivperf_SOURCES)
 
 all: all-am
@@ -151,6 +151,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/BarChart.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/ivperf.Po@am__quote@
 
 distclean-depend:
