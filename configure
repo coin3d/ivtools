@@ -1896,17 +1896,18 @@ fi
 # ** Check if getopt() is available.
 # *******************************************************************
 
-for ac_header in unistd.h
+# For getopt() (getopt.h is present on some SGI platforms).
+for ac_header in unistd.h getopt.h
 do
 ac_ac_Header=`echo "ac_cv_header_$ac_header" | $ac_tr_sh`
 
-echo "configure:1903: checking for $ac_header" >&5
+echo "configure:1904: checking for $ac_header" >&5
 echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
 if eval "test \"\${$ac_ac_Header+set}\" = set"; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   cat >conftest.$ac_ext <<_ACEOF
-#line 1909 "configure"
+#line 1910 "configure"
 #include "confdefs.h"
 #include <$ac_header>
 
@@ -1918,7 +1919,7 @@ main ()
   return 0;
 }
 _ACEOF
-if { (eval echo configure:1921: \"$ac_compile\") >&5; (eval $ac_compile) 2>&5; } && test -s conftest.$ac_objext; then
+if { (eval echo configure:1922: \"$ac_compile\") >&5; (eval $ac_compile) 2>&5; } && test -s conftest.$ac_objext; then
   eval "$ac_ac_Header=yes"
 else
   echo "configure: failed program was:" >&5
@@ -1927,7 +1928,7 @@ else
 fi
 rm -f conftest.$ac_objext conftest.$ac_ext
 fi
-echo "configure:1930: result: `eval echo '${'$ac_ac_Header'}'`" >&5
+echo "configure:1931: result: `eval echo '${'$ac_ac_Header'}'`" >&5
 echo "${ECHO_T}`eval echo '${'$ac_ac_Header'}'`" >&6
 if test `eval echo '${'$ac_ac_Header'}'` = yes; then
   cat >>confdefs.h <<EOF
@@ -1936,7 +1937,6 @@ EOF
 
 fi
 done
- # for getopt()
 
 echo "configure:1941: checking whether getopt() is available" >&5
 echo $ECHO_N "checking whether getopt() is available... $ECHO_C" >&6

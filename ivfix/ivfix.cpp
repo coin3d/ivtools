@@ -34,13 +34,17 @@
  *
  */
 
-#ifdef __sgi
-#include <getopt.h> 
-#else
-extern "C" int getopt(int argc, char * const argv[], const char *optstring);
-#endif
-#include <string.h>
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif // HAVE_CONFIG_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif // HAVE_UNISTD_H
+#if HAVE_GETOPT_H
+#include <getopt.h>
+#endif // HAVE_GETOPT_H
+
+#include <string.h>
 #include <stdlib.h>
 
 #include <Inventor/SoDB.h>
@@ -52,9 +56,6 @@ extern "C" int getopt(int argc, char * const argv[], const char *optstring);
 #include "IfFixer.h"
 #include "IfReporter.h"
 
-#ifdef _POSIX_SOURCE
-extern "C" char *strdup(const char *);
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -149,6 +150,7 @@ main(int argc, char **argv)
 static void
 printUsage(const char *progname)
 {
+#if HAVE_GETOPT
     fprintf(stderr, "Usage: %s [options] [infile] [outfile]\n", progname);
     fprintf(stderr,
 	    "\t-a     : Write out an ascii file.  Default is binary\n"
@@ -161,7 +163,9 @@ printUsage(const char *progname)
 	    "\t-v     : (Verbose) Display status info during processing\n"
 	    "\t-V     : (Very verbose) Display more detailed status info\n"
 	    );
-
+#else // !HAVE_GETOPT
+    fprintf(stderr, "Usage: %s [infile] [outfile]\n", progname);
+#endif // !HAVE_GETOPT
     exit(99);
 }
 
@@ -177,6 +181,7 @@ parseArgs(int argc, char **argv, OptionInfo &options)
     SbBool uhoh = FALSE;
     int c;
     
+#if HAVE_GETOPT
     while ((c = getopt(argc, argv, "ad:fhnptvV")) != -1) {
 	switch(c) {
 	  case 'a':
@@ -209,6 +214,9 @@ parseArgs(int argc, char **argv, OptionInfo &options)
 	    break;
 	}
     }
+#else // !HAVE_GETOPT
+    int optind = 1;
+#endif // !HAVE_GETOPT
 
     // Handle optional input file name
     if (optind < argc) {
@@ -230,9 +238,11 @@ parseArgs(int argc, char **argv, OptionInfo &options)
         }
     }
 
+#if HAVE_ISATTY
     // Trying to read stdin from a tty is a no-no
     else if (isatty(fileno(stdin)))
 	uhoh = TRUE;
+#endif // HAVE_ISATTY
 
     // Handle optional output file name
     if (optind < argc) {

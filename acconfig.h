@@ -1,4 +1,5 @@
 #undef HAVE_UNISTD_H
+#undef HAVE_GETOPT_H
 
 #undef HAVE_GETOPT
 #undef HAVE_ISATTY
