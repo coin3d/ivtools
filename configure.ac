@@ -7,16 +7,6 @@ AC_INIT(ivcat/ivcat.cpp)
 AC_CONFIG_AUX_DIR(cfg)
 
 # **************************************************************************
-# Check the CVS repository setup
-
-SIM_AC_CVS_CHANGES([
-  SIM_AC_CVS_CHANGE([
-    rm -rf conf-macros
-    cvs co IvToolsMacros
-  ], [test -d cfg/m4], [test ! -d conf-macros])
-])
-
-# **************************************************************************
 # If the Microsoft Visual C++ cl.exe compiler is available, set us up for
 # compiling with it.
 
@@ -66,7 +56,7 @@ AC_CACHE_CHECK([whether getopt() is available],
                sim_cv_func_getopt_avail=no)])
 
 if test x"$sim_cv_func_getopt_avail" = xyes; then
-  AC_DEFINE(HAVE_GETOPT)
+  AC_DEFINE([HAVE_GETOPT],, [if getopt function is available])
 fi
 
 
@@ -86,7 +76,7 @@ AC_CACHE_CHECK([whether isatty() is available],
                sim_cv_func_isatty_avail=no)])
 
 if test x"$sim_cv_func_isatty_avail" = xyes; then
-  AC_DEFINE(HAVE_ISATTY)
+  AC_DEFINE([HAVE_ISATTY],, [if isatty() is available])
 fi
 
 
