@@ -1,0 +1,44 @@
+#  This can be any file in the package.
+AC_INIT(ivcat/ivcat.cpp)
+
+#  Locate C++ compiler and set C++ as the default language to use
+#  in tests. The configure script will automatically terminate if
+#  it doesn't find a C++ compiler.
+AC_PROG_CXX
+AC_LANG_CPLUSPLUS
+
+AM_INIT_AUTOMAKE(IvTools, 0.9)
+
+#  Files to cram results from the configure tests into.
+AM_CONFIG_HEADER(config.h)
+
+#  Turn off default maintainer make-rules -- use ./bootstrap instead.
+AM_MAINTAINER_MODE
+
+if test x"$with_inventor" = xyes; then
+  # If we want to compile and link against Inventor, we
+  # need to check for a shitload of libraries.
+
+  SIM_AC_CHECK_MATHLIB
+  SIM_AC_CHECK_DL
+  
+  SIM_AC_CHECK_OPENGL( , AC_MSG_ERROR(needs an OpenGL-compatible development system installation))
+  SIM_AC_CHECK_GLU( , AC_MSG_ERROR(needs the OpenGL utility library))
+  SIM_CHECK_INVENTOR( , AC_MSG_ERROR(couldn't compile and link against Open Inventor))
+  
+else
+
+  # Compile and link on top of Coin.
+  SIM_AC_HAVE_COIN_IFELSE(, AC_MSG_ERROR(Couldn't build against Coin library))
+  CPPFLAGS="$CPPFLAGS $sim_ac_soxt_cppflags"
+  LDFLAGS="$CPPFLAGS $sim_ac_soxt_ldflags"
+  LIBS="$CPPFLAGS $sim_ac_soxt_libs"
+fi
+
+AC_OUTPUT([
+        Makefile
+        ivNodeKitStructure/Makefile
+        ivcat/Makefile
+        ivhierarchy/Makefile
+        renderos/Makefile
+        ])
