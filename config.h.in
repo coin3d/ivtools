@@ -11,6 +11,18 @@
 /* Define if you have the <getopt.h> header file. */
 #undef HAVE_GETOPT_H
 
+/* define if the GLU header should be included as GL/glu.h */
+#undef HAVE_GL_GLU_H
+
+/* define if the GL header should be included as GL/gl.h */
+#undef HAVE_GL_GL_H
+
+/* define if the GLU header should be included as OpenGL/glu.h */
+#undef HAVE_OPENGL_GLU_H
+
+/* define if the GL header should be included as OpenGL/gl.h */
+#undef HAVE_OPENGL_GL_H
+
 /* Define if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 

@@ -1,6 +1,6 @@
-# aclocal.m4 generated automatically by aclocal 1.4e
+# aclocal.m4 generated automatically by aclocal 1.5
 
-# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000
+# Copyright 1996, 1997, 1998, 1999, 2000, 2001
 # Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -136,6 +136,12 @@ fi
 # This macro invokes IF-FOUND if the msvccc wrapper can be run, and
 # IF-NOT-FOUND if not.
 #
+# **************************************************************************
+# SIM_AC_MSVCRT
+#
+# Set up the MSVC++ run-time library.
+#
+# **************************************************************************
 # Authors:
 #   Morten Eriksen <mortene@coin3d.org>
 #   Lars J. Aas <larsa@coin3d.org>
@@ -168,7 +174,131 @@ else
 fi
 ]) # SIM_AC_SETUP_MSVC_IFELSE
 
+AC_DEFUN([SIM_AC_SETUP_MSVCRT],
+[
+
+sim_ac_msvcrt_LDFLAGS=""
+sim_ac_msvcrt_LIBS=""
+
+AC_ARG_WITH([msvcrt],
+  [AC_HELP_STRING([--with-msvcrt=<crt>],
+                  [set which C run-time library to build against])],
+  [case `echo "$withval" | tr "[A-Z]" "[a-z]"` in
+  default | singlethread-static | ml | /ml | libc | libc\.lib )
+    sim_ac_msvcrt=singlethread-static
+    sim_ac_msvcrt_CFLAGS="/ML"
+    sim_ac_msvcrt_CXXFLAGS="/ML"
+    sim_ac_msvcrt_LIBLDFLAGS=""
+    sim_ac_msvcrt_LIBLIBS=""
+    ;;
+  default-debug | singlethread-static-debug | mld | /mld | libcd | libcd\.lib )
+    sim_ac_msvcrt=singlethread-static-debug
+    sim_ac_msvcrt_CFLAGS="/MLd"
+    sim_ac_msvcrt_CXXFLAGS="/MLd"
+    sim_ac_msvcrt_LIBLDFLAGS="/NODEFAULTLIB:libc"
+    sim_ac_msvcrt_LIBLIBS="-llibcd"
+    ;;
+  multithread-static | mt | /mt | libcmt | libcmt\.lib )
+    sim_ac_msvcrt=multithread-static
+    sim_ac_msvcrt_CFLAGS="/MT"
+    sim_ac_msvcrt_CXXFLAGS="/MT"
+    sim_ac_msvcrt_LIBLDFLAGS="/NODEFAULTLIB:libc"
+    sim_ac_msvcrt_LIBLIBS="-llibcmt"
+    ;;
+  multithread-static-debug | mtd | /mtd | libcmtd | libcmtd\.lib )
+    sim_ac_msvcrt=multithread-static-debug
+    sim_ac_msvcrt_CFLAGS="/MTd"
+    sim_ac_msvcrt_CXXFLAGS="/MTd"
+    sim_ac_msvcrt_LIBLDFLAGS="/NODEFAULTLIB:libc"
+    sim_ac_msvcrt_LIBLIBS="-llibcmtd"
+    ;;
+  multithread-dynamic | md | /md | msvcrt | msvcrt\.lib )
+    sim_ac_msvcrt=multithread-dynamic
+    sim_ac_msvcrt_CFLAGS=""
+    sim_ac_msvcrt_CXXFLAGS=""
+    sim_ac_msvcrt_LIBLDFLAGS="/NODEFAULTLIB:libc"
+    sim_ac_msvcrt_LIBLIBS="-lmsvcrt"
+    ;;
+  multithread-dynamic-debug | mdd | /mdd | msvcrtd | msvcrtd\.lib )
+    sim_ac_msvcrt=multithread-dynamic-debug
+    sim_ac_msvcrt_CFLAGS="/MDd"
+    sim_ac_msvcrt_CXXFLAGS="/MDd"
+    sim_ac_msvcrt_LIBLDFLAGS="/NODEFAULTLIB:libc"
+    sim_ac_msvcrt_LIBLIBS="-lmsvcrtd"
+    ;;
+  *)
+    SIM_AC_ERROR([invalid-msvcrt])
+    ;;
+  esac],
+  [sim_ac_msvcrt=singlethread-static])
+
+AC_MSG_CHECKING([MSVC++ C library choice])
+AC_MSG_RESULT([$sim_ac_msvcrt])
+
+$1
+]) # SIM_AC_SETUP_MSVCRT
+
 # EOF **********************************************************************
+
+# **************************************************************************
+# SIM_AC_ERROR_MESSAGE_FILE( FILENAME )
+#   Sets the error message file.  Default is $ac_aux_dir/m4/errors.txt.
+#
+# SIM_AC_ERROR( ERROR [, ERROR ...] )
+#   Fetches the error messages from the error message file and displays
+#   them on stderr.
+#
+# SIM_AC_WITH_ERROR( WITHARG )
+#   Invokes AC_MSG_ERROR in a consistent way for problems with the --with-*
+#   $withval argument.
+#
+# SIM_AC_ENABLE_ERROR( ENABLEARG )
+#   Invokes AC_MSG_ERROR in a consistent way for problems with the --enable-*
+#   $enableval argument.
+#
+# Authors:
+#   Lars J. Aas <larsa@sim.no>
+
+AC_DEFUN([SIM_AC_ERROR_MESSAGE_FILE], [
+sim_ac_message_file=$1
+]) # SIM_AC_ERROR_MESSAGE_FILE
+
+AC_DEFUN([SIM_AC_ONE_MESSAGE], [
+: ${sim_ac_message_file=$ac_aux_dir/m4/errors.txt}
+if test -f $sim_ac_message_file; then
+  sim_ac_message="`sed -n -e '/^!$1$/,/^!/ { /^!/ d; p; }' <$sim_ac_message_file`"
+  if test x"$sim_ac_message" = x""; then
+    AC_MSG_ERROR([no message named '$1' in '$sim_ac_message_file' - notify the $PACKAGE_NAME maintainer(s)])
+  else
+    eval "echo >&2 \"$sim_ac_message\""
+  fi
+else
+  AC_MSG_ERROR([file '$sim_ac_message_file' not found - notify the $PACKAGE_NAME maintainer(s)])
+fi
+]) # SIM_AC_ONE_MESSAGE
+
+AC_DEFUN([_SIM_AC_ERROR], [
+SIM_AC_ONE_MESSAGE([$1])
+ifelse([$2], , , [
+echo >&2 ""
+_SIM_AC_ERROR(m4_shift($@))])
+]) # _SIM_AC_ERROR
+
+AC_DEFUN([SIM_AC_ERROR], [
+echo >&2 ""
+_SIM_AC_ERROR($@)
+echo >&2 ""
+AC_MSG_ERROR([aborting])
+]) # SIM_AC_ERROR
+
+AC_DEFUN([SIM_AC_WITH_ERROR], [
+AC_MSG_ERROR([invalid value "${withval}" for "$1" configure argument])
+]) # SIM_AC_WITH_ERROR
+
+AC_DEFUN([SIM_AC_ENABLE_ERROR], [
+AC_MSG_ERROR([invalid value "${enableval}" for "$1" configure argument])
+]) # SIM_AC_ENABLE_ERROR
+
 
 # Do all the work for Automake.  This macro actually does too much --
 # some checks are only needed if your package does certain things.
@@ -222,7 +352,16 @@ AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [Version number of package])])
 # Autoconf 2.50 wants to disallow AM_ names.  We explicitly allow
 # the ones we care about.
 ifdef([m4_pattern_allow],
-      [m4_pattern_allow([^AM_(C|CPP|CXX|OBJC|F|R|GCJ)FLAGS])])dnl
+      [m4_pattern_allow([^AM_[A-Z]+FLAGS])])dnl
+
+# Autoconf 2.50 always computes EXEEXT.  However we need to be
+# compatible with 2.13, for now.  So we always define EXEEXT, but we
+# don't compute it.
+AC_SUBST(EXEEXT)
+# Similar for OBJEXT -- only we only use OBJEXT if the user actually
+# requests that it be used.  This is a bit dumb.
+: ${OBJEXT=o}
+AC_SUBST(OBJEXT)
 
 # Some tools Automake needs.
 AC_REQUIRE([AM_SANITY_CHECK])dnl
@@ -233,7 +372,7 @@ AM_MISSING_PROG(AUTOMAKE, automake)
 AM_MISSING_PROG(AUTOHEADER, autoheader)
 AM_MISSING_PROG(MAKEINFO, makeinfo)
 AM_MISSING_PROG(AMTAR, tar)
-AM_MISSING_INSTALL_SH
+AM_PROG_INSTALL_SH
 AM_PROG_INSTALL_STRIP
 # We need awk for the "check" target.  The system "awk" is bad on
 # some platforms.
@@ -242,13 +381,13 @@ AC_REQUIRE([AC_PROG_MAKE_SET])dnl
 AC_REQUIRE([AM_DEP_TRACK])dnl
 AC_REQUIRE([AM_SET_DEPDIR])dnl
 AC_PROVIDE_IFELSE([AC_PROG_][CC],
-                  [AM_DEPENDENCIES(CC)],
+                  [_AM_DEPENDENCIES(CC)],
                   [define([AC_PROG_][CC],
-                          defn([AC_PROG_][CC])[AM_DEPENDENCIES(CC)])])dnl
+                          defn([AC_PROG_][CC])[_AM_DEPENDENCIES(CC)])])dnl
 AC_PROVIDE_IFELSE([AC_PROG_][CXX],
-                  [AM_DEPENDENCIES(CXX)],
+                  [_AM_DEPENDENCIES(CXX)],
                   [define([AC_PROG_][CXX],
-                          defn([AC_PROG_][CXX])[AM_DEPENDENCIES(CXX)])])dnl
+                          defn([AC_PROG_][CXX])[_AM_DEPENDENCIES(CXX)])])dnl
 ])
 
 #
@@ -275,6 +414,7 @@ if (
       # -L didn't work.
       set X `ls -t $srcdir/configure conftest.file`
    fi
+   rm -f conftest.file
    if test "$[*]" != "X $srcdir/configure conftest.file" \
       && test "$[*]" != "X conftest.file $srcdir/configure"; then
 
@@ -295,7 +435,6 @@ else
    AC_MSG_ERROR([newly created file is older than distributed files!
 Check your system clock])
 fi
-rm -f conftest*
 AC_MSG_RESULT(yes)])
 
 
@@ -309,34 +448,15 @@ $1=${$1-"${am_missing_run}$2"}
 AC_SUBST($1)])
 
 
-# AM_MISSING_INSTALL_SH
-# ---------------------
-# Like AM_MISSING_PROG, but only looks for install-sh.
-AC_DEFUN([AM_MISSING_INSTALL_SH],
-[AC_REQUIRE([AM_MISSING_HAS_RUN])
-if test -z "$install_sh"; then
-   for install_sh in "$ac_aux_dir/install-sh" \
-                     "$ac_aux_dir/install.sh" \
-                     "${am_missing_run}${ac_auxdir}/install-sh";
-   do
-     test -f "$install_sh" && break
-   done
-   # FIXME: an evil hack: we remove the SHELL invocation from
-   # install_sh because automake adds it back in.  Sigh.
-   install_sh=`echo $install_sh | sed -e 's/\${SHELL}//'`
-fi
-AC_SUBST(install_sh)])
-
-
 # AM_MISSING_HAS_RUN
 # ------------------
 # Define MISSING if not defined so far and test if it supports --run.
 # If it does, set am_missing_run to use it, otherwise, to nothing.
 AC_DEFUN([AM_MISSING_HAS_RUN],
-[test x"${MISSING+set}" = xset ||
-  MISSING="\${SHELL} `CDPATH=:; cd $ac_aux_dir && pwd`/missing"
+[AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
+test x"${MISSING+set}" = xset || MISSING="\${SHELL} $am_aux_dir/missing"
 # Use eval to expand $SHELL
-if eval "$MISSING --run :"; then
+if eval "$MISSING --run true"; then
   am_missing_run="$MISSING --run "
 else
   am_missing_run=
@@ -348,104 +468,74 @@ fi
 # AM_AUX_DIR_EXPAND
 
 # For projects using AC_CONFIG_AUX_DIR([foo]), Autoconf sets
-# $ac_aux_dir to ${srcdir}/foo.  In other projects, it is set to `.'.
-# Of course, Automake must honor this variable whenever it call a tool
-# from the auxiliary directory.  The problem is that $srcdir (hence
-# $ac_aux_dir) can be either an absolute path or a path relative to
-# $top_srcdir or absolute, this depends on how configure is run.  This
-# is pretty anoying since it makes $ac_aux_dir quite unusable in
-# subdirectories: on the top source directory, any form will work
-# fine, but in subdirectories relative pat needs to be adapted.
-# - calling $top_srcidr/$ac_aux_dir/missing would success if $srcdir is
-#   relative, but fail if $srcdir is absolute
-# - conversly, calling $ax_aux_dir/missing would fail if $srcdir is
-#   absolute, and success on relative paths.
+# $ac_aux_dir to `$srcdir/foo'.  In other projects, it is set to
+# `$srcdir', `$srcdir/..', or `$srcdir/../..'.
 #
-# Consequently, we define and use $am_aux_dir, the "always absolute"
-# version of $ac_aux_dir.
+# Of course, Automake must honor this variable whenever it calls a
+# tool from the auxiliary directory.  The problem is that $srcdir (and
+# therefore $ac_aux_dir as well) can be either absolute or relative,
+# depending on how configure is run.  This is pretty annoying, since
+# it makes $ac_aux_dir quite unusable in subdirectories: in the top
+# source directory, any form will work fine, but in subdirectories a
+# relative path needs to be adjusted first.
+#
+# $ac_aux_dir/missing
+#    fails when called from a subdirectory if $ac_aux_dir is relative
+# $top_srcdir/$ac_aux_dir/missing
+#    fails if $ac_aux_dir is absolute,
+#    fails when called from a subdirectory in a VPATH build with
+#          a relative $ac_aux_dir
+#
+# The reason of the latter failure is that $top_srcdir and $ac_aux_dir
+# are both prefixed by $srcdir.  In an in-source build this is usually
+# harmless because $srcdir is `.', but things will broke when you
+# start a VPATH build or use an absolute $srcdir.
+#
+# So we could use something similar to $top_srcdir/$ac_aux_dir/missing,
+# iff we strip the leading $srcdir from $ac_aux_dir.  That would be:
+#   am_aux_dir='\$(top_srcdir)/'`expr "$ac_aux_dir" : "$srcdir//*\(.*\)"`
+# and then we would define $MISSING as
+#   MISSING="\${SHELL} $am_aux_dir/missing"
+# This will work as long as MISSING is not called from configure, because
+# unfortunately $(top_srcdir) has no meaning in configure.
+# However there are other variables, like CC, which are often used in
+# configure, and could therefore not use this "fixed" $ac_aux_dir.
+#
+# Another solution, used here, is to always expand $ac_aux_dir to an
+# absolute PATH.  The drawback is that using absolute paths prevent a
+# configured tree to be moved without reconfiguration.
 
 AC_DEFUN([AM_AUX_DIR_EXPAND], [
 # expand $ac_aux_dir to an absolute path
-am_aux_dir=`CDPATH=:; cd $ac_aux_dir && pwd`
+if test "${CDPATH+set}" = set; then
+  CDPATH=${ZSH_VERSION+.}:   # as recommended in autoconf.texi
+fi
+am_aux_dir=`cd $ac_aux_dir && pwd`
 ])
 
-# AM_AUX_DIR_EXPAND
-
-# For projects using AC_CONFIG_AUX_DIR([foo]), Autoconf sets
-# $ac_aux_dir to ${srcdir}/foo.  In other projects, it is set to `.'.
-# Of course, Automake must honor this variable whenever it calls a tool
-# from the auxiliary directory.  The problem is that $srcdir (and therefore
-# $ac_aux_dir as well) can be either an absolute path or a path relative to
-# $top_srcdir, depending on how configure is run.  This is pretty annoying,
-# since it makes $ac_aux_dir quite unusable in subdirectories: in the top
-# source directory, any form will work fine, but in subdirectories a relative
-# path needs to be adjusted first.
-# - calling $top_srcdir/$ac_aux_dir/missing would succeed if $ac_aux_dir was
-#   relative, but fail if it was absolute.
-# - conversly, calling $ac_aux_dir/missing would fail if $ac_aux_dir was
-#   relative, and succeed on absolute paths.
-#
-# Consequently, we define and use $am_aux_dir, the "always absolute"
-# version of $ac_aux_dir.
-
-AC_DEFUN([AM_AUX_DIR_EXPAND], [
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`CDPATH=:; cd $ac_aux_dir && pwd`
-])
+# AM_PROG_INSTALL_SH
+# ------------------
+# Define $install_sh.
+AC_DEFUN([AM_PROG_INSTALL_SH],
+[AC_REQUIRE([AM_AUX_DIR_EXPAND])dnl
+install_sh=${install_sh-"$am_aux_dir/install-sh"}
+AC_SUBST(install_sh)])
 
 # One issue with vendor `install' (even GNU) is that you can't
 # specify the program used to strip binaries.  This is especially
-# annoying in cross=compiling environments, where the build's strip
+# annoying in cross-compiling environments, where the build's strip
 # is unlikely to handle the host's binaries.
-# Fortunately install-sh will honor a STRIPPROG variable, so if we ever
-# need to use a non standard strip, we just have to make sure we use
-# install-sh with the STRIPPROG variable set.
+# Fortunately install-sh will honor a STRIPPROG variable, so we
+# always use install-sh in `make install-strip', and initialize
+# STRIPPROG with the value of the STRIP variable (set by the user).
 AC_DEFUN([AM_PROG_INSTALL_STRIP],
-[AC_REQUIRE([AM_MISSING_INSTALL_SH])
-dnl Don't test for $cross_compiling = yes, it might be `maybe'...
-# We'd like to do this but we can't because it will unconditionally
-# require config.guess.  One way would be if autoconf had the capability
-# to let us compile in this code only when config.guess was already
-# a possibility.
-#if test "$cross_compiling" != no; then
-#  # since we are cross-compiling, we need to check for a suitable `strip'
-#  AM_PROG_STRIP
-#  if test -z "$STRIP"; then
-#    AC_MSG_WARN([strip missing, install-strip will not strip binaries])
-#  fi
-#fi
+[AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
+INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
+AC_SUBST([INSTALL_STRIP_PROGRAM])])
 
-# If $STRIP is defined (either by the user, or by AM_PROG_STRIP),
-# instruct install-strip to use install-sh and the given $STRIP program.
-# Otherwise, just use ${INSTALL}: the idea is to use the vendor install
-# as much as possible, because it's faster.
-if test -z "$STRIP"; then
-  # The top level make will set INSTALL_PROGRAM=$(INSTALL_STRIP_PROGRAM)
-  # and the double dolard below is there to make sure that ${INSTALL}
-  # is substitued in the sub-makes, not at the top-level; this is
-  # needed if ${INSTALL} is a relative path (ajusted in each subdirectory
-  # by config.status).
-  INSTALL_STRIP_PROGRAM='$${INSTALL} -s'
-  INSTALL_STRIP_PROGRAM_ENV=''
-else
-  _am_dirpart="`echo $install_sh | sed -e 's,//*[[^/]]*$,,'`"
-  INSTALL_STRIP_PROGRAM="\${SHELL} \`CDPATH=: && cd $_am_dirpart && pwd\`/install-sh -c -s"
-  INSTALL_STRIP_PROGRAM_ENV="STRIPPROG='\$(STRIP)'"
-fi
-AC_SUBST([STRIP])
-AC_SUBST([INSTALL_STRIP_PROGRAM])
-AC_SUBST([INSTALL_STRIP_PROGRAM_ENV])])
+# serial 4						-*- Autoconf -*-
 
-#AC_DEFUN([AM_PROG_STRIP],
-#[# Check for `strip', unless the installer
-# has set the STRIP environment variable.
-# Note: don't explicitly check for -z "$STRIP" here because
-# that will cause problems if AC_CANONICAL_* is AC_REQUIREd after
-# this macro, and anyway it doesn't have an effect anyway.
-#AC_CHECK_TOOL([STRIP],[strip])
-#])
 
-# serial 3
 
 # There are a few dirty hacks below to avoid letting `AC_PROG_CC' be
 # written in clear, in which case automake, when reading aclocal.m4,
@@ -453,53 +543,57 @@ AC_SUBST([INSTALL_STRIP_PROGRAM_ENV])])
 # C support machinery.  Also note that it means that autoscan, seeing
 # CC etc. in the Makefile, will ask for an AC_PROG_CC use...
 
-# AM_DEPENDENCIES(NAME)
+
+
+# _AM_DEPENDENCIES(NAME)
 # ---------------------
 # See how the compiler implements dependency checking.
 # NAME is "CC", "CXX" or "OBJC".
 # We try a few techniques and use that to set a single cache variable.
-AC_DEFUN([AM_DEPENDENCIES],
+#
+# We don't AC_REQUIRE the corresponding AC_PROG_CC since the latter was
+# modified to invoke _AM_DEPENDENCIES(CC); we would have a circular
+# dependency, and given that the user is not expected to run this macro,
+# just rely on AC_PROG_CC.
+AC_DEFUN([_AM_DEPENDENCIES],
 [AC_REQUIRE([AM_SET_DEPDIR])dnl
 AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])dnl
-ifelse([$1], CC,
-       [AC_REQUIRE([AC_PROG_][CC])dnl
-AC_REQUIRE([AC_PROG_][CPP])
-depcc="$CC"
-depcpp="$CPP"],
-       [$1], CXX, [AC_REQUIRE([AC_PROG_][CXX])dnl
-AC_REQUIRE([AC_PROG_][CXXCPP])
-depcc="$CXX"
-depcpp="$CXXCPP"],
-       [$1], OBJC, [am_cv_OBJC_dependencies_compiler_type=gcc],
-       [AC_REQUIRE([AC_PROG_][$1])dnl
-depcc="$$1"
-depcpp=""])
+AC_REQUIRE([AM_MAKE_INCLUDE])dnl
+AC_REQUIRE([AM_DEP_TRACK])dnl
 
-AC_REQUIRE([AM_MAKE_INCLUDE])
+ifelse([$1], CC,   [depcc="$CC"   am_compiler_list=],
+       [$1], CXX,  [depcc="$CXX"  am_compiler_list=],
+       [$1], OBJC, [depcc="$OBJC" am_compiler_list='gcc3 gcc']
+       [$1], GCJ,  [depcc="$GCJ"  am_compiler_list='gcc3 gcc'],
+                   [depcc="$$1"   am_compiler_list=])
 
 AC_CACHE_CHECK([dependency style of $depcc],
                [am_cv_$1_dependencies_compiler_type],
-[if test -z "$AMDEP"; then
+[if test -z "$AMDEP_TRUE" && test -f "$am_depcomp"; then
   # We make a subdir and do the tests there.  Otherwise we can end up
   # making bogus files that we don't know about and never remove.  For
   # instance it was reported that on HP-UX the gcc test will end up
   # making a dummy file named `D' -- because `-MD' means `put the output
   # in D'.
-  mkdir confdir
+  mkdir conftest.dir
   # Copy depcomp to subdir because otherwise we won't find it if we're
   # using a relative directory.
-  cp "$am_depcomp" confdir
-  cd confdir
+  cp "$am_depcomp" conftest.dir
+  cd conftest.dir
 
   am_cv_$1_dependencies_compiler_type=none
-  for depmode in `sed -n ['s/^#*\([a-zA-Z0-9]*\))$/\1/p'] < "./depcomp"`; do
+  if test "$am_compiler_list" = ""; then
+     am_compiler_list=`sed -n ['s/^#*\([a-zA-Z0-9]*\))$/\1/p'] < ./depcomp`
+  fi
+  for depmode in $am_compiler_list; do
     # We need to recreate these files for each test, as the compiler may
     # overwrite some of them when testing with obscure command lines.
     # This happens at least with the AIX C compiler.
     echo '#include "conftest.h"' > conftest.c
     echo 'int i;' > conftest.h
+    echo "${am__include} ${am__quote}conftest.Po${am__quote}" > confmf
 
-    case "$depmode" in
+    case $depmode in
     nosideeffect)
       # after this tag, mechanisms are not by side-effect, so they'll
       # only be used when explicitly requested
@@ -514,18 +608,19 @@ AC_CACHE_CHECK([dependency style of $depcc],
     # We check with `-c' and `-o' for the sake of the "dashmstdout"
     # mode.  It turns out that the SunPro C++ compiler does not properly
     # handle `-M -o', and we need to detect this.
-    if depmode="$depmode" \
+    if depmode=$depmode \
        source=conftest.c object=conftest.o \
        depfile=conftest.Po tmpdepfile=conftest.TPo \
        $SHELL ./depcomp $depcc -c conftest.c -o conftest.o >/dev/null 2>&1 &&
-       grep conftest.h conftest.Po > /dev/null 2>&1; then
-      am_cv_$1_dependencies_compiler_type="$depmode"
+       grep conftest.h conftest.Po > /dev/null 2>&1 &&
+       ${MAKE-make} -s -f confmf > /dev/null 2>&1; then
+      am_cv_$1_dependencies_compiler_type=$depmode
       break
     fi
   done
 
   cd ..
-  rm -rf confdir
+  rm -rf conftest.dir
 else
   am_cv_$1_dependencies_compiler_type=none
 fi
@@ -538,16 +633,17 @@ AC_SUBST([$1DEPMODE])
 # AM_SET_DEPDIR
 # -------------
 # Choose a directory name for dependency files.
-# This macro is AC_REQUIREd in AM_DEPENDENCIES
+# This macro is AC_REQUIREd in _AM_DEPENDENCIES
 AC_DEFUN([AM_SET_DEPDIR],
-[if test -d .deps || mkdir .deps 2> /dev/null || test -d .deps; then
+[rm -f .deps 2>/dev/null
+mkdir .deps 2>/dev/null
+if test -d .deps; then
   DEPDIR=.deps
-  # We redirect because .deps might already exist and be populated.
-  # In this situation we don't want to see an error.
-  rmdir .deps > /dev/null 2>&1
 else
+  # MS-DOS does not allow filenames that begin with a dot.
   DEPDIR=_deps
 fi
+rmdir .deps 2>/dev/null
 AC_SUBST(DEPDIR)
 ])
 
@@ -558,22 +654,11 @@ AC_DEFUN([AM_DEP_TRACK],
 [AC_ARG_ENABLE(dependency-tracking,
 [  --disable-dependency-tracking Speeds up one-time builds
   --enable-dependency-tracking  Do not reject slow dependency extractors])
-if test "x$enable_dependency_tracking" = xno; then
-  AMDEP="#"
-else
+if test "x$enable_dependency_tracking" != xno; then
   am_depcomp="$ac_aux_dir/depcomp"
-  if test ! -f "$am_depcomp"; then
-    AMDEP="#"
-  else
-    AMDEP=
-  fi
-fi
-AC_SUBST(AMDEP)
-if test -z "$AMDEP"; then
   AMDEPBACKSLASH='\'
-else
-  AMDEPBACKSLASH=
 fi
+AM_CONDITIONAL([AMDEP], [test "x$enable_dependency_tracking" != xno])
 pushdef([subst], defn([AC_SUBST]))
 subst(AMDEPBACKSLASH)
 popdef([subst])
@@ -590,7 +675,7 @@ popdef([subst])
 # need in order to bootstrap the dependency handling code.
 AC_DEFUN([AM_OUTPUT_DEPENDENCY_COMMANDS],[
 AC_OUTPUT_COMMANDS([
-test x"$AMDEP" != x"" ||
+test x"$AMDEP_TRUE" != x"" ||
 for mf in $CONFIG_FILES; do
   case "$mf" in
   Makefile) dirpart=.;;
@@ -627,7 +712,7 @@ for mf in $CONFIG_FILES; do
     echo '# dummy' > "$dirpart/$file"
   done
 done
-], [AMDEP="$AMDEP"
+], [AMDEP_TRUE="$AMDEP_TRUE"
 ac_aux_dir="$ac_aux_dir"])])
 
 # AM_MAKE_INCLUDE()
@@ -635,74 +720,41 @@ ac_aux_dir="$ac_aux_dir"])])
 # Check to see how make treats includes.
 AC_DEFUN([AM_MAKE_INCLUDE],
 [am_make=${MAKE-make}
-# BSD make uses .include
 cat > confinc << 'END'
 doit:
 	@echo done
 END
 # If we don't find an include directive, just comment out the code.
 AC_MSG_CHECKING([for style of include used by $am_make])
-_am_include='#'
-for am_inc in include .include; do
-   echo "$am_inc confinc" > confmf
-   if test "`$am_make -f confmf 2> /dev/null`" = "done"; then
-      _am_include=$am_inc
-      break
+am__include='#'
+am__quote=
+_am_result=none
+# First try GNU make style include.
+echo "include confinc" > confmf
+# We grep out `Entering directory' and `Leaving directory'
+# messages which can occur if `w' ends up in MAKEFLAGS.
+# In particular we don't look at `^make:' because GNU make might
+# be invoked under some other name (usually "gmake"), in which
+# case it prints its new name instead of `make'.
+if test "`$am_make -s -f confmf 2> /dev/null | fgrep -v 'ing directory'`" = "done"; then
+   am__include=include
+   am__quote=
+   _am_result=GNU
+fi
+# Now try BSD make style include.
+if test "$am__include" = "#"; then
+   echo '.include "confinc"' > confmf
+   if test "`$am_make -s -f confmf 2> /dev/null`" = "done"; then
+      am__include=.include
+      am__quote='"'
+      _am_result=BSD
    fi
-done
-AC_SUBST(_am_include)
-AC_MSG_RESULT($_am_include)
+fi
+AC_SUBST(am__include)
+AC_SUBST(am__quote)
+AC_MSG_RESULT($_am_result)
 rm -f confinc confmf
 ])
-
-# Like AC_CONFIG_HEADER, but automatically create stamp file.
-
-# serial 3
-
-# When config.status generates a header, we must update the stamp-h file.
-# This file resides in the same directory as the config header
-# that is generated.  We must strip everything past the first ":",
-# and everything past the last "/".
-
-AC_PREREQ([2.12])
-
-AC_DEFUN([AM_CONFIG_HEADER],
-[AC_CONFIG_HEADER([$1])
-  AC_OUTPUT_COMMANDS(
-   ifelse(patsubst([$1], [[^ ]], []),
-	  [],
-	  [test -z "$CONFIG_HEADERS" || echo timestamp >dnl
-	   patsubst([$1], [^\([^:]*/\)?.*], [\1])stamp-h]),
-  [am_indx=1
-  for am_file in $1; do
-    case " $CONFIG_HEADERS " in
-    *" $am_file "*)
-      echo timestamp > `echo $am_file | sed 's%:.*%%;s%[^/]*$%%'`stamp-h$am_indx
-      ;;
-    esac
-    am_indx=\`expr \$am_indx + 1\`
-  done])
-])
-
-# Add --enable-maintainer-mode option to configure.
-# From Jim Meyering
-
-# serial 1
-
-AC_DEFUN([AM_MAINTAINER_MODE],
-[AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
-  dnl maintainer-mode is disabled by default
-  AC_ARG_ENABLE(maintainer-mode,
-[  --enable-maintainer-mode enable make rules and dependencies not useful
-                          (and sometimes confusing) to the casual installer],
-      USE_MAINTAINER_MODE=$enableval,
-      USE_MAINTAINER_MODE=no)
-  AC_MSG_RESULT([$USE_MAINTAINER_MODE])
-  AM_CONDITIONAL(MAINTAINER_MODE, [test $USE_MAINTAINER_MODE = yes])
-  MAINT=$MAINTAINER_MODE_TRUE
-  AC_SUBST(MAINT)dnl
-]
-)
 
 # serial 3
 
@@ -730,6 +782,93 @@ else
   $1_TRUE='#'
   $1_FALSE=
 fi])
+
+# Like AC_CONFIG_HEADER, but automatically create stamp file.
+
+# serial 3
+
+# When config.status generates a header, we must update the stamp-h file.
+# This file resides in the same directory as the config header
+# that is generated.  We must strip everything past the first ":",
+# and everything past the last "/".
+
+AC_PREREQ([2.12])
+
+AC_DEFUN([AM_CONFIG_HEADER],
+[ifdef([AC_FOREACH],dnl
+	 [dnl init our file count if it isn't already
+	 m4_ifndef([_AM_Config_Header_Index], m4_define([_AM_Config_Header_Index], [0]))
+	 dnl prepare to store our destination file list for use in config.status
+	 AC_FOREACH([_AM_File], [$1],
+		    [m4_pushdef([_AM_Dest], m4_patsubst(_AM_File, [:.*]))
+		    m4_define([_AM_Config_Header_Index], m4_incr(_AM_Config_Header_Index))
+		    dnl and add it to the list of files AC keeps track of, along
+		    dnl with our hook
+		    AC_CONFIG_HEADERS(_AM_File,
+dnl COMMANDS, [, INIT-CMDS]
+[# update the timestamp
+echo timestamp >"AS_ESCAPE(_AM_DIRNAME(]_AM_Dest[))/stamp-h]_AM_Config_Header_Index["
+][$2]m4_ifval([$3], [, [$3]]))dnl AC_CONFIG_HEADERS
+		    m4_popdef([_AM_Dest])])],dnl
+[AC_CONFIG_HEADER([$1])
+  AC_OUTPUT_COMMANDS(
+   ifelse(patsubst([$1], [[^ ]], []),
+	  [],
+	  [test -z "$CONFIG_HEADERS" || echo timestamp >dnl
+	   patsubst([$1], [^\([^:]*/\)?.*], [\1])stamp-h]),dnl
+[am_indx=1
+for am_file in $1; do
+  case " \$CONFIG_HEADERS " in
+  *" \$am_file "*)
+    am_dir=\`echo \$am_file |sed 's%:.*%%;s%[^/]*\$%%'\`
+    if test -n "\$am_dir"; then
+      am_tmpdir=\`echo \$am_dir |sed 's%^\(/*\).*\$%\1%'\`
+      for am_subdir in \`echo \$am_dir |sed 's%/% %'\`; do
+        am_tmpdir=\$am_tmpdir\$am_subdir/
+        if test ! -d \$am_tmpdir; then
+          mkdir \$am_tmpdir
+        fi
+      done
+    fi
+    echo timestamp > "\$am_dir"stamp-h\$am_indx
+    ;;
+  esac
+  am_indx=\`expr \$am_indx + 1\`
+done])
+])]) # AM_CONFIG_HEADER
+
+# _AM_DIRNAME(PATH)
+# -----------------
+# Like AS_DIRNAME, only do it during macro expansion
+AC_DEFUN([_AM_DIRNAME],
+       [m4_if(m4_regexp([$1], [^.*[^/]//*[^/][^/]*/*$]), -1,
+	      m4_if(m4_regexp([$1], [^//\([^/]\|$\)]), -1,
+		    m4_if(m4_regexp([$1], [^/.*]), -1,
+			  [.],
+			  m4_patsubst([$1], [^\(/\).*], [\1])),
+		    m4_patsubst([$1], [^\(//\)\([^/].*\|$\)], [\1])),
+	      m4_patsubst([$1], [^\(.*[^/]\)//*[^/][^/]*/*$], [\1]))[]dnl
+]) # _AM_DIRNAME
+
+# Add --enable-maintainer-mode option to configure.
+# From Jim Meyering
+
+# serial 1
+
+AC_DEFUN([AM_MAINTAINER_MODE],
+[AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
+  dnl maintainer-mode is disabled by default
+  AC_ARG_ENABLE(maintainer-mode,
+[  --enable-maintainer-mode enable make rules and dependencies not useful
+                          (and sometimes confusing) to the casual installer],
+      USE_MAINTAINER_MODE=$enableval,
+      USE_MAINTAINER_MODE=no)
+  AC_MSG_RESULT([$USE_MAINTAINER_MODE])
+  AM_CONDITIONAL(MAINTAINER_MODE, [test $USE_MAINTAINER_MODE = yes])
+  MAINT=$MAINTAINER_MODE_TRUE
+  AC_SUBST(MAINT)dnl
+]
+)
 
 # Usage:
 #   SIM_AC_CHECK_MATHLIB([ACTION-IF-OK[, ACTION-IF-NOT-OK]])
@@ -970,11 +1109,6 @@ if test x"$no_x" != xyes; then
   # echo "X_LIBS: $X_LIBS"
   # echo "X_EXTRA_LIBS: $X_EXTRA_LIBS"
   # echo
-  # echo "CFLAGS: $CFLAGS"
-  # echo "CPPFLAGS: $CPPFLAGS"
-  # echo "CXXFLAGS: $CXXFLAGS"
-  # echo "LDFLAGS: $LDFLAGS"
-  # echo "LIBS: $LIBS"
   # exit 0
 
   sim_ac_x11_cppflags="$X_CFLAGS"
@@ -1351,22 +1485,170 @@ fi
 #  implementation or the OpenGL-compatible Mesa library. If
 #  it is found, these shell variables are set:
 #
-#    $sim_ac_gl_cppflags (extra flags the compiler needs for OpenGL/Mesa)
+#    $sim_ac_gl_cppflags (extra flags the preprocessor needs for OpenGL/Mesa)
 #    $sim_ac_gl_ldflags  (extra flags the linker needs for OpenGL/Mesa)
 #    $sim_ac_gl_libs     (link libraries the linker needs for OpenGL/Mesa)
 #
-#  The CPPFLAGS, LDFLAGS and LIBS flags will also be modified accordingly.
 #  In addition, the variable $sim_ac_gl_avail is set to "yes" if an
 #  OpenGL-compatible development system is found.
 #
+# TODO:
+#   these macros are ripe for a complete rewrite...
 #
-# Author: Morten Eriksen, <mortene@sim.no>.
+# Authors:
+#   Morten Eriksen <mortene@sim.no>
+#   Lars J. Aas <larsa@sim.no>
+
+# **************************************************************************
+# SIM_AC_CHECK_HEADER_SILENT([header], [if-found], [if-not-found], [includes])
+# 
+# This macro will not output any header checking information, nor will it
+# cache the result, so it can be used multiple times on the same header,
+# trying out different compiler options.
+
+AC_DEFUN([SIM_AC_CHECK_HEADER_SILENT],
+[AS_VAR_PUSHDEF([ac_Header], [ac_cv_header_$1])
+m4_ifval([$4],
+         [AC_COMPILE_IFELSE([AC_LANG_SOURCE([$4
+@%:@include <$1>])],
+                            [AS_VAR_SET(ac_Header, yes)],
+                            [AS_VAR_SET(ac_Header, no)])],
+         [AC_PREPROC_IFELSE([AC_LANG_SOURCE([@%:@include <$1>])],
+                            [AS_VAR_SET(ac_Header, yes)],
+                            [AS_VAR_SET(ac_Header, no)])])
+AS_IF([test AS_VAR_GET(ac_Header) = yes], [$2], [$3])
+AS_VAR_POPDEF([ac_Header])
+])# SIM_AC_CHECK_HEADER_SILENT
+
+# **************************************************************************
+# SIM_AC_CHECK_HEADER_GL([IF-FOUND], [IF-NOT-FOUND])
+#
+# This macro detects how to include the GL header file, and gives you the
+# necessary CPPFLAGS in $sim_ac_gl_cppflags, and also sets the config.h
+# defines HAVE_GL_GL_H or HAVE_OPENGL_GL_H if one of them is found.
+
+AC_DEFUN([SIM_AC_CHECK_HEADER_GL],
+[sim_ac_gl_header_avail=false
+AC_MSG_CHECKING([how to include gl.h])
+if test x"$with_opengl" != x"no"; then
+  sim_ac_gl_save_CPPFLAGS=$CPPFLAGS
+  if test x"$with_opengl" != xyes && test x"$with_opengl" != x""; then
+    sim_ac_gl_cppflags="-I${with_opengl}/include"
+    CPPFLAGS="$CPPFLAGS $sim_ac_gl_cppflags"
+  fi
+  SIM_AC_CHECK_HEADER_SILENT([GL/gl.h], [
+    sim_ac_gl_header_avail=true
+    sim_ac_gl_header=GL/gl.h
+    AC_DEFINE([HAVE_GL_GL_H], , [define if the GL header should be included as GL/gl.h])
+  ], [
+    SIM_AC_CHECK_HEADER_SILENT([OpenGL/gl.h], [
+      sim_ac_gl_header_avail=true
+      sim_ac_gl_header=OpenGL/gl.h
+      AC_DEFINE([HAVE_OPENGL_GL_H], , [define if the GL header should be included as OpenGL/gl.h])
+    ])
+  ])
+  sim_ac_gl_hpux=/opt/graphics/OpenGL
+  if test x$sim_ac_gl_header_avail = xfalse && test -d $sim_ac_gl_hpux; then
+    sim_ac_gl_cppflags=-I$sim_ac_gl_hpux/include
+    CPPFLAGS="$CPPFLAGS $sim_ac_gl_cppflags"
+    SIM_AC_CHECK_HEADER_SILENT([GL/gl.h], [
+      sim_ac_gl_header_avail=true
+      sim_ac_gl_header=GL/gl.h
+      AC_DEFINE([HAVE_GL_GL_H], , [define if the GL header should be included as GL/gl.h])
+    ], [
+      SIM_AC_CHECK_HEADER_SILENT([OpenGL/gl.h], [
+        sim_ac_gl_header_avail=true
+        sim_ac_gl_header=OpenGL/gl.h
+        AC_DEFINE([HAVE_OPENGL_GL_H], , [define if the GL header should be included as OpenGL/gl.h])
+      ])
+    ])
+  fi
+  CPPFLAGS="$sim_ac_gl_save_CPPFLAGS"
+  if $sim_ac_gl_header_avail; then
+    if test x"$sim_ac_gl_cppflags" = x""; then
+      AC_MSG_RESULT([@%:@include <$sim_ac_gl_header>])
+    else
+      AC_MSG_RESULT([$sim_ac_gl_cppflags, @%:@include <$sim_ac_gl_header>])
+    fi
+    $1
+  else
+    AC_MSG_RESULT([not found])
+    $2
+  fi
+else
+  AC_MSG_RESULT([disabled])
+  $2
+fi
+])# SIM_AC_CHECK_HEADER_GL
+
+# **************************************************************************
+# SIM_AC_CHECK_HEADER_GLU([IF-FOUND], [IF-NOT-FOUND])
+#
+# This macro detects how to include the GLU header file, and gives you the
+# necessary CPPFLAGS in $sim_ac_glu_cppflags, and also sets the config.h
+# defines HAVE_GL_GLU_H or HAVE_OPENGL_GLU_H if one of them is found.
+
+AC_DEFUN([SIM_AC_CHECK_HEADER_GLU],
+[sim_ac_glu_header_avail=false
+AC_MSG_CHECKING([how to include glu.h])
+if test x"$with_opengl" != x"no"; then
+  sim_ac_glu_save_CPPFLAGS=$CPPFLAGS
+  if test x"$with_opengl" != xyes && test x"$with_opengl" != x""; then
+    sim_ac_glu_cppflags="-I${with_opengl}/include"
+    CPPFLAGS="$CPPFLAGS $sim_ac_glu_cppflags"
+  fi
+  SIM_AC_CHECK_HEADER_SILENT([GL/glu.h], [
+    sim_ac_glu_header_avail=true
+    sim_ac_glu_header=GL/glu.h
+    AC_DEFINE([HAVE_GL_GLU_H], , [define if the GLU header should be included as GL/glu.h])
+  ], [
+    SIM_AC_CHECK_HEADER_SILENT([OpenGL/gl.h], [
+      sim_ac_glu_header_avail=true
+      sim_ac_glu_header=OpenGL/glu.h
+      AC_DEFINE([HAVE_OPENGL_GLU_H], , [define if the GLU header should be included as OpenGL/glu.h])
+    ])
+  ])
+  sim_ac_gl_hpux=/opt/graphics/OpenGL
+  if test x$sim_ac_glu_header_avail = xfalse && test -d $sim_ac_gl_hpux; then
+    sim_ac_glu_cppflags=-I$sim_ac_gl_hpux/include
+    CPPFLAGS="$CPPFLAGS $sim_ac_glu_cppflags"
+    SIM_AC_CHECK_HEADER_SILENT([GL/glu.h], [
+      sim_ac_glu_header_avail=true
+      sim_ac_glu_header=GL/glu.h
+      AC_DEFINE([HAVE_GL_GLU_H], , [define if the GLU header should be included as GL/glu.h])
+    ], [
+      SIM_AC_CHECK_HEADER_SILENT([OpenGL/glu.h], [
+        sim_ac_glu_header_avail=true
+        sim_ac_glu_header=OpenGL/glu.h
+        AC_DEFINE([HAVE_OPENGL_GLU_H], , [define if the GLU header should be included as OpenGL/glu.h])
+      ])
+    ])
+  fi
+  CPPFLAGS="$sim_ac_glu_save_CPPFLAGS"
+  if $sim_ac_glu_header_avail; then
+    if test x"$sim_ac_glu_cppflags" = x""; then
+      AC_MSG_RESULT([@%:@include <$sim_ac_glu_header>])
+    else
+      AC_MSG_RESULT([$sim_ac_glu_cppflags, @%:@include <$sim_ac_glu_header>])
+    fi
+    $1
+  else
+    AC_MSG_RESULT([not found])
+    $2
+  fi
+else
+  AC_MSG_RESULT([disabled])
+  $2
+fi
+])# SIM_AC_CHECK_HEADER_GLU
+
+# **************************************************************************
 
 AC_DEFUN(SIM_AC_CHECK_OPENGL, [
 
-unset sim_ac_gl_cppflags
-unset sim_ac_gl_ldflags
-unset sim_ac_gl_libs
+sim_ac_gl_cppflags=
+sim_ac_gl_ldflags=
+sim_ac_gl_libs=
 sim_ac_gl_avail=no
 
 AC_ARG_WITH(
@@ -1376,7 +1658,7 @@ AC_ARG_WITH(
   [],
   [with_mesa=yes])
 
-# It's usually libGL.so on UNIX systems and opengl32.lib on MSWindows.
+
 sim_ac_gl_glnames="-lGL -lopengl32"
 sim_ac_gl_mesaglnames=-lMesaGL
 
@@ -1396,17 +1678,22 @@ AC_ARG_WITH(
   [with_opengl=yes])
 
 if test x"$with_opengl" != xno; then
-  if test x"$with_opengl" != xyes; then
-    sim_ac_gl_cppflags="-I${with_opengl}/include"
-    sim_ac_gl_ldflags="-L${with_opengl}/lib"
-  else
-    # This is a common location for the OpenGL library on HPUX.
-    sim_ac_gl_hpux=/opt/graphics/OpenGL
-    if test -d $sim_ac_gl_hpux; then
-      sim_ac_gl_cppflags=-I$sim_ac_gl_hpux/include
-      sim_ac_gl_ldflags=-L$sim_ac_gl_hpux/lib
+  sim_ac_use_framework_option=false;
+  case $host_os in
+  darwin*)
+    if test x"$GCC" = x"yes"; then
+      SIM_AC_CC_COMPILER_OPTION([-framework OpenGL], [sim_ac_use_framework_option=true])
     fi
+    ;;
+  esac
+
+  if $sim_ac_use_framework_option; then
+    # hopefully, this is the default behavior and not needed. 20011005 larsa
+    # sim_ac_gl_cppflags="-F/System/Library/Frameworks/OpenGL.framework/"
+    sim_ac_gl_ldflags="-Wl,-framework,OpenGL"
   fi
+
+  SIM_AC_CHECK_HEADER_GL(, [AC_MSG_ERROR([could not find gl.h])])
 
   sim_ac_save_cppflags=$CPPFLAGS
   sim_ac_save_ldflags=$LDFLAGS
@@ -1420,28 +1707,46 @@ if test x"$with_opengl" != xno; then
     sim_cv_lib_gl,
     [sim_cv_lib_gl=UNRESOLVED
 
-    for sim_ac_gl_libcheck in $sim_ac_gl_first $sim_ac_gl_second; do
+    # Mac OS X uses nada, which is why "" was set first
+    for sim_ac_gl_libcheck in "" $sim_ac_gl_first $sim_ac_gl_second; do
       if test "x$sim_cv_lib_gl" = "xUNRESOLVED"; then
         LIBS="$sim_ac_gl_libcheck $sim_ac_save_libs"
         AC_TRY_LINK([
-#if HAVE_WINDOWS_H
+#ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #endif /* HAVE_WINDOWS_H */
+#ifdef HAVE_GL_GL_H
 #include <GL/gl.h>
+#else
+#ifdef HAVE_OPENGL_GL_H
+/* Mac OS X */
+#include <OpenGL/gl.h>
+#endif
+#endif
 ],
                     [
 glPointSize(1.0f);
-],
-                    [sim_cv_lib_gl="$sim_ac_gl_libcheck"])
+], [
+          if test x"$sim_ac_gl_libcheck" = x""; then
+            sim_cv_lib_gl="$sim_ac_gl_ldflags"
+          else
+            sim_cv_lib_gl="$sim_ac_gl_libcheck"
+          fi])
       fi
     done
   ])
 
   LIBS="$sim_ac_save_libs"
 
-  if test "x$sim_cv_lib_gl" != "xUNRESOLVED"; then
+  case $sim_cv_lib_gl in
+  -Wl,-framework,OpenGL)
+    sim_ac_gl_libs=
+    sim_ac_gl_ldflags="$sim_cv_lib_gl"
+    ;;
+  -l*)
     sim_ac_gl_libs="$sim_cv_lib_gl"
-  else
+    ;;
+  *)
     AC_MSG_WARN([couldn't compile or link with OpenGL library -- trying with pthread library in place...])
 
     SIM_AC_CHECK_PTHREAD([
@@ -1459,7 +1764,13 @@ glPointSize(1.0f);
           if test "x$sim_cv_lib_gl_pthread" = "xUNRESOLVED"; then
             LIBS="$sim_ac_gl_libcheck $sim_ac_pthread_libs $sim_ac_save_libs"
             AC_TRY_LINK([
+#ifdef HAVE_GL_GL_H
 #include <GL/gl.h>
+#else
+#ifdef HAVE_OPENGL_GL_H
+#include <OpenGL/gl.h>
+#endif
+#endif
 ],
                         [
 glPointSize(1.0f);
@@ -1473,11 +1784,12 @@ glPointSize(1.0f);
         sim_ac_gl_libs="$sim_cv_lib_gl_pthread $sim_ac_pthread_libs"
       fi
     fi
-  fi
+    ;;
+  esac
 
 
-  if test "x$sim_ac_gl_libs" != "x"; then
-    LIBS="$sim_ac_gl_libs $sim_ac_save_libs"
+  # MacOS will have empty sim_ac_gl_libs, so don't check if it is empty...
+  if test x"$sim_cv_gl_libs" != x"UNRESOLVED"; then
     sim_ac_gl_avail=yes
     $1
   else
@@ -1489,6 +1801,55 @@ glPointSize(1.0f);
 fi
 ])
 
+
+# **************************************************************************
+# SIM_AC_GLU_READY_IFELSE( [ACTION-IF-TRUE], [ACTION-IF-FALSE] )
+
+AC_DEFUN([SIM_AC_GLU_READY_IFELSE], [
+sim_ac_glu_save_CPPFLAGS=$CPPFLAGS
+SIM_AC_CHECK_HEADER_GLU(, [AC_MSG_WARN([could not find glu.h])])
+if test x"$sim_ac_gl_cppflags" != x"$sim_ac_glu_cppflags"; then
+  CPPFLAGS="$CPPFLAGS $sim_ac_gl_cppflags $sim_ac_glu_cppflags"
+fi
+AC_CACHE_CHECK(
+  [if GLU is available as part of GL library],
+  [sim_cv_glu_ready],
+  [AC_TRY_LINK(
+    [
+#ifdef HAVE_WINDOWS_H
+#include <windows.h>
+#endif /* HAVE_WINDOWS_H */
+#ifdef HAVE_GL_GL_H
+#include <GL/gl.h>
+#else
+#ifdef HAVE_OPENGL_GL_H
+#include <OpenGL/gl.h>
+#endif
+#endif
+#ifdef HAVE_GL_GLU_H
+#include <GL/glu.h>
+#else
+#ifdef HAVE_OPENGL_GLU_H
+#include <OpenGL/glu.h>
+#endif
+#endif
+],
+    [
+gluSphere(0L, 1.0, 1, 1);
+/* Defect JAGad01283 of HP's aCC compiler causes a link failure unless
+   there is at least one "pure" OpenGL call along with GLU calls. */
+glEnd();
+],
+    [sim_cv_glu_ready=true],
+    [sim_cv_glu_ready=false])])
+
+CPPFLAGS=$sim_ac_glu_save_CPPFLAGS
+if $sim_cv_glu_ready; then
+  ifelse([$1], , :, [$1])
+else
+  ifelse([$2], , :, [$2])
+fi
+]) # SIM_AC_GLU_READY_IFELSE()
 
 # Usage:
 #  SIM_AC_CHECK_GLU([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
@@ -1507,11 +1868,12 @@ fi
 #
 # Author: Morten Eriksen, <mortene@sim.no>.
 
-AC_DEFUN(SIM_AC_CHECK_GLU, [
-
-unset sim_ac_glu_cppflags
-unset sim_ac_glu_ldflags
-unset sim_ac_glu_libs
+AC_DEFUN([SIM_AC_CHECK_GLU], [
+sim_ac_glu_save_CPPFLAGS=$CPPFLAGS
+SIM_AC_CHECK_HEADER_GLU(, [AC_MSG_WARN([could not find glu.h])])
+if test x"$sim_ac_gl_cppflags" != x"$sim_ac_glu_cppflags"; then
+  CPPFLAGS="$CPPFLAGS $sim_ac_gl_cppflags $sim_ac_glu_cppflags"
+fi
 sim_ac_glu_avail=no
 
 # It's usually libGLU.so on UNIX systems and glu32.lib on MSWindows.
@@ -1536,7 +1898,7 @@ AC_ARG_WITH(
 
 if test x"$with_glu" != xno; then
   if test x"$with_glu" != xyes; then
-    sim_ac_glu_cppflags="-I${with_glu}/include"
+    # sim_ac_glu_cppflags="-I${with_glu}/include"
     sim_ac_glu_ldflags="-L${with_glu}/lib"
   fi
 
@@ -1558,11 +1920,23 @@ if test x"$with_glu" != xno; then
       if test "x$sim_cv_lib_glu" = "xUNRESOLVED"; then
         LIBS="$sim_ac_glu_libcheck $sim_ac_save_libs"
         AC_TRY_LINK([
-#if HAVE_WINDOWS_H
+#ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #endif /* HAVE_WINDOWS_H */
+#ifdef HAVE_GL_GL_H
 #include <GL/gl.h>
+#else
+#ifdef HAVE_OPENGL_GL_H
+#include <OpenGL/gl.h>
+#endif
+#endif
+#ifdef HAVE_GL_GLU_H
 #include <GL/glu.h>
+#else
+#ifdef HAVE_OPENGL_GLU_H
+#include <OpenGL/glu.h>
+#endif
+#endif
 ],
                     [
 gluSphere(0L, 1.0, 1, 1);
@@ -1573,12 +1947,22 @@ glEnd();
                     [sim_cv_lib_glu="$sim_ac_glu_libcheck"])
       fi
     done
+    if test x"$sim_cv_lib_glu" = x"" &&
+       test x`echo $LDFLAGS | grep -c -- "-Wl,-framework,OpenGL"` = x1; then
+      # just for the visual representation on Mac OS X
+      sim_cv_lib_glu="-Wl,-framework,OpenGL"
+    fi
   ])
 
   LIBS="$sim_ac_save_libs"
 
+  CPPFLAGS=$sim_ac_glu_save_CPPFLAGS
   if test "x$sim_cv_lib_glu" != "xUNRESOLVED"; then
-    sim_ac_glu_libs="$sim_cv_lib_glu"
+    if test x"$sim_cv_lib_glu" = x"-Wl,-framework,OpenGL"; then
+      sim_ac_glu_libs=""
+    else
+      sim_ac_glu_libs="$sim_cv_lib_glu"
+    fi
     LIBS="$sim_ac_glu_libs $sim_ac_save_libs"
     sim_ac_glu_avail=yes
     $1
@@ -1590,37 +1974,6 @@ glEnd();
   fi
 fi
 ])
-
-
-# **************************************************************************
-# SIM_AC_GLU_READY_IFELSE( [ACTION-IF-TRUE], [ACTION-IF-FALSE] )
-
-AC_DEFUN([SIM_AC_GLU_READY_IFELSE],
-[AC_CACHE_CHECK(
-  [if GLU is available as part of GL library],
-  [sim_cv_glu_ready],
-  [AC_TRY_LINK(
-    [
-#if HAVE_WINDOWS_H
-#include <windows.h>
-#endif /* HAVE_WINDOWS_H */
-#include <GL/gl.h>
-#include <GL/glu.h>
-],
-    [
-gluSphere(0L, 1.0, 1, 1);
-/* Defect JAGad01283 of HP's aCC compiler causes a link failure unless
-   there is at least one "pure" OpenGL call along with GLU calls. */
-glEnd();
-],
-    [sim_cv_glu_ready=true],
-    [sim_cv_glu_ready=false])])
-if ${sim_cv_glu_ready}; then
-  ifelse([$1], , :, [$1])
-else
-  ifelse([$2], , :, [$2])
-fi
-]) # SIM_AC_GLU_READY_IFELSE()
 
 
 # Usage:
@@ -1644,11 +1997,24 @@ AC_CACHE_CHECK(
    for sim_ac_glu_structname in GLUnurbs GLUnurbsObj; do
     if test "$sim_cv_func_glu_nurbsobject" = NONE; then
       AC_TRY_LINK([
-#if HAVE_WINDOWS_H
+#ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #endif /* HAVE_WINDOWS_H */
+#ifdef HAVE_GL_GL_H
 #include <GL/gl.h>
-#include <GL/glu.h>],
+#else
+#ifdef HAVE_OPENGL_GL_H
+#include <OpenGL/gl.h>
+#endif
+#endif
+#ifdef HAVE_GL_GLU_H
+#include <GL/glu.h>
+#else
+#ifdef HAVE_OPENGL_GLU_H
+#include <OpenGL/glu.h>
+#endif
+#endif
+],
                   [
 $sim_ac_glu_structname * hepp = gluNewNurbsRenderer();
 gluDeleteNurbsRenderer(hepp);
@@ -1735,6 +2101,55 @@ else
 fi
 ]) # SIM_AC_HAVE_WGL_IFELSE()
 
+#   Use this file to store miscellaneous macros related to checking
+#   compiler features.
+
+# Usage:
+#   SIM_AC_CC_COMPILER_OPTION(OPTION-TO-TEST, ACTION-IF-TRUE [, ACTION-IF-FALSE])
+#   SIM_AC_CXX_COMPILER_OPTION(OPTION-TO-TEST, ACTION-IF-TRUE [, ACTION-IF-FALSE])
+#
+# Description:
+#
+#   Check whether the current C or C++ compiler can handle a
+#   particular command-line option.
+#
+#
+# Author: Morten Eriksen, <mortene@sim.no>.
+#
+#   * [mortene:19991218] improve macros by catching and analyzing
+#     stderr (at least to see if there was any output there)?
+#
+
+AC_DEFUN([SIM_AC_COMPILER_OPTION], [
+sim_ac_save_cppflags=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS $1"
+AC_TRY_COMPILE([], [], [sim_ac_accept_result=yes], [sim_ac_accept_result=no])
+AC_MSG_RESULT([$sim_ac_accept_result])
+CPPFLAGS=$sim_ac_save_cppflags
+# This need to go last, in case CPPFLAGS is modified in $2 or $3.
+if test $sim_ac_accept_result = yes; then
+  ifelse($2, , :, $2)
+else
+  ifelse($3, , :, $3)
+fi
+])
+
+AC_DEFUN([SIM_AC_CC_COMPILER_OPTION], [
+AC_LANG_SAVE
+AC_LANG_C
+AC_MSG_CHECKING([whether $CC accepts $1])
+SIM_AC_COMPILER_OPTION($1, $2, $3)
+AC_LANG_RESTORE
+])
+
+AC_DEFUN([SIM_AC_CXX_COMPILER_OPTION], [
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_MSG_CHECKING([whether $CXX accepts $1])
+SIM_AC_COMPILER_OPTION($1, $2, $3)
+AC_LANG_RESTORE
+])
+
 # Usage:
 #  SIM_AC_CHECK_PTHREAD([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 #
@@ -1797,6 +2212,7 @@ if test x"$with_pthread" != xno; then
   fi
 fi
 ])
+
 
 
 # Usage:

@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4e from Makefile.am.
+# Makefile.in generated automatically by automake 1.5 from Makefile.am.
 
 # Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
 # Free Software Foundation, Inc.
@@ -10,6 +10,8 @@
 # but WITHOUT ANY WARRANTY, to the extent permitted by law; without
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
+
+@SET_MAKE@
 
 SHELL = @SHELL@
 
@@ -31,11 +33,9 @@ infodir = @infodir@
 mandir = @mandir@
 includedir = @includedir@
 oldincludedir = /usr/include
-
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-
 top_builddir = ..
 
 ACLOCAL = @ACLOCAL@
@@ -49,32 +49,31 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_HEADER = $(INSTALL_DATA)
 transform = @program_transform_name@
-
 NORMAL_INSTALL = :
 PRE_INSTALL = :
 POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-
-@SET_MAKE@
-AMDEP = @AMDEP@
 AMTAR = @AMTAR@
 AWK = @AWK@
 BUILD_WITH_MSVC = @BUILD_WITH_MSVC@
 CXX = @CXX@
 DEPDIR = @DEPDIR@
+EXEEXT = @EXEEXT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-INSTALL_STRIP_PROGRAM_ENV = @INSTALL_STRIP_PROGRAM_ENV@
 MAINT = @MAINT@
-MAKEINFO = @MAKEINFO@
+OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
-STRIP = @STRIP@
 VERSION = @VERSION@
-_am_include = @_am_include@
+X_CFLAGS = @X_CFLAGS@
+X_EXTRA_LIBS = @X_EXTRA_LIBS@
+X_LIBS = @X_LIBS@
+X_PRE_LIBS = @X_PRE_LIBS@
+am__include = @am__include@
+am__quote = @am__quote@
 install_sh = @install_sh@
 sim_ac_coin_configcmd = @sim_ac_coin_configcmd@
-
 
 bin_PROGRAMS = ivfix
 
@@ -101,8 +100,6 @@ ivfix_SOURCES = \
 
 man_MANS = ivfix.1
 EXTRA_DIST = $(man_MANS)
-EXEEXT =
-OBJEXT = o
 subdir = ivfix
 mkinstalldirs = $(SHELL) $(top_srcdir)/cfg/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -110,61 +107,57 @@ CONFIG_CLEAN_FILES =
 bin_PROGRAMS = ivfix$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
+am_ivfix_OBJECTS = IfBuilder.$(OBJEXT) IfCollector.$(OBJEXT) \
+	IfCondenser.$(OBJEXT) IfFixer.$(OBJEXT) IfFlattener.$(OBJEXT) \
+	IfHasher.$(OBJEXT) IfHolder.$(OBJEXT) IfMerger.$(OBJEXT) \
+	IfReplacer.$(OBJEXT) IfReporter.$(OBJEXT) IfShape.$(OBJEXT) \
+	IfShapeList.$(OBJEXT) IfSorter.$(OBJEXT) IfStripper.$(OBJEXT) \
+	IfTypes.$(OBJEXT) IfWeeder.$(OBJEXT) ivfix.$(OBJEXT)
+ivfix_OBJECTS = $(am_ivfix_OBJECTS)
+ivfix_LDADD = $(LDADD)
+ivfix_DEPENDENCIES =
+ivfix_LDFLAGS =
 
-DEFS = @DEFS@ -I. -I$(srcdir) -I$(top_builddir)
+DEFS = @DEFS@
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-X_CFLAGS = @X_CFLAGS@
-X_LIBS = @X_LIBS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
-am_ivfix_OBJECTS = IfBuilder.$(OBJEXT) IfCollector.$(OBJEXT) \
-IfCondenser.$(OBJEXT) IfFixer.$(OBJEXT) IfFlattener.$(OBJEXT) \
-IfHasher.$(OBJEXT) IfHolder.$(OBJEXT) IfMerger.$(OBJEXT) \
-IfReplacer.$(OBJEXT) IfReporter.$(OBJEXT) IfShape.$(OBJEXT) \
-IfShapeList.$(OBJEXT) IfSorter.$(OBJEXT) IfStripper.$(OBJEXT) \
-IfTypes.$(OBJEXT) IfWeeder.$(OBJEXT) ivfix.$(OBJEXT)
-ivfix_OBJECTS = $(am_ivfix_OBJECTS)
-ivfix_LDADD = $(LDADD)
-ivfix_DEPENDENCIES = 
-ivfix_LDFLAGS = 
-CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-CXXFLAGS = @CXXFLAGS@
+depcomp = $(SHELL) $(top_srcdir)/cfg/depcomp
+@AMDEP_TRUE@DEP_FILES = $(DEPDIR)/IfBuilder.Po $(DEPDIR)/IfCollector.Po \
+@AMDEP_TRUE@	$(DEPDIR)/IfCondenser.Po $(DEPDIR)/IfFixer.Po \
+@AMDEP_TRUE@	$(DEPDIR)/IfFlattener.Po $(DEPDIR)/IfHasher.Po \
+@AMDEP_TRUE@	$(DEPDIR)/IfHolder.Po $(DEPDIR)/IfMerger.Po \
+@AMDEP_TRUE@	$(DEPDIR)/IfReplacer.Po $(DEPDIR)/IfReporter.Po \
+@AMDEP_TRUE@	$(DEPDIR)/IfShape.Po $(DEPDIR)/IfShapeList.Po \
+@AMDEP_TRUE@	$(DEPDIR)/IfSorter.Po $(DEPDIR)/IfStripper.Po \
+@AMDEP_TRUE@	$(DEPDIR)/IfTypes.Po $(DEPDIR)/IfWeeder.Po \
+@AMDEP_TRUE@	$(DEPDIR)/ivfix.Po
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
-CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
+CXXFLAGS = @CXXFLAGS@
 CFLAGS = @CFLAGS@
-COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 DIST_SOURCES = $(ivfix_SOURCES)
-man1dir = $(mandir)/man1
-MANS = $(man_MANS)
 
 NROFF = nroff
-depcomp = $(SHELL) $(top_srcdir)/cfg/depcomp
-@AMDEP@DEP_FILES = $(DEPDIR)/IfBuilder.Po $(DEPDIR)/IfCollector.Po \
-@AMDEP@ $(DEPDIR)/IfCondenser.Po $(DEPDIR)/IfFixer.Po \
-@AMDEP@ $(DEPDIR)/IfFlattener.Po $(DEPDIR)/IfHasher.Po \
-@AMDEP@ $(DEPDIR)/IfHolder.Po $(DEPDIR)/IfMerger.Po \
-@AMDEP@ $(DEPDIR)/IfReplacer.Po $(DEPDIR)/IfReporter.Po \
-@AMDEP@ $(DEPDIR)/IfShape.Po $(DEPDIR)/IfShapeList.Po \
-@AMDEP@ $(DEPDIR)/IfSorter.Po $(DEPDIR)/IfStripper.Po \
-@AMDEP@ $(DEPDIR)/IfTypes.Po $(DEPDIR)/IfWeeder.Po $(DEPDIR)/ivfix.Po
+MANS = $(man_MANS)
 DIST_COMMON = README Makefile.am Makefile.in
-
 SOURCES = $(ivfix_SOURCES)
-OBJECTS = $(am_ivfix_OBJECTS)
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .cpp .h .o .obj
-
+.SUFFIXES: .cpp .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --foreign  ivfix/Makefile
-
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && \
 	  CONFIG_HEADERS= CONFIG_LINKS= \
@@ -173,8 +166,10 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f=`echo $$p|sed 's/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
+	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  if test -f $$p \
+	  ; then \
+	    f=`echo $$p1|sed '$(transform);s/$$/$(EXEEXT)/'`; \
 	   echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/$$f"; \
 	   $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/$$f; \
 	  else :; fi; \
@@ -190,6 +185,9 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+ivfix$(EXEEXT): $(ivfix_OBJECTS) $(ivfix_DEPENDENCIES) 
+	@rm -f ivfix$(EXEEXT)
+	$(CXXLINK) $(ivfix_LDFLAGS) $(ivfix_OBJECTS) $(ivfix_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT) core *.core
@@ -197,14 +195,48 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-ivfix$(EXEEXT): $(ivfix_OBJECTS) $(ivfix_DEPENDENCIES)
-	@rm -f ivfix$(EXEEXT)
-	$(CXXLINK) $(ivfix_LDFLAGS) $(ivfix_OBJECTS) $(ivfix_LDADD) $(LIBS)
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfBuilder.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfCollector.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfCondenser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfFixer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfFlattener.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfHasher.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfHolder.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfMerger.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfReplacer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfReporter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfShape.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfShapeList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfSorter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfStripper.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfTypes.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/IfWeeder.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/ivfix.Po@am__quote@
+
+distclean-depend:
+	-rm -rf $(DEPDIR)
+
+.cpp.o:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXXCOMPILE) -c -o $@ `test -f $< || echo '$(srcdir)/'`$<
+
+.cpp.obj:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+	$(CXXCOMPILE) -c -o $@ `cygpath -w $<`
+CXXDEPMODE = @CXXDEPMODE@
+uninstall-info-am:
+
+man1dir = $(mandir)/man1
 install-man1: $(man1_MANS) $(man_MANS)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(man1dir)
-	@list='$(man1_MANS)'; \
-	l2='$(man_MANS)'; for i in $$l2; do \
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
 	  case "$$i" in \
 	    *.1*) list="$$list $$i" ;; \
 	  esac; \
@@ -219,11 +251,11 @@ install-man1: $(man1_MANS) $(man_MANS)
 	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst"; \
 	  $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst; \
 	done
-
 uninstall-man1:
 	@$(NORMAL_UNINSTALL)
-	@list='$(man1_MANS)'; \
-	l2='$(man_MANS)'; for i in $$l2; do \
+	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
+	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
+	for i in $$l2; do \
 	  case "$$i" in \
 	    *.1*) list="$$list $$i" ;; \
 	  esac; \
@@ -264,46 +296,10 @@ TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 GTAGS:
 	here=`CDPATH=: && cd $(top_builddir) && pwd` \
 	  && cd $(top_srcdir) \
-	  && gtags -i $$here
+	  && gtags -i $(GTAGS_ARGS) $$here
 
 distclean-tags:
-	-rm -f TAGS ID
-
-@AMDEP@@_am_include@ $(DEPDIR)/IfBuilder.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfCollector.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfCondenser.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfFixer.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfFlattener.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfHasher.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfHolder.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfMerger.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfReplacer.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfReporter.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfShape.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfShapeList.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfSorter.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfStripper.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfTypes.Po
-@AMDEP@@_am_include@ $(DEPDIR)/IfWeeder.Po
-@AMDEP@@_am_include@ $(DEPDIR)/ivfix.Po
-
-distclean-depend:
-	-rm -rf $(DEPDIR)
-
-@AMDEP@CXXDEPMODE = @CXXDEPMODE@
-
-.cpp.o:
-@AMDEP@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
-@AMDEP@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXXCOMPILE) -c -o $@ `test -f $< || echo '$(srcdir)/'`$<
-
-.cpp.obj:
-@AMDEP@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
-@AMDEP@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-	$(CXXCOMPILE) -c -o $@ `cygpath -w $<`
-
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH
 
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 
@@ -312,7 +308,11 @@ distdir = $(top_distdir)/$(PACKAGE)-$(VERSION)
 
 distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
-	  d=$(srcdir); \
+	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
+	  dir=`echo "$$file" | sed -e 's,/[^/]*$$,,'`; \
+	  if test "$$dir" != "$$file" && test "$$dir" != "."; then \
+	    $(mkinstalldirs) "$(distdir)/$$dir"; \
+	  fi; \
 	  if test -d $$d/$$file; then \
 	    cp -pR $$d/$$file $(distdir) \
 	    || exit 1; \
@@ -338,23 +338,20 @@ install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
 installcheck: installcheck-am
-
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
-	  INSTALL_PROGRAM_ENV='$(INSTALL_STRIP_PROGRAM_ENV)' install
-
+	  `test -z '$(STRIP)' || \
+	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
 mostlyclean-generic:
 
 clean-generic:
 
 distclean-generic:
-	-rm -f Makefile $(CONFIG_CLEAN_FILES)
-	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-rm -f Makefile $(CONFIG_CLEAN_FILES) stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-rm -f Makefile.in
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
@@ -364,11 +361,11 @@ distclean: distclean-am
 distclean-am: clean-am distclean-compile distclean-depend \
 	distclean-generic distclean-tags
 
-dvi:
+dvi: dvi-am
 
 dvi-am:
 
-info:
+info: info-am
 
 info-am:
 
@@ -376,7 +373,7 @@ install-data-am: install-man
 
 install-exec-am: install-binPROGRAMS
 
-install-info:
+install-info: install-info-am
 
 install-man: install-man1
 
@@ -390,21 +387,21 @@ mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
-uninstall-am: uninstall-binPROGRAMS uninstall-man
+uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-man
 
 uninstall-man: uninstall-man1
 
-.PHONY: all all-am check check-am clean clean-binPROGRAMS clean-generic \
-	distclean distclean-compile distclean-depend distclean-generic \
-	distclean-tags distdir dvi dvi-am info info-am install \
-	install-am install-binPROGRAMS install-data install-data-am \
-	install-exec install-exec-am install-info install-man \
-	install-man1 install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic tags \
-	uninstall uninstall-am uninstall-binPROGRAMS uninstall-man \
+.PHONY: GTAGS all all-am check check-am clean clean-binPROGRAMS \
+	clean-generic distclean distclean-compile distclean-depend \
+	distclean-generic distclean-tags distdir dvi dvi-am info \
+	info-am install install-am install-binPROGRAMS install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-man1 install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic tags uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-info-am uninstall-man \
 	uninstall-man1
-
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
