@@ -34,6 +34,7 @@
  *
  */
 
+#include <stdlib.h> // qsort()
 #include "IfAssert.h"
 #include "IfShape.h"
 #include "IfSorter.h"
