@@ -21,6 +21,7 @@
 #include <Inventor/SoInput.h>
 #include <Inventor/SoInteraction.h>
 #include <Inventor/SoOffscreenRenderer.h>
+#include <Inventor/actions/SoGLRenderAction.h>
 #include <Inventor/nodekits/SoNodeKit.h>
 #include <Inventor/nodes/SoDirectionalLight.h>
 #include <Inventor/nodes/SoPerspectiveCamera.h>
@@ -56,9 +57,21 @@ usage(const char * invname)
   fprintf(stderr, "\t-c:\tset components in image\n");
   fprintf(stderr, "\t\t\t1 = LUMINANCE\n");
   fprintf(stderr, "\t\t\t2 = LUMINANCE with transparency\n");
-  fprintf(stderr, "\t\t\t3 = RGB\n");
+  fprintf(stderr, "\t\t\t3 = RGB (default)\n");
   fprintf(stderr, "\t\t\t4 = RGB with transparency\n");
-  fprintf(stderr, "\t\t(default is RGB)\n");
+  fprintf(stderr, "\t-t:\ttransparency mode\n");
+  fprintf(stderr, "\t\t\t0 = SCREEN_DOOR (default)\n");
+  fprintf(stderr, "\t\t\t1 = ADD\n");
+  fprintf(stderr, "\t\t\t2 = DELAYED_ADD\n");
+  fprintf(stderr, "\t\t\t3 = SORTED_OBJECT_ADD\n");
+  fprintf(stderr, "\t\t\t4 = BLEND\n");
+  fprintf(stderr, "\t\t\t5 = DELAYED_BLEND\n");
+  fprintf(stderr, "\t\t\t6 = SORTED_OBJECT_BLEND\n");
+#ifdef __COIN__ // The next two are Coin extensions.
+  fprintf(stderr, "\t\t\t7 = SORTED_OBJECT_SORTED_TRIANGLE_ADD\n");
+  fprintf(stderr, "\t\t\t8 = SORTED_OBJECT_SORTED_TRIANGLE_BLEND\n");
+#endif // __COIN__
+
   // FIXME: see FIXME above about "-r". 20011024 mortene.
 //    fprintf(stderr, "\t-r:\tcamera rotation, axis plus angle (default none)\n");
   fprintf(stderr, "\n");
@@ -74,10 +87,17 @@ main(int argc, char ** argv)
   int height = 480;
   SoOffscreenRenderer::Components components = SoOffscreenRenderer::RGB;
 
+  SoGLRenderAction::TransparencyType transtype = SoGLRenderAction::SCREEN_DOOR;
+  SoGLRenderAction::TransparencyType maxtranstype = SoGLRenderAction::SORTED_OBJECT_BLEND;
+#ifdef __COIN__ // The next two are Coin extensions.
+  maxtranstype = SoGLRenderAction::SORTED_OBJECT_SORTED_TRIANGLE_BLEND;
+#endif // __COIN__
+
+
 #ifdef HAVE_GETOPT
   /* Parse command line. */
   int getoptchar;
-  while ((getoptchar = getopt(argc, argv, "?hx:y:c:")) != EOF) {
+  while ((getoptchar = getopt(argc, argv, "?hx:y:c:t:")) != EOF) {
     switch (getoptchar) {
     case '?':
     case ':':
@@ -96,6 +116,13 @@ main(int argc, char ** argv)
       if (components < 1 || components > 4) {
         (void)fprintf(stderr, "Invalid number of components: %d\n",
                       components);
+        exit(1);
+      }
+      break;
+    case 't':
+      transtype = (SoGLRenderAction::TransparencyType)atoi(optarg);
+      if (transtype < 0 || transtype > maxtranstype) {
+        (void)fprintf(stderr, "Invalid transparency type %d\n", transtype);
         exit(1);
       }
       break;
@@ -151,6 +178,10 @@ main(int argc, char ** argv)
 
   SoOffscreenRenderer osr(vp);
   osr.setComponents(components);
+
+  SoGLRenderAction * glra = osr.getGLRenderAction();
+  glra->setTransparencyType(transtype);
+
   SbBool wasrendered = osr.render(root);
   root->unref();
 
