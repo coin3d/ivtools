@@ -17,6 +17,9 @@
  *
 \**************************************************************************/
 
+#include <stdio.h>
+#include <assert.h>
+
 #include <Inventor/SoDB.h>
 #include <Inventor/SoInput.h>
 #include <Inventor/SoInteraction.h>
@@ -24,12 +27,11 @@
 #include <Inventor/actions/SoGLRenderAction.h>
 #include <Inventor/actions/SoSearchAction.h>
 #include <Inventor/errors/SoDebugError.h>
+#include <Inventor/nodekits/SoBaseKit.h>
 #include <Inventor/nodekits/SoNodeKit.h>
 #include <Inventor/nodes/SoDirectionalLight.h>
 #include <Inventor/nodes/SoPerspectiveCamera.h>
 #include <Inventor/nodes/SoSeparator.h>
-#include <stdio.h>
-#include <assert.h>
 
 #if HAVE_CONFIG_H
 #include <config.h>
@@ -37,6 +39,11 @@
 #if HAVE_UNISTD_H
 #include <unistd.h> // getopt()
 #endif /* HAVE_UNISTD_H */
+
+#ifdef HAVE_SMALLCHANGE_LIBRARY
+#include <SmallChange/misc/Init.h>
+#endif // HAVE_SMALLCHANGE_LIBRARY
+
 
 #ifdef HAVE_GETOPT
 /* These two externs are for interfacing against getopt(). */
@@ -52,8 +59,9 @@ usage(const char * invname)
   // FIXME: the -r option is not activated yet (don't know how to have
   // multiple values on an option with getopt(). 20011024 mortene.
 //    fprintf(stderr, "\nUsage: %s [-h] [-x width] [-y height] [-c components] [-r x y z a] <modelfile.iv> <snapshot.rgb>\n\n", invname);
-  fprintf(stderr, "\nUsage: %s [-h] [-x width] [-y height] [-c components] <modelfile.iv> <snapshot.rgb>\n\n", invname);
+  fprintf(stderr, "\nUsage: %s [-h -v] [-x width] [-y height] [-c components] <modelfile.iv> <snapshot.rgb>\n\n", invname);
   fprintf(stderr, "\t-h:\tshow usage\n");
+  fprintf(stderr, "\t-v:\tcall ''view all'' on camera before snapshot\n");
   fprintf(stderr, "\t-x:\tset width in pixels (default 640)\n");
   fprintf(stderr, "\t-y:\tset height in pixels (default 480)\n");
   fprintf(stderr, "\t-c:\tset components in image\n");
@@ -95,17 +103,21 @@ main(int argc, char ** argv)
   maxtranstype = SoGLRenderAction::SORTED_OBJECT_SORTED_TRIANGLE_BLEND;
 #endif // __COIN__
 
+  SbBool viewall = FALSE;
 
 #ifdef HAVE_GETOPT
   /* Parse command line. */
   int getoptchar;
-  while ((getoptchar = getopt(argc, argv, "?hx:y:c:t:")) != EOF) {
+  while ((getoptchar = getopt(argc, argv, "?hvx:y:c:t:")) != EOF) {
     switch (getoptchar) {
     case '?':
     case ':':
     case 'h':
       usage(argv[0]);
       exit(0);
+      break;
+    case 'v':
+      viewall = TRUE;
       break;
     case 'x':
       width = atoi(optarg);
@@ -151,6 +163,10 @@ main(int argc, char ** argv)
   SoNodeKit::init();
   SoInteraction::init();
 
+#ifdef HAVE_SMALLCHANGE_LIBRARY
+  smallchange_init();
+#endif // HAVE_SMALLCHANGE_LIBRARY
+
   SbViewportRegion vp(width, height);
 
   SoInput in;
@@ -173,21 +189,34 @@ main(int argc, char ** argv)
   // If there's no camera in the scene graph already, set up a "super
   // graph" above the one loaded from file, and add a camera.
 
+  // The camera and light searches should extend into nodekits.
+  (void)SoBaseKit::setSearchingChildren(TRUE);
+
   SoSearchAction searchaction;
   searchaction.setType(SoCamera::getClassTypeId());
   searchaction.setInterest(SoSearchAction::FIRST);
   searchaction.apply(root);
 
-  if (searchaction.getPath() == NULL) {
+  SoCamera * camera = NULL;
+  SoPath * p = searchaction.getPath();
+
+  if (p == NULL) {
     SoDebugError::postInfo("main",
                            "Found no camera in scene, so a default "
                            "perspective camera in a \"view all\" "
                            "position will be set up.");
 
-    SoPerspectiveCamera * camera = new SoPerspectiveCamera;
+    camera = new SoPerspectiveCamera;
     camera->viewAll(root, vp);
     root->insertChild(camera, 0);
   }
+  else {
+    SoNode * n = ((SoFullPath *)p)->getTail();
+    assert(n && n->getTypeId().isDerivedFrom(SoCamera::getClassTypeId()));
+    camera = (SoCamera *)n;
+  }
+
+  if (viewall) { camera->viewAll(root, vp); }
 
   // Add in a (head) light aswell, if there was none in the scene.
 
@@ -208,6 +237,7 @@ main(int argc, char ** argv)
 
   SoOffscreenRenderer osr(vp);
   osr.setComponents(components);
+  osr.setBackgroundColor(SbColor(0.2f, 0.4f, 0.6f));
 
   SoGLRenderAction * glra = osr.getGLRenderAction();
   glra->setTransparencyType(transtype);
