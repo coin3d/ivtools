@@ -5,6 +5,15 @@
 #undef HAVE_GETOPT
 #undef HAVE_ISATTY
 
+/* Define if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Define if you have the <getopt.h> header file. */
+#undef HAVE_GETOPT_H
+
+/* Define if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
 /* Name of package */
 #undef PACKAGE
 

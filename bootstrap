@@ -8,16 +8,18 @@
 # Makes it possible to run this script from any location.
 directory=`echo "$0" | sed -e 's/[^\/]*$//g'`;
 cd $directory
-if ! test -f ./bootstrap; then
+if test ! -f ./bootstrap; then
   echo "unexpected problem with your shell - bailing out"
   exit 1
 fi
 
+AUTOCONF_VER=2.5[023456789]
+AUTOMAKE_VER=1.4[efghijklmn]     # Automake from CVS
 
 DIE=false
 
 PROJECT=IvTools
-MACRODIR=conf-macros
+MACRODIR=cfg/m4
 AUTOMAKE_ADD=
 
 if test "$1" = "--clean"; then
@@ -37,46 +39,25 @@ elif test "$1" = "--add"; then
   AUTOMAKE_ADD="--add-missing --copy"
 fi
 
-# required autoduo tool versions
-AUTOCONF_VER=2.49c   # CVS development version
-AUTOMAKE_VER=1.4a    # CVS development version
-
 echo "Checking the installed configuration tools..."
 
-if test -z "`autoconf --version | grep \" $AUTOCONF_VER\" 2> /dev/null`"; then
-  cat <<EOF
-
-  Invalid Version of Autoconf
-  ---------------------------
-  You must use the CVS development version of autoconf ($AUTOCONF_VER)
-  to generate configure information and Makefiles for $PROJECT.
-
-  The CVS autoconf repository can be fetched by running the following
-  set of commands:
-
-  $ cvs -d :pserver:anoncvs@subversions.gnu.org:/cvs login    # (no password)
-  $ cvs -d :pserver:anoncvs@subversions.gnu.org:/cvs co autoconf
-
-EOF
-  DIE=true
+if test -z "`autoconf --version 2>/dev/null | grep \" $AUTOCONF_VER\"`"; then
+    echo ""
+    echo "You must have autoconf version $AUTOCONF_VER installed to"
+    echo "generate configure information and Makefiles for $PROJECT."
+    echo ""
+    echo "Get ftp://ftp.gnu.org/gnu/autoconf/autoconf-$AUTOCONF_VER.tar.gz"
+    DIE=true
 fi
 
-if test -z "`automake --version | grep \" $AUTOMAKE_VER\" 2> /dev/null`"; then
-  cat <<EOF
-
-  Invalid Version of Automake
-  ---------------------------
-  You must use the CVS development version of automake to ($AUTOMAKE_VER)
-  to generate configure information and Makefiles for $PROJECT.
-
-  The CVS automake repository can be fetched by running the following
-  set of commands:
-
-  $ cvs -d :pserver:anoncvs@anoncvs.cygnus.com:/cvs/automake login
-  $ cvs -d :pserver:anoncvs@anoncvs.cygnus.com:/cvs/automake co automake
-
-EOF
-  DIE=true
+if test -z "`automake --version 2>/dev/null | grep \" $AUTOMAKE_VER\"`"; then
+    echo ""
+    echo "You must have automake version $AUTOMAKE_VER installed to"
+    echo "generate configure information and Makefiles for $PROJECT."
+    echo ""
+    echo "(The Automake version we are using is the bleeding edge"
+    echo "from the CVS repository.)"
+    DIE=true
 fi
 
 $DIE && exit 1
