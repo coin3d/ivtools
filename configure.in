@@ -1,3 +1,7 @@
+# *******************************************************************
+# ** Misc init/setup stuff.
+# *******************************************************************
+
 #  This can be any file in the package.
 AC_INIT(ivcat/ivcat.cpp)
 
@@ -14,6 +18,53 @@ AM_CONFIG_HEADER(config.h)
 
 #  Turn off default maintainer make-rules -- use ./bootstrap instead.
 AM_MAINTAINER_MODE
+
+
+# *******************************************************************
+# ** Check if getopt() is available.
+# *******************************************************************
+
+SIM_AC_CHECK_HEADERS(unistd.h) # for getopt()
+
+AC_CACHE_CHECK([whether getopt() is available],
+  sim_cv_func_getopt_avail,
+  [AC_TRY_LINK([
+                #if HAVE_UNISTD_H
+                #include <unistd.h>
+                #endif /* HAVE_UNISTD_H */
+               ],
+               [(void)getopt(0, 0L, 0L);],
+               sim_cv_func_getopt_avail=yes,
+               sim_cv_func_getopt_avail=no)])
+
+if test x"$sim_cv_func_getopt_avail" = xyes; then
+  AC_DEFINE(HAVE_GETOPT)
+fi
+
+
+# *******************************************************************
+# ** Check if isatty() is available.
+# *******************************************************************
+
+AC_CACHE_CHECK([whether isatty() is available],
+  sim_cv_func_isatty_avail,
+  [AC_TRY_LINK([
+                #if HAVE_UNISTD_H
+                #include <unistd.h>
+                #endif /* HAVE_UNISTD_H */
+               ],
+               [(void)isatty(0);],
+               sim_cv_func_isatty_avail=yes,
+               sim_cv_func_isatty_avail=no)])
+
+if test x"$sim_cv_func_isatty_avail" = xyes; then
+  AC_DEFINE(HAVE_ISATTY)
+fi
+
+
+# *******************************************************************
+# ** Try linking against either libInventor or libCoin.
+# *******************************************************************
 
 if test x"$with_inventor" = xyes; then
   # If we want to compile and link against Inventor, we
@@ -34,6 +85,10 @@ else
   LDFLAGS="$LDFLAGS $sim_ac_coin_ldflags"
   LIBS="$LIBS $sim_ac_coin_libs"
 fi
+
+# *******************************************************************
+# ** Generate output files.
+# *******************************************************************
 
 AC_OUTPUT([
         Makefile
