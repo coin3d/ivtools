@@ -23,6 +23,7 @@
 #include <Inventor/SoOffscreenRenderer.h>
 #include <Inventor/actions/SoGLRenderAction.h>
 #include <Inventor/actions/SoSearchAction.h>
+#include <Inventor/errors/SoDebugError.h>
 #include <Inventor/nodekits/SoNodeKit.h>
 #include <Inventor/nodes/SoDirectionalLight.h>
 #include <Inventor/nodes/SoPerspectiveCamera.h>
@@ -164,9 +165,10 @@ main(int argc, char ** argv)
     exit(1);
   }
 
-  SoSeparator * root = NULL;
+  SoSeparator * root = new SoSeparator;
+  root->ref();
 
-  fileroot->ref(); // Since we're applying the (search) action.
+  root->addChild(fileroot);
 
   // If there's no camera in the scene graph already, set up a "super
   // graph" above the one loaded from file, and add a camera.
@@ -174,35 +176,35 @@ main(int argc, char ** argv)
   SoSearchAction searchaction;
   searchaction.setType(SoCamera::getClassTypeId());
   searchaction.setInterest(SoSearchAction::FIRST);
-  searchaction.apply(fileroot);
+  searchaction.apply(root);
 
   if (searchaction.getPath() == NULL) {
-    root = new SoSeparator;
+    SoDebugError::postInfo("main",
+                           "Found no camera in scene, so a default "
+                           "perspective camera in a \"view all\" "
+                           "position will be set up.");
 
     SoPerspectiveCamera * camera = new SoPerspectiveCamera;
     camera->viewAll(root, vp);
-    root->addChild(camera);
-
-    searchaction.reset();
-    searchaction.setType(SoLight::getClassTypeId());
-    searchaction.setInterest(SoSearchAction::FIRST);
-    searchaction.apply(fileroot);
-
-    // Add in a (head) light aswell, if there was none in the scene.
-    if (searchaction.getPath() == NULL) {
-      SoDirectionalLight * light = new SoDirectionalLight;
-      light->direction.setValue(0.5, 0.5, -0.8);
-      root->addChild(light);
-    }
-
-    root->addChild(fileroot);
-  }
-  else {
-    root = fileroot;
+    root->insertChild(camera, 0);
   }
 
-  root->ref();
-  fileroot->unrefNoDelete();
+  // Add in a (head) light aswell, if there was none in the scene.
+
+  searchaction.reset();
+  searchaction.setType(SoLight::getClassTypeId());
+  searchaction.setInterest(SoSearchAction::FIRST);
+  searchaction.apply(fileroot);
+
+  if (searchaction.getPath() == NULL) {
+    SoDebugError::postInfo("main",
+                           "Found no light sources in scene, so a "
+                           "default will be set up.");
+
+    SoDirectionalLight * light = new SoDirectionalLight;
+    light->direction.setValue(0.25, 0.25, -0.8);
+    root->insertChild(light, 0);
+  }
 
   SoOffscreenRenderer osr(vp);
   osr.setComponents(components);
@@ -219,9 +221,7 @@ main(int argc, char ** argv)
   }
 
   SbString filename(snapshotdump);
-//   filename += ".ps"; // XXX
   if (!osr.writeToRGB(filename.getString())) {
-//   if (!osr.writeToPostScript(filename.getString())) {
     (void)fprintf(stderr, "Couldn't write file '%s'.\n", snapshotdump);
   }
   else {
