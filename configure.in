@@ -94,6 +94,7 @@ AC_OUTPUT([
         Makefile
         ivNodeKitStructure/Makefile
         ivcat/Makefile
+        ivfix/Makefile
         ivhierarchy/Makefile
         renderos/Makefile
         ])

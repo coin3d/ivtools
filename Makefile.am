@@ -1,3 +1,3 @@
 ## Process this file with automake to generate Makefile.in.
 
-SUBDIRS = ivcat ivhierarchy ivNodeKitStructure renderos
+SUBDIRS = ivcat ivfix ivhierarchy ivNodeKitStructure renderos

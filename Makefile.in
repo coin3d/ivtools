@@ -81,7 +81,7 @@ install_sh = @install_sh@
 sim_ac_coin_configcmd = @sim_ac_coin_configcmd@
 
 
-SUBDIRS = ivcat ivhierarchy ivNodeKitStructure renderos
+SUBDIRS = ivcat ivfix ivhierarchy ivNodeKitStructure renderos
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

@@ -2797,6 +2797,7 @@ ac_config_files="$ac_config_files
         Makefile
         ivNodeKitStructure/Makefile
         ivcat/Makefile
+        ivfix/Makefile
         ivhierarchy/Makefile
         renderos/Makefile
         "
@@ -3048,6 +3049,7 @@ Try \`$me --help' for more information."; exit 1 ;;
   'Makefile' ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   'ivNodeKitStructure/Makefile' ) CONFIG_FILES="$CONFIG_FILES ivNodeKitStructure/Makefile" ;;
   'ivcat/Makefile' ) CONFIG_FILES="$CONFIG_FILES ivcat/Makefile" ;;
+  'ivfix/Makefile' ) CONFIG_FILES="$CONFIG_FILES ivfix/Makefile" ;;
   'ivhierarchy/Makefile' ) CONFIG_FILES="$CONFIG_FILES ivhierarchy/Makefile" ;;
   'renderos/Makefile' ) CONFIG_FILES="$CONFIG_FILES renderos/Makefile" ;;
   'default-1' ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
