@@ -30,9 +30,9 @@ else
 
   # Compile and link on top of Coin.
   SIM_AC_HAVE_COIN_IFELSE(, AC_MSG_ERROR(Couldn't build against Coin library))
-  CPPFLAGS="$CPPFLAGS $sim_ac_soxt_cppflags"
-  LDFLAGS="$CPPFLAGS $sim_ac_soxt_ldflags"
-  LIBS="$CPPFLAGS $sim_ac_soxt_libs"
+  CPPFLAGS="$CPPFLAGS $sim_ac_coin_cppflags"
+  LDFLAGS="$LDFLAGS $sim_ac_coin_ldflags"
+  LIBS="$LIBS $sim_ac_coin_libs"
 fi
 
 AC_OUTPUT([
