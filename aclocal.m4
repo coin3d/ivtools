@@ -1,14 +1,15 @@
-dnl aclocal.m4 generated automatically by aclocal 1.4a
+# aclocal.m4 generated automatically by aclocal 1.4a
 
-dnl Copyright (C) 1994, 1995-9, 2000 Free Software Foundation, Inc.
-dnl This file is free software; the Free Software Foundation
-dnl gives unlimited permission to copy and/or distribute it,
-dnl with or without modifications, as long as this notice is preserved.
+# Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000
+# Free Software Foundation, Inc.
+# This file is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-dnl This program is distributed in the hope that it will be useful,
-dnl but WITHOUT ANY WARRANTY, to the extent permitted by law; without
-dnl even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-dnl PARTICULAR PURPOSE.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
 # Do all the work for Automake.  This macro actually does too much --
 # some checks are only needed if your package does certain things.
@@ -38,7 +39,7 @@ AC_DEFUN([AM_INIT_AUTOMAKE],
 [dnl We require 2.13 because we rely on SHELL being computed by configure.
 AC_REQUIRE([AC_PROG_INSTALL])dnl
 # test to see if srcdir already configured
-if test "`CDPATH=: && cd $srcdir && pwd`" != "`pwd`" &&
+if test "`CDPATH=:; cd $srcdir && pwd`" != "`pwd`" &&
    test -f $srcdir/config.status; then
   AC_MSG_ERROR([source directory already configured; run "make distclean" there first])
 fi
@@ -146,7 +147,7 @@ AC_SUBST(install_sh)])
 # If it does, set am_missing_run to use it, otherwise, to nothing.
 AC_DEFUN([AM_MISSING_HAS_RUN], [
 test x"${MISSING+set}" = xset || \
-  MISSING="\${SHELL} `CDPATH=: && cd $ac_aux_dir && pwd`/missing"
+  MISSING="\${SHELL} `CDPATH=:; cd $ac_aux_dir && pwd`/missing"
 # Use eval to expand $SHELL
 if eval "$MISSING --run :"; then
   am_missing_run="$MISSING --run "
@@ -206,7 +207,7 @@ if test -z "$AMDEP"; then
     if depmode="$depmode" \
        source=conftest.c object=conftest.o \
        depfile=conftest.Po tmpdepfile=conftest.TPo \
-       $SHELL $am_depcomp $depcc -c conftest.c -o conftest.o 2>/dev/null &&
+       $SHELL $am_depcomp $depcc -c conftest.c -o conftest.o >/dev/null 2>&1 &&
        grep conftest.h conftest.Po > /dev/null 2>&1; then
       am_cv_[$1]_dependencies_compiler_type="$depmode"
       break
@@ -353,8 +354,8 @@ AC_DEFUN([AM_MAINTAINER_MODE],
                           (and sometimes confusing) to the casual installer],
       USE_MAINTAINER_MODE=$enableval,
       USE_MAINTAINER_MODE=no)
-  AC_MSG_RESULT($USE_MAINTAINER_MODE)
-  AM_CONDITIONAL(MAINTAINER_MODE, test $USE_MAINTAINER_MODE = yes)
+  AC_MSG_RESULT([$USE_MAINTAINER_MODE])
+  AM_CONDITIONAL(MAINTAINER_MODE, [test $USE_MAINTAINER_MODE = yes])
   MAINT=$MAINTAINER_MODE_TRUE
   AC_SUBST(MAINT)dnl
 ]
@@ -379,17 +380,22 @@ fi])
 # as we can get false positives and/or false negatives when running under
 # Cygwin, using the Microsoft Visual C++ compiler (the configure script will
 # pick the GCC preprocessor).
-AC_DEFUN([SIM_AC_CHECK_HEADER],
-[AC_VAR_PUSHDEF([ac_Header], [ac_cv_header_$1])dnl
-AC_ARG_VAR([CPPFLAGS], [C/C++ preprocessor flags, e.g. -I<include dir> if you ha
-ve headers in a nonstandard directory <include dir>])
-AC_CACHE_CHECK([for $1], ac_Header,
-[AC_TRY_COMPILE([#include <$1>
-], [],
-AC_VAR_SET(ac_Header, yes), AC_VAR_SET(ac_Header, no))])
-AC_SHELL_IFELSE([test AC_VAR_GET(ac_Header) = yes],
-                [$2], [$3])dnl
-AC_VAR_POPDEF([ac_Header])dnl
+
+AC_DEFUN([SIM_AC_CHECK_HEADER], [
+AC_VAR_PUSHDEF([ac_Header], [ac_cv_header_$1])
+AC_ARG_VAR([CPPFLAGS], [C/C++ preprocessor flags, e.g. -I<include dir> if you have headers in a nonstandard directory <include dir>])
+AC_CACHE_CHECK(
+  [for $1],
+  ac_Header,
+  [AC_TRY_COMPILE([#include <$1>],
+  [],
+  [AC_VAR_SET(ac_Header, yes)],
+  [AC_VAR_SET(ac_Header, no)])])
+AS_IFELSE(
+  [test AC_VAR_GET(ac_Header) = yes],
+  [$2],
+  [$3])
+AC_VAR_POPDEF([ac_Header])
 ])# SIM_AC_CHECK_HEADER
 
 
@@ -399,9 +405,10 @@ AC_VAR_POPDEF([ac_Header])dnl
 AC_DEFUN([SIM_AC_CHECK_HEADERS],
 [for ac_header in $1
 do
-SIM_AC_CHECK_HEADER($ac_header,
-                    [AC_DEFINE_UNQUOTED(AC_TR_CPP(HAVE_$ac_header)) $2],
-                    [$3])dnl
+SIM_AC_CHECK_HEADER(
+  [$ac_header],
+  [AC_DEFINE_UNQUOTED(AC_TR_CPP(HAVE_$ac_header)) $2],
+  [$3])
 done
 ])# SIM_AC_CHECK_HEADERS
 
@@ -509,419 +516,6 @@ fi
 ]) # SIM_AC_MATHLIB_READY_IFELSE()
 
 
-
-# serial 40 AC_PROG_LIBTOOL
-AC_DEFUN(AC_PROG_LIBTOOL,
-[AC_REQUIRE([AC_LIBTOOL_SETUP])dnl
-
-# Save cache, so that ltconfig can load it
-AC_CACHE_SAVE
-
-# Actually configure libtool.  ac_aux_dir is where install-sh is found.
-CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" \
-LD="$LD" LDFLAGS="$LDFLAGS" LIBS="$LIBS" \
-LN_S="$LN_S" NM="$NM" RANLIB="$RANLIB" \
-DLLTOOL="$DLLTOOL" AS="$AS" OBJDUMP="$OBJDUMP" \
-${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig --no-reexec \
-$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $lt_target \
-|| AC_MSG_ERROR([libtool configure failed])
-
-# Reload cache, that may have been modified by ltconfig
-AC_CACHE_LOAD
-
-# This can be used to rebuild libtool when needed
-LIBTOOL_DEPS="$ac_aux_dir/ltconfig $ac_aux_dir/ltmain.sh"
-
-# Always use our own libtool.
-LIBTOOL='$(SHELL) $(top_builddir)/libtool'
-AC_SUBST(LIBTOOL)dnl
-
-# Redirect the config.log output again, so that the ltconfig log is not
-# clobbered by the next message.
-exec 5>>./config.log
-])
-
-AC_DEFUN(AC_LIBTOOL_SETUP,
-[AC_PREREQ(2.13)dnl
-AC_REQUIRE([AC_ENABLE_SHARED])dnl
-AC_REQUIRE([AC_ENABLE_STATIC])dnl
-AC_REQUIRE([AC_ENABLE_FAST_INSTALL])dnl
-AC_REQUIRE([AC_CANONICAL_HOST])dnl
-AC_REQUIRE([AC_CANONICAL_BUILD])dnl
-AC_REQUIRE([AC_PROG_RANLIB])dnl
-AC_REQUIRE([AC_PROG_CC])dnl
-AC_REQUIRE([AC_PROG_LD])dnl
-AC_REQUIRE([AC_PROG_NM])dnl
-AC_REQUIRE([AC_PROG_LN_S])dnl
-dnl
-
-case "$target" in
-NONE) lt_target="$host" ;;
-*) lt_target="$target" ;;
-esac
-
-# Check for any special flags to pass to ltconfig.
-libtool_flags="--cache-file=$cache_file"
-test "$enable_shared" = no && libtool_flags="$libtool_flags --disable-shared"
-test "$enable_static" = no && libtool_flags="$libtool_flags --disable-static"
-test "$enable_fast_install" = no && libtool_flags="$libtool_flags --disable-fast-install"
-test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
-test "$ac_cv_prog_gnu_ld" = yes && libtool_flags="$libtool_flags --with-gnu-ld"
-ifdef([AC_PROVIDE_AC_LIBTOOL_DLOPEN],
-[libtool_flags="$libtool_flags --enable-dlopen"])
-ifdef([AC_PROVIDE_AC_LIBTOOL_WIN32_DLL],
-[libtool_flags="$libtool_flags --enable-win32-dll"])
-AC_ARG_ENABLE(libtool-lock,
-  [  --disable-libtool-lock  avoid locking (might break parallel builds)])
-test "x$enable_libtool_lock" = xno && libtool_flags="$libtool_flags --disable-lock"
-test x"$silent" = xyes && libtool_flags="$libtool_flags --silent"
-
-# Some flags need to be propagated to the compiler or linker for good
-# libtool support.
-case "$lt_target" in
-*-*-irix6*)
-  # Find out which ABI we are using.
-  echo '[#]line __oline__ "configure"' > conftest.$ac_ext
-  if AC_TRY_EVAL(ac_compile); then
-    case "`/usr/bin/file conftest.o`" in
-    *32-bit*)
-      LD="${LD-ld} -32"
-      ;;
-    *N32*)
-      LD="${LD-ld} -n32"
-      ;;
-    *64-bit*)
-      LD="${LD-ld} -64"
-      ;;
-    esac
-  fi
-  rm -rf conftest*
-  ;;
-
-*-*-sco3.2v5*)
-  # On SCO OpenServer 5, we need -belf to get full-featured binaries.
-  SAVE_CFLAGS="$CFLAGS"
-  CFLAGS="$CFLAGS -belf"
-  AC_CACHE_CHECK([whether the C compiler needs -belf], lt_cv_cc_needs_belf,
-    [AC_TRY_LINK([],[],[lt_cv_cc_needs_belf=yes],[lt_cv_cc_needs_belf=no])])
-  if test x"$lt_cv_cc_needs_belf" != x"yes"; then
-    # this is probably gcc 2.8.0, egcs 1.0 or newer; no need for -belf
-    CFLAGS="$SAVE_CFLAGS"
-  fi
-  ;;
-
-ifdef([AC_PROVIDE_AC_LIBTOOL_WIN32_DLL],
-[*-*-cygwin* | *-*-mingw*)
-  AC_CHECK_TOOL(DLLTOOL, dlltool, false)
-  AC_CHECK_TOOL(AS, as, false)
-  AC_CHECK_TOOL(OBJDUMP, objdump, false)
-  ;;
-])
-esac
-])
-
-# AC_LIBTOOL_DLOPEN - enable checks for dlopen support
-AC_DEFUN(AC_LIBTOOL_DLOPEN, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])])
-
-# AC_LIBTOOL_WIN32_DLL - declare package support for building win32 dll's
-AC_DEFUN(AC_LIBTOOL_WIN32_DLL, [AC_BEFORE([$0], [AC_LIBTOOL_SETUP])])
-
-# AC_ENABLE_SHARED - implement the --enable-shared flag
-# Usage: AC_ENABLE_SHARED[(DEFAULT)]
-#   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
-#   `yes'.
-AC_DEFUN(AC_ENABLE_SHARED, [dnl
-define([AC_ENABLE_SHARED_DEFAULT], ifelse($1, no, no, yes))dnl
-AC_ARG_ENABLE(shared,
-changequote(<<, >>)dnl
-<<  --enable-shared[=PKGS]  build shared libraries [default=>>AC_ENABLE_SHARED_DEFAULT],
-changequote([, ])dnl
-[p=${PACKAGE-default}
-case "$enableval" in
-yes) enable_shared=yes ;;
-no) enable_shared=no ;;
-*)
-  enable_shared=no
-  # Look at the argument we got.  We use all the common list separators.
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
-  for pkg in $enableval; do
-    if test "X$pkg" = "X$p"; then
-      enable_shared=yes
-    fi
-  done
-  IFS="$ac_save_ifs"
-  ;;
-esac],
-enable_shared=AC_ENABLE_SHARED_DEFAULT)dnl
-])
-
-# AC_DISABLE_SHARED - set the default shared flag to --disable-shared
-AC_DEFUN(AC_DISABLE_SHARED, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
-AC_ENABLE_SHARED(no)])
-
-# AC_ENABLE_STATIC - implement the --enable-static flag
-# Usage: AC_ENABLE_STATIC[(DEFAULT)]
-#   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
-#   `yes'.
-AC_DEFUN(AC_ENABLE_STATIC, [dnl
-define([AC_ENABLE_STATIC_DEFAULT], ifelse($1, no, no, yes))dnl
-AC_ARG_ENABLE(static,
-changequote(<<, >>)dnl
-<<  --enable-static[=PKGS]  build static libraries [default=>>AC_ENABLE_STATIC_DEFAULT],
-changequote([, ])dnl
-[p=${PACKAGE-default}
-case "$enableval" in
-yes) enable_static=yes ;;
-no) enable_static=no ;;
-*)
-  enable_static=no
-  # Look at the argument we got.  We use all the common list separators.
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
-  for pkg in $enableval; do
-    if test "X$pkg" = "X$p"; then
-      enable_static=yes
-    fi
-  done
-  IFS="$ac_save_ifs"
-  ;;
-esac],
-enable_static=AC_ENABLE_STATIC_DEFAULT)dnl
-])
-
-# AC_DISABLE_STATIC - set the default static flag to --disable-static
-AC_DEFUN(AC_DISABLE_STATIC, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
-AC_ENABLE_STATIC(no)])
-
-
-# AC_ENABLE_FAST_INSTALL - implement the --enable-fast-install flag
-# Usage: AC_ENABLE_FAST_INSTALL[(DEFAULT)]
-#   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
-#   `yes'.
-AC_DEFUN(AC_ENABLE_FAST_INSTALL, [dnl
-define([AC_ENABLE_FAST_INSTALL_DEFAULT], ifelse($1, no, no, yes))dnl
-AC_ARG_ENABLE(fast-install,
-changequote(<<, >>)dnl
-<<  --enable-fast-install[=PKGS]  optimize for fast installation [default=>>AC_ENABLE_FAST_INSTALL_DEFAULT],
-changequote([, ])dnl
-[p=${PACKAGE-default}
-case "$enableval" in
-yes) enable_fast_install=yes ;;
-no) enable_fast_install=no ;;
-*)
-  enable_fast_install=no
-  # Look at the argument we got.  We use all the common list separators.
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
-  for pkg in $enableval; do
-    if test "X$pkg" = "X$p"; then
-      enable_fast_install=yes
-    fi
-  done
-  IFS="$ac_save_ifs"
-  ;;
-esac],
-enable_fast_install=AC_ENABLE_FAST_INSTALL_DEFAULT)dnl
-])
-
-# AC_ENABLE_FAST_INSTALL - set the default to --disable-fast-install
-AC_DEFUN(AC_DISABLE_FAST_INSTALL, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
-AC_ENABLE_FAST_INSTALL(no)])
-
-# AC_PROG_LD - find the path to the GNU or non-GNU linker
-AC_DEFUN(AC_PROG_LD,
-[AC_ARG_WITH(gnu-ld,
-[  --with-gnu-ld           assume the C compiler uses GNU ld [default=no]],
-test "$withval" = no || with_gnu_ld=yes, with_gnu_ld=no)
-AC_REQUIRE([AC_PROG_CC])dnl
-AC_REQUIRE([AC_CANONICAL_HOST])dnl
-AC_REQUIRE([AC_CANONICAL_BUILD])dnl
-ac_prog=ld
-if test "$ac_cv_prog_gcc" = yes; then
-  # Check if gcc -print-prog-name=ld gives a path.
-  AC_MSG_CHECKING([for ld used by GCC])
-  ac_prog=`($CC -print-prog-name=ld) 2>&5`
-  case "$ac_prog" in
-    # Accept absolute paths.
-changequote(,)dnl
-    [\\/]* | [A-Za-z]:[\\/]*)
-      re_direlt='/[^/][^/]*/\.\./'
-changequote([,])dnl
-      # Canonicalize the path of ld
-      ac_prog=`echo $ac_prog| sed 's%\\\\%/%g'`
-      while echo $ac_prog | grep "$re_direlt" > /dev/null 2>&1; do
-	ac_prog=`echo $ac_prog| sed "s%$re_direlt%/%"`
-      done
-      test -z "$LD" && LD="$ac_prog"
-      ;;
-  "")
-    # If it fails, then pretend we aren't using GCC.
-    ac_prog=ld
-    ;;
-  *)
-    # If it is relative, then search for the first ld in PATH.
-    with_gnu_ld=unknown
-    ;;
-  esac
-elif test "$with_gnu_ld" = yes; then
-  AC_MSG_CHECKING([for GNU ld])
-else
-  AC_MSG_CHECKING([for non-GNU ld])
-fi
-AC_CACHE_VAL(ac_cv_path_LD,
-[if test -z "$LD"; then
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR-:}"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f "$ac_dir/$ac_prog" || test -f "$ac_dir/$ac_prog$ac_exeext"; then
-      ac_cv_path_LD="$ac_dir/$ac_prog"
-      # Check to see if the program is GNU ld.  I'd rather use --version,
-      # but apparently some GNU ld's only accept -v.
-      # Break only if it was the GNU/non-GNU ld that we prefer.
-      if "$ac_cv_path_LD" -v 2>&1 < /dev/null | egrep '(GNU|with BFD)' > /dev/null; then
-	test "$with_gnu_ld" != no && break
-      else
-	test "$with_gnu_ld" != yes && break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-else
-  ac_cv_path_LD="$LD" # Let the user override the test with a path.
-fi])
-LD="$ac_cv_path_LD"
-if test -n "$LD"; then
-  AC_MSG_RESULT($LD)
-else
-  AC_MSG_RESULT(no)
-fi
-test -z "$LD" && AC_MSG_ERROR([no acceptable ld found in \$PATH])
-AC_PROG_LD_GNU
-])
-
-AC_DEFUN(AC_PROG_LD_GNU,
-[AC_CACHE_CHECK([if the linker ($LD) is GNU ld], ac_cv_prog_gnu_ld,
-[# I'd rather use --version here, but apparently some GNU ld's only accept -v.
-if $LD -v 2>&1 </dev/null | egrep '(GNU|with BFD)' 1>&5; then
-  ac_cv_prog_gnu_ld=yes
-else
-  ac_cv_prog_gnu_ld=no
-fi])
-])
-
-# AC_PROG_NM - find the path to a BSD-compatible name lister
-AC_DEFUN(AC_PROG_NM,
-[AC_MSG_CHECKING([for BSD-compatible nm])
-AC_CACHE_VAL(ac_cv_path_NM,
-[if test -n "$NM"; then
-  # Let the user override the test.
-  ac_cv_path_NM="$NM"
-else
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR-:}"
-  for ac_dir in $PATH /usr/ccs/bin /usr/ucb /bin; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/nm || test -f $ac_dir/nm$ac_exeext ; then
-      # Check to see if the nm accepts a BSD-compat flag.
-      # Adding the `sed 1q' prevents false positives on HP-UX, which says:
-      #   nm: unknown option "B" ignored
-      if ($ac_dir/nm -B /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-	ac_cv_path_NM="$ac_dir/nm -B"
-	break
-      elif ($ac_dir/nm -p /dev/null 2>&1 | sed '1q'; exit 0) | egrep /dev/null >/dev/null; then
-	ac_cv_path_NM="$ac_dir/nm -p"
-	break
-      else
-	ac_cv_path_NM=${ac_cv_path_NM="$ac_dir/nm"} # keep the first match, but
-	continue # so that we can try to find one that supports BSD flags
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-  test -z "$ac_cv_path_NM" && ac_cv_path_NM=nm
-fi])
-NM="$ac_cv_path_NM"
-AC_MSG_RESULT([$NM])
-])
-
-# AC_CHECK_LIBM - check for math library
-AC_DEFUN(AC_CHECK_LIBM,
-[AC_REQUIRE([AC_CANONICAL_HOST])dnl
-LIBM=
-case "$lt_target" in
-*-*-beos* | *-*-cygwin*)
-  # These system don't have libm
-  ;;
-*-ncr-sysv4.3*)
-  AC_CHECK_LIB(mw, _mwvalidcheckl, LIBM="-lmw")
-  AC_CHECK_LIB(m, main, LIBM="$LIBM -lm")
-  ;;
-*)
-  AC_CHECK_LIB(m, main, LIBM="-lm")
-  ;;
-esac
-])
-
-# AC_LIBLTDL_CONVENIENCE[(dir)] - sets LIBLTDL to the link flags for
-# the libltdl convenience library and INCLTDL to the include flags for
-# the libltdl header and adds --enable-ltdl-convenience to the
-# configure arguments.  Note that LIBLTDL and INCLTDL are not
-# AC_SUBSTed, nor is AC_CONFIG_SUBDIRS called.  If DIR is not
-# provided, it is assumed to be `libltdl'.  LIBLTDL will be prefixed
-# with '${top_builddir}/' and INCLTDL will be prefixed with
-# '${top_srcdir}/' (note the single quotes!).  If your package is not
-# flat and you're not using automake, define top_builddir and
-# top_srcdir appropriately in the Makefiles.
-AC_DEFUN(AC_LIBLTDL_CONVENIENCE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
-  case "$enable_ltdl_convenience" in
-  no) AC_MSG_ERROR([this package needs a convenience libltdl]) ;;
-  "") enable_ltdl_convenience=yes
-      ac_configure_args="$ac_configure_args --enable-ltdl-convenience" ;;
-  esac
-  LIBLTDL='${top_builddir}/'ifelse($#,1,[$1],['libltdl'])/libltdlc.la
-  INCLTDL='-I${top_srcdir}/'ifelse($#,1,[$1],['libltdl'])
-])
-
-# AC_LIBLTDL_INSTALLABLE[(dir)] - sets LIBLTDL to the link flags for
-# the libltdl installable library and INCLTDL to the include flags for
-# the libltdl header and adds --enable-ltdl-install to the configure
-# arguments.  Note that LIBLTDL and INCLTDL are not AC_SUBSTed, nor is
-# AC_CONFIG_SUBDIRS called.  If DIR is not provided and an installed
-# libltdl is not found, it is assumed to be `libltdl'.  LIBLTDL will
-# be prefixed with '${top_builddir}/' and INCLTDL will be prefixed
-# with '${top_srcdir}/' (note the single quotes!).  If your package is
-# not flat and you're not using automake, define top_builddir and
-# top_srcdir appropriately in the Makefiles.
-# In the future, this macro may have to be called after AC_PROG_LIBTOOL.
-AC_DEFUN(AC_LIBLTDL_INSTALLABLE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
-  AC_CHECK_LIB(ltdl, main,
-  [test x"$enable_ltdl_install" != xyes && enable_ltdl_install=no],
-  [if test x"$enable_ltdl_install" = xno; then
-     AC_MSG_WARN([libltdl not installed, but installation disabled])
-   else
-     enable_ltdl_install=yes
-   fi
-  ])
-  if test x"$enable_ltdl_install" = x"yes"; then
-    ac_configure_args="$ac_configure_args --enable-ltdl-install"
-    LIBLTDL='${top_builddir}/'ifelse($#,1,[$1],['libltdl'])/libltdl.la
-    INCLTDL='-I${top_srcdir}/'ifelse($#,1,[$1],['libltdl'])
-  else
-    ac_configure_args="$ac_configure_args --enable-ltdl-install=no"
-    LIBLTDL="-lltdl"
-    INCLTDL=
-  fi
-])
-
-dnl old names
-AC_DEFUN(AM_PROG_LIBTOOL, [indir([AC_PROG_LIBTOOL])])dnl
-AC_DEFUN(AM_ENABLE_SHARED, [indir([AC_ENABLE_SHARED], $@)])dnl
-AC_DEFUN(AM_ENABLE_STATIC, [indir([AC_ENABLE_STATIC], $@)])dnl
-AC_DEFUN(AM_DISABLE_SHARED, [indir([AC_DISABLE_SHARED], $@)])dnl
-AC_DEFUN(AM_DISABLE_STATIC, [indir([AC_DISABLE_STATIC], $@)])dnl
-AC_DEFUN(AM_PROG_LD, [indir([AC_PROG_LD])])dnl
-AC_DEFUN(AM_PROG_NM, [indir([AC_PROG_NM])])dnl
-
-dnl This is just to silence aclocal about the macro not being used
-ifelse([AC_DISABLE_FAST_INSTALL])dnl
-
 # Usage:
 #  SIM_AC_CHECK_DL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 #
@@ -992,6 +586,410 @@ fi
 ])
 
 # Usage:
+#  SIM_AC_CHECK_X11([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+#
+#  Try to find the X11 development system. If it is found, these
+#  shell variables are set:
+#
+#    $sim_ac_x11_cppflags (extra flags the compiler needs for X11)
+#    $sim_ac_x11_ldflags  (extra flags the linker needs for X11)
+#    $sim_ac_x11_libs     (link libraries the linker needs for X11)
+#
+#  The CPPFLAGS, LDFLAGS and LIBS flags will also be modified accordingly.
+#  In addition, the variable $sim_ac_x11_avail is set to "yes" if
+#  the X11 development system is found.
+#
+#
+# Author: Morten Eriksen, <mortene@sim.no>.
+
+AC_DEFUN([SIM_AC_CHECK_X11], [
+AC_REQUIRE([AC_PATH_XTRA])
+
+sim_ac_x11_avail=no
+
+if test x"$no_x" != xyes; then
+  #  *** DEBUG ***
+  #  Keep this around, as it can be handy when testing on new systems.
+  # echo "X_CFLAGS: $X_CFLAGS"
+  # echo "X_PRE_LIBS: $X_PRE_LIBS"
+  # echo "X_LIBS: $X_LIBS"
+  # echo "X_EXTRA_LIBS: $X_EXTRA_LIBS"
+  # echo
+  # echo "CFLAGS: $CFLAGS"
+  # echo "CPPFLAGS: $CPPFLAGS"
+  # echo "CXXFLAGS: $CXXFLAGS"
+  # echo "LDFLAGS: $LDFLAGS"
+  # echo "LIBS: $LIBS"
+  # exit 0
+
+  sim_ac_x11_cppflags="$X_CFLAGS"
+  sim_ac_x11_ldflags="$X_LIBS"
+  sim_ac_x11_libs="$X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+
+  sim_ac_save_cppflags=$CPPFLAGS
+  sim_ac_save_ldflags=$LDFLAGS
+  sim_ac_save_libs=$LIBS
+
+  CPPFLAGS="$CPPFLAGS $sim_ac_x11_cppflags"
+  LDFLAGS="$LDFLAGS $sim_ac_x11_ldflags"
+  LIBS="$sim_ac_x11_libs $LIBS"
+
+  AC_CACHE_CHECK(
+    [whether we can link against X11],
+    sim_cv_lib_x11_avail,
+    [AC_TRY_LINK([#include <X11/Xlib.h>],
+                 [(void)XOpenDisplay(0L);],
+                 [sim_cv_lib_x11_avail=yes],
+                 [sim_cv_lib_x11_avail=no])])
+
+  if test x"$sim_cv_lib_x11_avail" = x"yes"; then
+    sim_ac_x11_avail=yes
+    $1
+  else
+    CPPFLAGS=$sim_ac_save_cppflags
+    LDFLAGS=$sim_ac_save_ldflags
+    LIBS=$sim_ac_save_libs
+    $2
+  fi
+fi
+])
+
+# Usage:
+#  SIM_AC_CHECK_X11SHMEM([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+#
+#  Try to find the X11 shared memory extension. If it is found, this
+#  shell variable is set:
+#
+#    $sim_ac_x11shmem_libs   (link libraries the linker needs for X11 Shm)
+#
+#  The LIBS flag will also be modified accordingly. In addition, the
+#  variable $sim_ac_x11shmem_avail is set to "yes" if the X11 shared
+#  memory extension is found.
+#
+#
+# Author: Morten Eriksen, <mortene@sim.no>.
+#
+# TODO:
+#    * [mortene:20000122] make sure this work on MSWin (with
+#      Cygwin installation)
+#
+
+AC_DEFUN([SIM_AC_CHECK_X11SHMEM], [
+
+sim_ac_x11shmem_avail=no
+sim_ac_x11shmem_libs="-lXext"
+sim_ac_save_libs=$LIBS
+LIBS="$sim_ac_x11shmem_libs $LIBS"
+
+AC_CACHE_CHECK(
+  [whether the X11 shared memory extension is available],
+  sim_cv_lib_x11shmem_avail,
+  [AC_TRY_LINK([#include <X11/Xlib.h>
+               #include <X11/extensions/XShm.h>],
+               [(void)XShmQueryVersion(0L, 0L, 0L, 0L);],
+               [sim_cv_lib_x11shmem_avail=yes],
+               [sim_cv_lib_x11shmem_avail=no])])
+
+if test x"$sim_cv_lib_x11shmem_avail" = xyes; then
+  sim_ac_x11shmem_avail=yes
+  $1
+else
+  LIBS=$sim_ac_save_libs
+  $2
+fi
+])
+
+# Usage:
+#  SIM_AC_CHECK_X11MU([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+#
+#  Try to find the X11 miscellaneous utilities extension. If it is
+#  found, this shell variable is set:
+#
+#    $sim_ac_x11mu_libs   (link libraries the linker needs for X11 MU)
+#
+#  The LIBS flag will also be modified accordingly. In addition, the
+#  variable $sim_ac_x11mu_avail is set to "yes" if the X11 miscellaneous
+#  utilities extension is found.
+#
+# Author: Morten Eriksen, <mortene@sim.no>.
+#
+# TODO:
+#    * [mortene:20000122] make sure this work on MSWin (with
+#      Cygwin installation)
+#
+
+AC_DEFUN([SIM_AC_CHECK_X11MU], [
+
+sim_ac_x11mu_avail=no
+sim_ac_x11mu_libs="-lXmu"
+sim_ac_save_libs=$LIBS
+LIBS="$sim_ac_x11mu_libs $LIBS"
+
+AC_CACHE_CHECK(
+  [whether the X11 miscellaneous utilities is available],
+  sim_cv_lib_x11mu_avail,
+  [AC_TRY_LINK([#include <X11/Xlib.h>
+                #include <X11/Xmu/Xmu.h>
+                #include <X11/Xmu/StdCmap.h>],
+               [(void)XmuAllStandardColormaps(0L);],
+               [sim_cv_lib_x11mu_avail=yes],
+               [sim_cv_lib_x11mu_avail=no])])
+
+if test x"$sim_cv_lib_x11mu_avail" = xyes; then
+  sim_ac_x11mu_avail=yes
+  $1
+else
+  LIBS=$sim_ac_save_libs
+  $2
+fi
+])
+
+# Usage:
+#  SIM_AC_CHECK_X11XID([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+#
+#  Try to find the X11 extension device library. Sets this
+#  shell variable:
+#
+#    $sim_ac_x11xid_libs   (link libraries the linker needs for X11 XID)
+#
+#  The LIBS flag will also be modified accordingly. In addition, the
+#  variable $sim_ac_x11xid_avail is set to "yes" if the X11 extension
+#  device library is found.
+#
+# Author: Morten Eriksen, <mortene@sim.no>.
+#
+# TODO:
+#    * [mortene:20000122] make sure this work on MSWin (with
+#      Cygwin installation)
+#
+
+AC_DEFUN([SIM_AC_CHECK_X11XID], [
+
+sim_ac_x11xid_avail=no
+sim_ac_x11xid_libs="-lXi"
+sim_ac_save_libs=$LIBS
+LIBS="$sim_ac_x11xid_libs $LIBS"
+
+AC_CACHE_CHECK(
+  [whether the X11 extension device library is available],
+  sim_cv_lib_x11xid_avail,
+  [AC_TRY_LINK([#include <X11/extensions/XInput.h>],
+               [(void)XOpenDevice(0L, 0);],
+               [sim_cv_lib_x11xid_avail=yes],
+               [sim_cv_lib_x11xid_avail=no])])
+
+if test x"$sim_cv_lib_x11xid_avail" = xyes; then
+  sim_ac_x11xid_avail=yes
+  $1
+else
+  LIBS=$sim_ac_save_libs
+  $2
+fi
+])
+
+# Usage:
+#  SIM_AC_CHECK_X_INTRINSIC([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+#
+#  Try to find the Xt intrinsic library. Sets this shell variable:
+#
+#    $sim_ac_xt_libs   (link library the linker needs for X Intrinsic)
+#
+#  The LIBS flag will also be modified accordingly. In addition, the
+#  variable $sim_ac_xt_avail is set to "yes" if the X11 Intrinsic
+#  library is found.
+#
+# Author: Morten Eriksen, <mortene@sim.no>.
+#
+
+AC_DEFUN([SIM_AC_CHECK_X_INTRINSIC], [
+
+sim_ac_xt_avail=no
+sim_ac_xt_libs="-lXt"
+sim_ac_save_libs=$LIBS
+LIBS="$sim_ac_xt_libs $LIBS"
+
+AC_CACHE_CHECK(
+  [whether the X11 Intrinsic library is available],
+  sim_cv_lib_xt_avail,
+  [AC_TRY_LINK([#include <X11/Intrinsic.h>],
+               [(void)XtVaCreateWidget("", 0L, 0L);],
+               [sim_cv_lib_xt_avail=yes],
+               [sim_cv_lib_xt_avail=no])])
+
+if test x"$sim_cv_lib_xt_avail" = xyes; then
+  sim_ac_xt_avail=yes
+  $1
+else
+  LIBS=$sim_ac_save_libs
+  $2
+fi
+])
+
+# Usage:
+#   SIM_AC_CHECK_LIBXPM( [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND] )
+#
+# Description:
+#   This macro checks for libXpm.
+#
+# Variables:
+#   $sim_ac_xpm_avail      yes | no
+#   $sim_ac_xpm_libs       [link-line libraries]
+#
+# Authors:
+#   Lars J. Aas <larsa@sim.no>
+#
+
+AC_DEFUN([SIM_AC_CHECK_LIBXPM], [
+
+sim_ac_xpm_avail=no
+sim_ac_xpm_libs="-lXpm"
+
+AC_CACHE_CHECK(
+  [whether libXpm is available],
+  sim_cv_lib_xpm_avail,
+  [sim_ac_save_libs=$LIBS
+  LIBS="$sim_ac_xpm_libs $LIBS"
+  AC_TRY_LINK([#include <X11/xpm.h>],
+              [(void)XpmLibraryVersion();],
+              [sim_cv_lib_xpm_avail=yes],
+              [sim_cv_lib_xpm_avail=no])
+  LIBS="$sim_ac_save_libs"])
+
+if test x"$sim_cv_lib_xpm_avail" = x"yes"; then
+  sim_ac_xpm_avail=yes
+  LIBS="$sim_ac_xpm_libs $LIBS"
+  $1
+else
+  ifelse([$2], , :, [$2])
+fi
+])
+
+
+# Usage:
+#  SIM_AC_CHECK_X11_XP([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+#
+#  Try to find the Xp library for printing functionality. Sets this
+#  shell variable:
+#
+#    $sim_ac_xp_libs   (link library the linker needs for the Xp library)
+#
+#  The LIBS flag will also be modified accordingly. In addition, the
+#  variable $sim_ac_xp_avail is set to "yes" if the Xp library is found.
+#
+# Author: Morten Eriksen, <mortene@sim.no>.
+#
+
+AC_DEFUN([SIM_AC_CHECK_X11_XP], [
+sim_ac_xp_avail=no
+sim_ac_xp_libs="-lXp"
+sim_ac_save_libs=$LIBS
+LIBS="$sim_ac_xp_libs $LIBS"
+
+AC_CACHE_CHECK(
+  [whether the X11 printing library is available],
+  sim_cv_lib_xp_avail,
+  [AC_TRY_LINK([#include <X11/extensions/Print.h>],
+               [XpEndJob(0L);],
+               [sim_cv_lib_xp_avail=yes],
+               [sim_cv_lib_xp_avail=no])])
+
+if test x"$sim_cv_lib_xp_avail" = xyes; then
+  sim_ac_xp_avail=yes
+  $1
+else
+  LIBS=$sim_ac_save_libs
+  $2
+fi
+])
+
+# SIM_AC_CHECK_X11_ATHENA( [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND] )
+
+AC_DEFUN([SIM_AC_CHECK_X11_ATHENA], [
+sim_ac_athena_avail=no
+sim_ac_athena_libs="-lXaw"
+sim_ac_save_libs=$LIBS
+LIBS="$sim_ac_athena_libs $LIBS"
+
+AC_CACHE_CHECK(
+  [whether the X11 Athena widgets library is available],
+  sim_cv_lib_athena_avail,
+  [AC_TRY_LINK([#include <X11/Xfuncproto.h>
+                #include <X11/Xaw/XawInit.h>],
+               [XawInitializeWidgetSet();],
+               [sim_cv_lib_athena_avail=yes],
+               [sim_cv_lib_athena_avail=no])])
+
+if test x"$sim_cv_lib_athena_avail" = xyes; then
+  sim_ac_athena_avail=yes
+  $1
+else
+  LIBS=$sim_ac_save_libs
+  $2
+fi
+])
+
+# SIM_AC_X11_READY( [ACTION-IF-TRUE], [ACTION-IF-FALSE] )
+
+AC_DEFUN([SIM_AC_CHECK_X11_READY],
+[AC_CACHE_CHECK(
+  [if X11 linkage is ready],
+  [sim_cv_x11_ready],
+  [AC_TRY_LINK(
+    [#include <X11/Xlib.h>],
+    [(void)XOpenDisplay(0L);],
+    [sim_cv_x11_ready=true],
+    [sim_cv_x11_ready=false])])
+if ${sim_cv_x11_ready}; then
+  ifelse([$1], , :, [$1])
+else
+  ifelse([$2], , :, [$2])
+fi
+]) # SIM_AC_X11_READY()
+
+
+# **************************************************************************
+
+AC_DEFUN([SIM_AC_HAVE_LIBX11_IFELSE], [
+: ${sim_ac_have_libx11=false}
+AC_REQUIRE([AC_PATH_X])
+
+# prevent multiple runs
+$sim_ac_have_libx11 || {
+  if test x"$no_x" != xyes; then
+    sim_ac_libx11_cppflags=
+    sim_ac_libx11_ldflags=
+    test x"$x_includes" != x && sim_ac_libx11_cppflags="-I$x_includes"
+    test x"$x_libraries" != x && sim_ac_libx11_ldflags="-L$x_libraries"
+    sim_ac_libx11_libs="-lX11"
+
+    sim_ac_libx11_save_cppflags=$CPPFLAGS
+    sim_ac_libx11_save_ldflags=$LDFLAGS
+    sim_ac_libx11_save_libs=$LIBS
+
+    CPPFLAGS="$CPPFLAGS $sim_ac_libx11_cppflags"
+    LDFLAGS="$LDFLAGS $sim_ac_libx11_ldflags"
+    LIBS="$sim_ac_libx11_libs $LIBS"
+
+    AC_TRY_LINK(
+      [#include <X11/Xlib.h>],
+      [(void)XOpenDisplay(0L);],
+      [sim_ac_have_libx11=true])
+
+    CPPFLAGS=$sim_ac_libx11_save_cppflags
+    LDFLAGS=$sim_ac_libx11_save_ldflags
+    LIBS=$sim_ac_libx11_save_libs
+  fi
+}
+
+if $sim_ac_have_libx11; then
+  ifelse([$1], , :, [$1])
+else
+  ifelse([$2], , :, [$2])
+fi
+]) # SIM_AC_HAVE_LIBX11_IFELSE
+
+
+# Usage:
 #  SIM_AC_CHECK_OPENGL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 #
 #  Try to find an OpenGL development system, either a native
@@ -1023,21 +1021,16 @@ AC_ARG_WITH(
   [],
   [with_mesa=yes])
 
-if test x"$sim_ac_linking_style" = xmswin; then
-  sim_ac_gl_glname=opengl32.lib
-  # FIXME: is this name correct? Probably not. 20000602 mortene.
-  sim_ac_gl_mesaglname=mesagl.lib
-else
-  sim_ac_gl_glname=-lGL
-  sim_ac_gl_mesaglname=-lMesaGL
-fi
+# It's usually libGL.so on UNIX systems and opengl32.lib on MSWindows.
+sim_ac_gl_glnames="-lGL -lopengl32"
+sim_ac_gl_mesaglnames=-lMesaGL
 
 if test "x$with_mesa" = "xyes"; then
-  sim_ac_gl_first=$sim_ac_gl_mesaglname
-  sim_ac_gl_second=$sim_ac_gl_glname
+  sim_ac_gl_first=$sim_ac_gl_mesaglnames
+  sim_ac_gl_second=$sim_ac_gl_glnames
 else
-  sim_ac_gl_first=$sim_ac_gl_glname
-  sim_ac_gl_second=$sim_ac_gl_mesaglname
+  sim_ac_gl_first=$sim_ac_gl_glnames
+  sim_ac_gl_second=$sim_ac_gl_mesaglnames
 fi
 
 AC_ARG_WITH(
@@ -1076,9 +1069,9 @@ if test x"$with_opengl" != xno; then
       if test "x$sim_cv_lib_gl" = "xUNRESOLVED"; then
         LIBS="$sim_ac_gl_libcheck $sim_ac_save_libs"
         AC_TRY_LINK([
-#ifdef _WIN32
+#if HAVE_WINDOWS_H
 #include <windows.h>
-#endif
+#endif /* HAVE_WINDOWS_H */
 #include <GL/gl.h>
 ],
                     [
@@ -1099,7 +1092,7 @@ glPointSize(1.0f);
     SIM_AC_CHECK_PTHREAD([
       sim_ac_gl_cppflags="$sim_ac_gl_cppflags $sim_ac_pthread_cppflags"
       sim_ac_gl_ldflags="$sim_ac_gl_ldflags $sim_ac_pthread_ldflags"],
-      AC_MSG_WARN(couldn't compile or link with pthread library))
+      [AC_MSG_WARN([couldn't compile or link with pthread library])])
 
     if test "x$sim_ac_pthread_avail" = "xyes"; then
       AC_CACHE_CHECK(
@@ -1166,22 +1159,17 @@ unset sim_ac_glu_ldflags
 unset sim_ac_glu_libs
 sim_ac_glu_avail=no
 
-if test x"$sim_ac_linking_style" = xmswin; then
-  sim_ac_glu_name=glu32.lib
-  # FIXME: is this name correct? Probably not. 20000928 mortene.
-  sim_ac_glu_mesaname=mesaglu.lib
-else
-  sim_ac_glu_name=-lGLU
-  sim_ac_glu_mesaname=-lMesaGLU
-fi
+# It's usually libGLU.so on UNIX systems and glu32.lib on MSWindows.
+sim_ac_glu_names="-lGLU -lglu32"
+sim_ac_glu_mesanames=-lMesaGLU
 
 # with_mesa is set from the SIM_AC_CHECK_OPENGL macro.
 if test "x$with_mesa" = "xyes"; then
-  sim_ac_glu_first=$sim_ac_glu_mesaname
-  sim_ac_glu_second=$sim_ac_glu_name
+  sim_ac_glu_first=$sim_ac_glu_mesanames
+  sim_ac_glu_second=$sim_ac_glu_names
 else
-  sim_ac_glu_first=$sim_ac_glu_name
-  sim_ac_glu_second=$sim_ac_glu_mesaname
+  sim_ac_glu_first=$sim_ac_glu_names
+  sim_ac_glu_second=$sim_ac_glu_mesanames
 fi
 
 AC_ARG_WITH(
@@ -1211,13 +1199,13 @@ if test x"$with_glu" != xno; then
 
     # Some platforms (like BeOS) have the GLU functionality in the GL
     # library (and no GLU library present).
-    for sim_ac_glu_libcheck in "" "$sim_ac_glu_first"  "$sim_ac_glu_second"; do
+    for sim_ac_glu_libcheck in "" $sim_ac_glu_first $sim_ac_glu_second; do
       if test "x$sim_cv_lib_glu" = "xUNRESOLVED"; then
         LIBS="$sim_ac_glu_libcheck $sim_ac_save_libs"
         AC_TRY_LINK([
-#ifdef _WIN32
+#if HAVE_WINDOWS_H
 #include <windows.h>
-#endif
+#endif /* HAVE_WINDOWS_H */
 #include <GL/gl.h>
 #include <GL/glu.h>
 ],
@@ -1255,7 +1243,7 @@ AC_DEFUN([SIM_AC_GLU_READY_IFELSE],
   [sim_cv_glu_ready],
   [AC_TRY_LINK(
     [
-#ifdef HAVE_WINDOWS_H
+#if HAVE_WINDOWS_H
 #include <windows.h>
 #endif /* HAVE_WINDOWS_H */
 #include <GL/gl.h>
@@ -1294,11 +1282,12 @@ AC_CACHE_CHECK(
   [sim_cv_func_glu_nurbsobject=NONE
    for sim_ac_glu_structname in GLUnurbs GLUnurbsObj; do
     if test "$sim_cv_func_glu_nurbsobject" = NONE; then
-      AC_TRY_LINK([#ifdef _WIN32
-                  #include <windows.h>
-                  #endif
-                  #include <GL/gl.h>
-                  #include <GL/glu.h>],
+      AC_TRY_LINK([
+#if HAVE_WINDOWS_H
+#include <windows.h>
+#endif /* HAVE_WINDOWS_H */
+#include <GL/gl.h>
+#include <GL/glu.h>],
                   [$sim_ac_glu_structname * hepp = gluNewNurbsRenderer();
                    gluDeleteNurbsRenderer(hepp)],
                   [sim_cv_func_glu_nurbsobject=$sim_ac_glu_structname])
@@ -1314,6 +1303,29 @@ else
   $1
 fi
 ])
+
+# **************************************************************************
+# SIM_AC_HAVE_GLX_IFELSE( IF-FOUND, IF-NOT-FOUND )
+#
+# Check whether GLX is on the system.
+
+AC_DEFUN([SIM_AC_HAVE_GLX_IFELSE], [
+AC_CACHE_CHECK(
+  [whether GLX is on the system],
+  sim_cv_have_glx,
+  AC_TRY_LINK(
+    [#include <GL/glx.h>],
+    [(void)glXChooseVisual(0L, 0, 0L);],
+    [sim_cv_have_glx=true],
+    [sim_cv_have_glx=false]))
+
+if ${sim_cv_have_glx=false}; then
+  ifelse([$1], , :, [$1])
+else
+  ifelse([$2], , :, [$2])
+fi
+]) # SIM_AC_HAVE_GLX_IFELSE()
+
 
 # Usage:
 #  SIM_AC_CHECK_PTHREAD([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
@@ -1380,95 +1392,6 @@ fi
 
 
 # Usage:
-#  SIM_CHECK_INVENTOR([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
-#
-#  Try to find the Open Inventor development system. If it is found, these
-#  shell variables are set:
-#
-#    $sim_ac_oiv_cppflags (extra flags the compiler needs for Inventor)
-#    $sim_ac_oiv_ldflags  (extra flags the linker needs for Inventor)
-#    $sim_ac_oiv_libs     (link libraries the linker needs for Inventor)
-#
-#  The CPPFLAGS, LDFLAGS and LIBS flags will also be modified accordingly.
-#  In addition, the variable $sim_ac_oiv_avail is set to "yes" if
-#  the Open Inventor development system is found.
-#
-# Author: Morten Eriksen, <mortene@sim.no>.
-#
-
-AC_DEFUN([SIM_CHECK_INVENTOR], [
-AC_ARG_WITH(
-  [inventor],
-  AC_HELP_STRING([--with-inventor=DIR],
-                 [use the Open Inventor library [default=no]]),
-  [],
-  [with_inventor=yes])
-
-sim_ac_oiv_avail=no
-
-if test x"$with_inventor" != xno; then
-  if test x"$with_inventor" != xyes; then
-    sim_ac_oiv_cppflags="-I${with_inventor}/include"
-    sim_ac_oiv_ldflags="-L${with_inventor}/lib"
-  else
-    AC_MSG_CHECKING(value of the OIVHOME environment variable)
-    if test x"$OIVHOME" = x; then
-      AC_MSG_RESULT([empty])
-      AC_MSG_WARN([OIVHOME environment variable not set -- this might be an indication of a problem])
-    else
-      AC_MSG_RESULT([$OIVHOME])
-      sim_ac_oiv_cppflags="-I$OIVHOME/include"
-      sim_ac_oiv_ldflags="-L$OIVHOME/lib"
-    fi
-  fi
-
-  if test x"$sim_ac_linking_style" = xmswin; then
-    cat <<EOF > conftest.c
-#include <Inventor/SbBasic.h>
-PeekInventorVersion: TGS_VERSION
-EOF
-    iv_version=`$CXX -E conftest.c 2>/dev/null | grep "^PeekInventorVersion" | sed 's/.* //g'`
-    if test x"$iv_version" = xTGS_VERSION; then
-      AC_MSG_ERROR([SbBasic.h does not define TGS_VERSION.  Maybe it's a Coin file?])
-    fi
-    iv_version=`echo $iv_version | sed 's/.$//'`
-    rm -f conftest.c
-    sim_ac_oiv_libs="inv${iv_version}.lib"
-    sim_ac_oiv_enter="#include <SoWinEnterScope.h>"
-    sim_ac_oiv_leave="#include <SoWinLeaveScope.h>"
-  else
-    sim_ac_oiv_libs="-lInventor -limage"
-  fi
-
-  sim_ac_save_cppflags=$CPPFLAGS
-  sim_ac_save_ldflags=$LDFLAGS
-  sim_ac_save_libs=$LIBS
-
-  CPPFLAGS="$sim_ac_oiv_cppflags $CPPFLAGS"
-  LDFLAGS="$sim_ac_oiv_ldflags $LDFLAGS"
-  LIBS="$sim_ac_oiv_libs $LIBS"
-
-  AC_CACHE_CHECK([for Open Inventor developer kit],
-    sim_cv_lib_oiv_avail,
-    [AC_TRY_LINK([$sim_ac_oiv_enter
-                  #include <Inventor/SoDB.h>],
-                 [SoDB::init();],
-                 [sim_cv_lib_oiv_avail=yes],
-                 [sim_cv_lib_oiv_avail=no])])
-
-  if test x"$sim_cv_lib_oiv_avail" = xyes; then
-    sim_ac_oiv_avail=yes
-    $1
-  else
-    CPPFLAGS=$sim_ac_save_cppflags
-    LDFLAGS=$sim_ac_save_ldflags
-    LIBS=$sim_ac_save_libs
-    $2
-  fi
-fi
-])
-
-# Usage:
 #  SIM_CHECK_OIV_XT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 #
 #  Try to compile and link against the Xt GUI glue library for
@@ -1508,74 +1431,188 @@ fi
 ])
 
 # **************************************************************************
-# SIM_AC_HAVE_SOPOLYGONOFFSET( [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]] )
-#
-# Check whether or not the SoPolygonOffset node is part of the
-# Open Inventor development system. If it is found, the
-# HAVE_SOPOLYGONOFFSET define is set.
-#
-# Author: Morten Eriksen, <mortene@sim.no>.
-#
-# TODO:
-#
-#     [20001002:mortene]   make a macro SIM_AC_HAVE_INVENTOR_NODE to replace
-#                          this macro and the SIM_AC_HAVE_SOEXTSELECTION
-#                          macro.
+# SIM_AC_WITH_INVENTOR
+# This macro just ensures the --with-inventor option is used.
 
-AC_DEFUN([SIM_AC_HAVE_SOPOLYGONOFFSET],
-[AC_CACHE_CHECK([for the SoPolygonOffset node],
-  sim_cv_sopolygonoffset,
-  [AC_TRY_LINK([#include <Inventor/nodes/SoPolygonOffset.h>],
-               [SoPolygonOffset * p = new SoPolygonOffset;],
-               [sim_cv_sopolygonoffset=yes],
-               [sim_cv_sopolygonoffset=no])])
-
-if test x"$sim_cv_sopolygonoffset" = xyes; then
-  AC_DEFINE(HAVE_SOPOLYGONOFFSET, 1,
-    [Define to enable use of the SoPolygonOffset node])
-  $1
-else
-  ifelse([$2], , :, [$2])
-fi
-]) # SIM_AC_HAVE_SOPOLYGONOFFSET
+AC_DEFUN([SIM_AC_WITH_INVENTOR], [
+: ${sim_ac_want_inventor=false}
+AC_ARG_WITH([inventor],
+  AC_HELP_STRING([--with-inventor], [use another Open Inventor than Coin [[default=no]]])
+AC_HELP_STRING([--with-inventor=PATH], [specify where Open Inventor resides]),
+  [case "$withval" in
+  no)  sim_ac_want_inventor=false ;;
+  yes) sim_ac_want_inventor=true
+       test -n "$OIVHOME" &&
+         SIM_AC_DEBACKSLASH(sim_ac_inventor_path, "$OIVHOME") ;;
+  *)   sim_ac_want_inventor=true; sim_ac_inventor_path="$withval" ;;
+  esac])
+]) # SIM_AC_WITH_INVENTOR
 
 # **************************************************************************
-# SIM_AC_HAVE_SOEXTSELECTION( [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]] )
-#
-# Check whether or not the SoExtSelection node is part of the
-# Open Inventor development system. If it is found, the
-# HAVE_SOEXTSELECTION define is set.
-#
-# Author: Morten Eriksen, <mortene@sim.no>.
-#
-# TODO:
-#
-#     [20001002:mortene]   make a macro SIM_AC_HAVE_INVENTOR_NODE to replace
-#                          this macro and the SIM_AC_HAVE_SOPOLYGONOFFSET
-#                          macro.
+# SIM_AC_HAVE_INVENTOR_IMAGE_IFELSE
 
-AC_DEFUN([SIM_AC_HAVE_SOEXTSELECTION],
-[AC_CACHE_CHECK([for the SoExtSelection node],
-  sim_cv_soextselection,
-  [AC_TRY_LINK([#include <Inventor/nodes/SoExtSelection.h>],
-               [SoExtSelection * p = new SoExtSelection;],
-               [sim_cv_soextselection=yes],
-               [sim_cv_soextselection=no])])
+AC_DEFUN([SIM_AC_HAVE_INVENTOR_IMAGE_IFELSE], [
+AC_REQUIRE([SIM_AC_WITH_INVENTOR])
 
-if test x"$sim_cv_soextselection" = xyes; then
-  AC_DEFINE(HAVE_SOEXTSELECTION, 1,
-    [Define to enable use of the SoExtSelection node])
-  $1
+if $sim_ac_want_inventor; then
+  sim_ac_inventor_image_save_CPPFLAGS="$CPPFLAGS"
+  sim_ac_inventor_image_save_LDFLAGS="$LDFLAGS"
+  sim_ac_inventor_image_save_LIBS="$LIBS"
+
+  if test s${sim_ac_inventor_path+et} = set; then
+    sim_ac_inventor_image_cppflags="-I${sim_ac_inventor_path}/include"
+    sim_ac_inventor_image_ldflags="-L${sim_ac_inventor_path}/lib"
+  fi
+  sim_ac_inventor_image_libs="-limage"
+
+  AC_CACHE_CHECK(
+    [if linking with libimage is possible],
+    sim_cv_have_inventor_image,
+    [
+    CPPFLAGS="$sim_ac_inventor_image_cppflags $CPPFLAGS"
+    LDFLAGS="$sim_ac_inventor_image_ldflags $LDFLAGS"
+    LIBS="$sim_ac_inventor_image_libs $LIBS"
+    AC_TRY_LINK(
+      [],
+      [],
+      [sim_cv_have_inventor_image=true],
+      [sim_cv_have_inventor_image=false])
+    CPPFLAGS="$sim_ac_inventor_image_save_CPPFLAGS"
+    LDFLAGS="$sim_ac_inventor_image_save_LDFLAGS"
+    LIBS="$sim_ac_inventor_image_save_LIBS"
+    ])
+
+  if $sim_cv_have_inventor_image; then
+    ifelse([$1], , :, [$1])
+  else
+    ifelse([$2], , :, [$2])
+  fi
 else
   ifelse([$2], , :, [$2])
 fi
-]) # SIM_AC_HAVE_SOEXTSELECTION
+]) # SIM_AC_HAVE_INVENTOR_IMAGE_IFELSE
+
+# **************************************************************************
+# SIM_AC_HAVE_INVENTOR_IFELSE( [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND] ] )
+#
+# Defines $sim_ac_inventor_cppflags, $sim_ac_inventor_ldflags and
+# $sim_ac_inventor_libs.
+
+AC_DEFUN([SIM_AC_HAVE_INVENTOR_IFELSE], [
+AC_REQUIRE([SIM_AC_WITH_INVENTOR])
+
+if $sim_ac_want_inventor; then
+  sim_ac_save_CPPFLAGS="$CPPFLAGS";
+  sim_ac_save_LDFLAGS="$LDFLAGS";
+  sim_ac_save_LIBS="$LIBS";
+
+  SIM_AC_HAVE_INVENTOR_IMAGE_IFELSE([
+    sim_ac_inventor_cppflags="$sim_ac_inventor_image_cppflags"
+    sim_ac_inventor_ldflags="$sim_ac_inventor_image_ldflags"
+  ], [
+    if test s${sim_ac_inventor_path+et} = set; then
+      sim_ac_inventor_cppflags="-I${sim_ac_inventor_path}/include"
+      sim_ac_inventor_ldflags="-L${sim_ac_inventor_path}/lib"
+    fi
+    sim_ac_inventor_image_libs=
+  ])
+
+  # Let's at least test for "libInventor".
+  sim_ac_inventor_chk_libs="-lInventor"
+
+  # See if we can get the TGS_VERSION number for including a
+  # check for inv{ver}.lib.
+    cat <<EOF > conftest.c
+#include <Inventor/SbBasic.h>
+PeekInventorVersion: TGS_VERSION
+EOF
+  tgs_version=`$CPP $sim_ac_inventor_cppflags $CPPFLAGS conftest.c 2>/dev/null | egrep "^PeekInventorVersion" | sed 's/.* //g'`
+  rm -f conftest.c
+  if test x"$tgs_version" != xTGS_VERSION; then
+    tgs_version=`echo $tgs_version | cut -c-3`
+    sim_ac_inventor_chk_libs="$sim_ac_inventor_chk_libs -linv${tgs_version}"
+  fi
+
+  AC_MSG_CHECKING([for Open Inventor library])
+  sim_ac_inventor_libs=UNRESOLVED
+
+  for sim_ac_iv_cppflags_loop in "" "-DWIN32"; do
+    for sim_ac_iv_libcheck in $sim_ac_inventor_chk_libs; do
+      if test "x$sim_ac_inventor_libs" = "xUNRESOLVED"; then
+        CPPFLAGS="$sim_ac_iv_cppflags_loop $sim_ac_inventor_cppflags $sim_ac_save_CPPFLAGS"
+        LDFLAGS="$sim_ac_inventor_ldflags $sim_ac_save_LDFLAGS"
+        LIBS="$sim_ac_iv_libcheck $sim_ac_inventor_image_libs $sim_ac_save_LIBS"
+        AC_TRY_LINK([#include <Inventor/SoDB.h>],
+                    [SoDB::init();],
+                    [sim_ac_inventor_libs="$sim_ac_iv_libcheck $sim_ac_inventor_image_libs"
+                     sim_ac_inventor_cppflags="$sim_ac_iv_cppflags_loop $sim_ac_inventor_cppflags"])
+      fi
+    done
+  done
+
+  CPPFLAGS="$sim_ac_save_CPPFLAGS"
+  LDFLAGS="$sim_ac_save_LDFLAGS"
+  LIBS="$sim_ac_save_LIBS"
+
+  if test "x$sim_ac_inventor_libs" != "xUNRESOLVED"; then
+    AC_MSG_RESULT($sim_ac_inventor_cppflags $sim_ac_inventor_ldflags $sim_ac_inventor_libs)
+    $1
+  else
+    AC_MSG_RESULT([unavailable])
+    $2
+  fi
+else
+  ifelse([$2], , :, [$2])
+fi
+]) # SIM_AC_HAVE_INVENTOR_IFELSE
+
+# **************************************************************************
+
+# utility macros:
+AC_DEFUN([AC_TOUPPER], [translit([$1], [[a-z]], [[A-Z]])])
+AC_DEFUN([AC_TOLOWER], [translit([$1], [[A-Z]], [[a-z]])])
+
+# **************************************************************************
+# SIM_AC_HAVE_INVENTOR_NODE( NODE, [ACTION-IF-FOUND] [, ACTION-IF-NOT-FOUND])
+#
+# Check whether or not the given NODE is available in the Open Inventor
+# development system.  If so, the HAVE_<NODE> define is set.
+#
+# Authors:
+#   Lars J. Aas  <larsa@sim.no>
+#   Morten Eriksen  <mortene@sim.no>
+
+AC_DEFUN([SIM_AC_HAVE_INVENTOR_NODE], 
+[m4_do([pushdef([cache_variable], sim_cv_have_oiv_[]AC_TOLOWER([$1])_node)],
+       [pushdef([DEFINE_VARIABLE], HAVE_[]AC_TOUPPER([$1]))])
+AC_CACHE_CHECK(
+  [if the Open Inventor $1 node is available],
+  cache_variable,
+  [AC_TRY_LINK(
+    [#include <Inventor/nodes/$1.h>],
+    [$1 * p = new $1;],
+    cache_variable=true,
+    cache_variable=false)])
+
+if $cache_variable; then
+  AC_DEFINE(DEFINE_VARIABLE, 1, [Define to enable use of the Open Inventor $1 node])
+  $2
+else
+  ifelse([$3], , :, [$3])
+fi
+m4_do([popdef([cache_variable])],
+      [popdef([DEFINE_VARIABLE])])
+]) # SIM_AC_HAVE_INVENTOR_NODE
 
 # **************************************************************************
 # SIM_AC_HAVE_SOMOUSEBUTTONEVENT_BUTTONS
 #
 # Authors:
 #   Lars J. Aas <larsa@sim.no>
+#
+# TODO:
+#   Check for enums generically instead.
+#
 
 AC_DEFUN([SIM_AC_HAVE_SOMOUSEBUTTONEVENT_BUTTONS],
 [AC_CACHE_CHECK(
@@ -1595,6 +1632,61 @@ else
   ifelse([$2], , :, [$2])
 fi
 ]) # SIM_AC_HAVE_SOMOUSEBUTTONEVENT_BUTTONS()
+
+# **************************************************************************
+# SIM_AC_HAVE_INVENTOR_FEATURE(MESSAGE, HEADERS, BODY, DEFINE
+#                              [, ACTION-IF-FOUND[, ACTION-IF-NOT-FOUND]])
+#
+# Authors:
+#   Morten Eriksen <mortene@sim.no>
+
+AC_DEFUN([SIM_AC_HAVE_INVENTOR_FEATURE],
+[m4_do([pushdef([cache_variable], sim_cv_have_oiv_[]AC_TOLOWER([$4]))],
+       [pushdef([DEFINE_VARIABLE], AC_TOUPPER([$4]))])
+AC_CACHE_CHECK(
+  [$1],
+  cache_variable,
+  [AC_TRY_LINK(
+    [$2],
+    [$3],
+    cache_variable=true,
+    cache_variable=false)])
+
+if $cache_variable; then
+  AC_DEFINE(DEFINE_VARIABLE, 1, [Define to enable use of Inventor feature])
+  $5
+else
+  ifelse([$6], , :, [$6])
+fi
+m4_do([popdef([cache_variable])],
+      [popdef([DEFINE_VARIABLE])])
+]) # SIM_AC_HAVE_INVENTOR_FEATURE
+
+# Convenience macros SIM_AC_DEBACKSLASH and SIM_AC_DOBACKSLASH for
+# converting to and from MSWin/MS-DOS style paths.
+#
+# Example use:
+#
+#     SIM_AC_DEBACKSLASH(my_ac_reversed, "C:\\mydir\\bin")
+#
+# will give a shell variable $my_ac_reversed with the value "C:/mydir/bin").
+# Vice versa for SIM_AC_DOBACKSLASH.
+#
+# Author: Marius Bugge Monsen <mariusbu@sim.no>
+#         Lars Jørgen Aas <larsa@sim.no>
+#         Morten Eriksen <mortene@sim.no>
+
+AC_DEFUN([SIM_AC_DEBACKSLASH], [
+eval "$1=\"`echo $2 | sed -e 's%\\\\%\\/%g'`\""
+])
+
+AC_DEFUN([SIM_AC_DOBACKSLASH], [
+eval "$1=\"`echo $2 | sed -e 's%\\/%\\\\%g'`\""
+])
+
+AC_DEFUN([SIM_AC_DODOUBLEBACKSLASH], [
+eval "$1=\"`echo $2 | sed -e 's%\\/%\\\\\\\\\\\\\\\\%g'`\""
+])
 
 
 # Usage:
@@ -1639,10 +1731,9 @@ sim_ac_coin_version=
 : ${sim_ac_coin_desired=true}
 sim_ac_coin_extrapath=
 
-AC_ARG_WITH([coin], AC_HELP_STRING([--without-coin], [disable use of Coin]))
-AC_ARG_WITH([coin], AC_HELP_STRING([--with-coin], [enable use of Coin]))
 AC_ARG_WITH([coin],
-  AC_HELP_STRING([--with-coin=DIR], [give prefix location of Coin]),
+AC_HELP_STRING([--with-coin], [enable use of Coin [[default=yes]]])
+AC_HELP_STRING([--with-coin=DIR], [give prefix location of Coin]),
   [ case $withval in
     no)  sim_ac_coin_desired=false ;;
     yes) sim_ac_coin_desired=true ;;
@@ -1674,11 +1765,13 @@ if $sim_ac_coin_desired; then
       CPPFLAGS="$CPPFLAGS $sim_ac_coin_cppflags"
       LDFLAGS="$LDFLAGS $sim_ac_coin_ldflags"
       LIBS="$sim_ac_coin_libs $LIBS"
+      AC_LANG_PUSH(C++)
       AC_TRY_LINK(
         [#include <Inventor/SoDB.h>],
         [SoDB::init();],
         [sim_cv_coin_avail=true],
         [sim_cv_coin_avail=false])
+      AC_LANG_POP
       CPPFLAGS=$sim_ac_save_cppflags
       LDFLAGS=$sim_ac_save_ldflags
       LIBS=$sim_ac_save_libs

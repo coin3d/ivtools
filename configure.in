@@ -5,11 +5,22 @@
 #  This can be any file in the package.
 AC_INIT(ivcat/ivcat.cpp)
 
-#  Locate C++ compiler and set C++ as the default language to use
-#  in tests. The configure script will automatically terminate if
-#  it doesn't find a C++ compiler.
-AC_PROG_CXX
-AC_LANG_CPLUSPLUS
+# **************************************************************************
+# If the Microsoft Visual C++ cl.exe compiler is available, set us up for
+# compiling with it and to generate an MSWindows .dll file.
+
+# FIXME: replace with the SIM_AC_MSVC_SUPPORT macro as soon as we
+# have converted auxconfig-dir to cfg/m4/. 20001123 mortene.
+
+BUILD_WITH_MSVC=false
+sim_ac_msvccc=`cd $srcdir; pwd`/conf-macros/msvccc
+if test -z "$CC" && test -z "$CXX" && $sim_ac_msvccc >/dev/null 2>&1; then
+  CC=$sim_ac_msvccc
+  CXX=$sim_ac_msvccc
+  export CC CXX
+  BUILD_WITH_MSVC=true
+fi
+AC_SUBST(BUILD_WITH_MSVC)
 
 AM_INIT_AUTOMAKE(IvTools, 0.9)
 
@@ -19,6 +30,13 @@ AM_CONFIG_HEADER(config.h)
 #  Turn off default maintainer make-rules -- use ./bootstrap instead.
 AM_MAINTAINER_MODE
 
+# *******************************************************************
+#  Locate C++ compiler and set C++ as the default language to use
+#  in tests. The configure script will automatically terminate if
+#  it doesn't find a C++ compiler.
+# *******************************************************************
+AC_LANG_CPLUSPLUS
+AC_PROG_CXX
 
 # *******************************************************************
 # ** Check if getopt() is available.
@@ -63,28 +81,39 @@ if test x"$sim_cv_func_isatty_avail" = xyes; then
 fi
 
 
-# *******************************************************************
-# ** Try linking against either libInventor or libCoin.
-# *******************************************************************
+# **************************************************************************
+# Search and set up necessary stuff to use the Inventor implementation.
 
 if test x"$with_inventor" = xyes; then
-  # If we want to compile and link against Inventor, we
+  # If we want to compile and link against InventorXt and Inventor, we
   # need to check for a shitload of libraries.
 
   SIM_AC_CHECK_MATHLIB
   SIM_AC_CHECK_DL
+  SIM_CHECK_X11
+  
+  if test x"$sim_ac_x11_avail" = xyes; then
+    SIM_CHECK_X11SHMEM
+    SIM_CHECK_X11MU
+    SIM_CHECK_X11XID
+    SIM_AC_CHECK_X11_XP
+    SIM_CHECK_X_INTRINSIC
+  fi
   
   SIM_AC_CHECK_OPENGL( , AC_MSG_ERROR(needs an OpenGL-compatible development system installation))
-  SIM_AC_CHECK_GLU( , AC_MSG_ERROR(needs the OpenGL utility library))
-  SIM_CHECK_INVENTOR( , AC_MSG_ERROR(couldn't compile and link against Open Inventor))
-  
-else
+  SIM_AC_CHECK_GLU( , AC_MSG_ERROR(needs the GLU library functions))
+  SIM_AC_HAVE_INVENTOR_IFELSE(
+    [CPPFLAGS="$sim_ac_inventor_cppflags $CPPFLAGS"
+     LDFLAGS="$sim_ac_inventor_ldflags $LDFLAGS"
+     LIBS="$sim_ac_inventor_libs $LIBS"],
+    AC_MSG_ERROR(couldn't compile and link against Open Inventor))
 
-  # Compile and link on top of Coin.
-  SIM_AC_HAVE_COIN_IFELSE(, AC_MSG_ERROR(Couldn't build against Coin library))
-  CPPFLAGS="$CPPFLAGS $sim_ac_coin_cppflags"
-  LDFLAGS="$LDFLAGS $sim_ac_coin_ldflags"
-  LIBS="$LIBS $sim_ac_coin_libs"
+else
+  SIM_AC_HAVE_COIN_IFELSE([
+    CPPFLAGS="$sim_ac_coin_cppflags $CPPFLAGS"
+    LDFLAGS="$sim_ac_coin_ldflags $LDFLAGS"
+    LIBS="$sim_ac_coin_libs $LIBS"
+  ], [AC_MSG_ERROR([cannot compile and link with Coin library])])
 fi
 
 # *******************************************************************

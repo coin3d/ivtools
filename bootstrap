@@ -38,7 +38,7 @@ elif test "$1" = "--add"; then
 fi
 
 # required autoduo tool versions
-AUTOCONF_VER=2.49b   # CVS development version
+AUTOCONF_VER=2.49c   # CVS development version
 AUTOMAKE_VER=1.4a    # CVS development version
 
 echo "Checking the installed configuration tools..."
