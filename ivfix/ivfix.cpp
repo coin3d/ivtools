@@ -150,7 +150,7 @@ main(int argc, char **argv)
 static void
 printUsage(const char *progname)
 {
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
     fprintf(stderr, "Usage: %s [options] [infile] [outfile]\n", progname);
     fprintf(stderr,
 	    "\t-a     : Write out an ascii file.  Default is binary\n"
@@ -181,7 +181,7 @@ parseArgs(int argc, char **argv, OptionInfo &options)
     SbBool uhoh = FALSE;
     int c;
     
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
     while ((c = getopt(argc, argv, "ad:fhnptvV")) != -1) {
 	switch(c) {
 	  case 'a':
@@ -238,7 +238,7 @@ parseArgs(int argc, char **argv, OptionInfo &options)
         }
     }
 
-#if HAVE_ISATTY
+#ifdef HAVE_ISATTY
     // Trying to read stdin from a tty is a no-no
     else if (isatty(fileno(stdin)))
 	uhoh = TRUE;

@@ -31,7 +31,7 @@
 #endif /* HAVE_UNISTD_H */
 
 
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
 /* These two externs are for interfacing against getopt(). */
 extern int optind;
 extern char * optarg;
@@ -41,7 +41,7 @@ extern char * optarg;
 void
 usage(const char * invname)
 {
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
   fprintf(stderr, "\nUsage: %s [-h] <kitclassname>\n\n", invname);
   fprintf(stderr, "\t-h:\tshow usage\n\n");
 #else // !HAVE_GETOPT
@@ -52,7 +52,7 @@ usage(const char * invname)
 int
 main(int argc, char ** argv)
 {
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
   /* Parse command line. */
   int getoptchar;
   while ((getoptchar = getopt(argc, argv, "h")) != EOF) {

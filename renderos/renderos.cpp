@@ -35,7 +35,7 @@
 #include <unistd.h> // getopt()
 #endif /* HAVE_UNISTD_H */
 
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
 /* These two externs are for interfacing against getopt(). */
 extern int optind;
 extern char * optarg;
@@ -45,7 +45,7 @@ extern char * optarg;
 void
 usage(const char * invname)
 {
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
   // FIXME: the -r option is not activated yet (don't know how to have
   // multiple values on an option with getopt(). 20011024 mortene.
 //    fprintf(stderr, "\nUsage: %s [-h] [-x width] [-y height] [-c components] [-r x y z a] <modelfile.iv> <snapshot.rgb>\n\n", invname);
@@ -74,7 +74,7 @@ main(int argc, char ** argv)
   int height = 480;
   SoOffscreenRenderer::Components components = SoOffscreenRenderer::RGB;
 
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
   /* Parse command line. */
   int getoptchar;
   while ((getoptchar = getopt(argc, argv, "?hx:y:c:")) != EOF) {

@@ -34,7 +34,7 @@
 #include <unistd.h> // getopt(), isatty()
 #endif /* HAVE_UNISTD_H */
 
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
 /* These two externs are for interfacing against getopt(). */
 extern int optind;
 extern char * optarg;
@@ -63,7 +63,7 @@ usage(const char * argv_0)
 #endif // !HAVE_GETOPT
 
 
-#if HAVE_ISATTY
+#ifdef HAVE_ISATTY
 #define CHECK_TTY(fileptr) \
   do { \
     if (isatty(fileno(fileptr))) { \
@@ -87,7 +87,7 @@ main(int argc, char * argv[])
   int flattentextures = 0;
   const char * outname = NULL;
 
-#if HAVE_GETOPT
+#ifdef HAVE_GETOPT
   /* Parse command line. */
   int getoptchar;
   while ((getoptchar = getopt(argc, argv, "bftho:")) != EOF) {
