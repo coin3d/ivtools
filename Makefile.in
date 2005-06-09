@@ -115,7 +115,9 @@ sim_ac_coin_configcmd = @sim_ac_coin_configcmd@
 sim_ac_smallchange_configcmd = @sim_ac_smallchange_configcmd@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = ivcat ivfix ivhierarchy ivNodeKitStructure renderos # ivperf
+SUBDIRS = ivcat ivdefaults ivfix ivhierarchy ivNodeKitStructure \
+          renderos # ivperf
+
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/cfg/mkinstalldirs

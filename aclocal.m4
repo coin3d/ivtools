@@ -1331,7 +1331,7 @@ if test x"$with_dl" != xno; then
   # At least under FreeBSD, dlopen() et al is part of the C library.
   # On HP-UX, dlopen() might reside in a library "svld" instead of "dl".
   for sim_ac_dl_libcheck in "" "-ldl" "-lsvld"; do
-    if ! $sim_ac_dl_avail; then
+    if $sim_ac_dl_avail; then :; else
       LIBS="$sim_ac_dl_libcheck $sim_ac_save_libs"
       AC_TRY_LINK([
 #ifdef HAVE_DLFCN_H
@@ -1504,9 +1504,25 @@ fi
 AC_DEFUN([SIM_AC_CHECK_X11], [
 AC_REQUIRE([AC_PATH_XTRA])
 
+sim_ac_enable_darwin_x11=true
+
+case $host_os in
+  darwin* ) 
+    AC_ARG_ENABLE([darwin-x11],
+      AC_HELP_STRING([--enable-darwin-x11],
+                     [enable X11 on Darwin [[default=--disable-darwin-x11]]]),
+      [case "${enableval}" in
+        yes | true) sim_ac_enable_darwin_x11=true ;;
+        no | false) sim_ac_enable_darwin_x11=false ;;
+        *) SIM_AC_ENABLE_ERROR([--enable-darwin-x11]) ;;
+      esac],
+      [sim_ac_enable_darwin_x11=false])
+  ;;
+esac
+
 sim_ac_x11_avail=no
 
-if test x"$no_x" != xyes; then
+if test x"$no_x" != xyes -a x"$sim_ac_enable_darwin_x11" = xtrue; then
   #  *** DEBUG ***
   #  Keep this around, as it can be handy when testing on new systems.
   # echo "X_CFLAGS: $X_CFLAGS"
@@ -1878,49 +1894,6 @@ else
 fi
 ]) # SIM_AC_X11_READY()
 
-
-# **************************************************************************
-
-AC_DEFUN([SIM_AC_HAVE_LIBX11_IFELSE], [
-: ${sim_ac_have_libx11=false}
-AC_REQUIRE([AC_PATH_X])
-
-# prevent multiple runs
-$sim_ac_have_libx11 || {
-  if test x"$no_x" != xyes; then
-    sim_ac_libx11_cppflags=
-    sim_ac_libx11_ldflags=
-    test x"$x_includes" != x && sim_ac_libx11_cppflags="-I$x_includes"
-    test x"$x_libraries" != x && sim_ac_libx11_ldflags="-L$x_libraries"
-    sim_ac_libx11_libs="-lX11"
-
-    sim_ac_libx11_save_cppflags=$CPPFLAGS
-    sim_ac_libx11_save_ldflags=$LDFLAGS
-    sim_ac_libx11_save_libs=$LIBS
-
-    CPPFLAGS="$CPPFLAGS $sim_ac_libx11_cppflags"
-    LDFLAGS="$LDFLAGS $sim_ac_libx11_ldflags"
-    LIBS="$sim_ac_libx11_libs $LIBS"
-
-    AC_TRY_LINK(
-      [#include <X11/Xlib.h>],
-      [(void)XOpenDisplay(0L);],
-      [sim_ac_have_libx11=true])
-
-    CPPFLAGS=$sim_ac_libx11_save_cppflags
-    LDFLAGS=$sim_ac_libx11_save_ldflags
-    LIBS=$sim_ac_libx11_save_libs
-  fi
-}
-
-if $sim_ac_have_libx11; then
-  ifelse([$1], , :, [$1])
-else
-  ifelse([$2], , :, [$2])
-fi
-]) # SIM_AC_HAVE_LIBX11_IFELSE
-
-
 # **************************************************************************
 # SIM_AC_CHECK_HEADER_SILENT([header], [if-found], [if-not-found], [includes])
 # 
@@ -1967,19 +1940,35 @@ if test x"$with_opengl" != x"no"; then
     fi
   fi
 
+  # On Mac OS X, GL is part of the optional X11 fraemwork
+  case $host_os in
+  darwin*)
+    AC_REQUIRE([SIM_AC_CHECK_X11])
+    if test x$sim_ac_enable_darwin_x11 = xtrue; then
+      sim_ac_gl_darwin_x11=/usr/X11R6
+      if test -d $sim_ac_gl_darwin_x11; then
+        sim_ac_gl_cppflags=-I$sim_ac_gl_darwin_x11/include
+      fi
+    fi
+    ;;
+  esac
+
   CPPFLAGS="$CPPFLAGS $sim_ac_gl_cppflags"
 
-  SIM_AC_CHECK_HEADER_SILENT([OpenGL/gl.h], [
-    sim_ac_gl_header_avail=true
-    sim_ac_gl_header=OpenGL/gl.h
-    AC_DEFINE([HAVE_OPENGL_GL_H], 1, [define if the GL header should be included as OpenGL/gl.h])
-  ], [
+  # Mac OS X framework (no X11, -framework OpenGL) 
+  if test x$sim_ac_enable_darwin_x11 = xfalse; then
+    SIM_AC_CHECK_HEADER_SILENT([OpenGL/gl.h], [
+      sim_ac_gl_header_avail=true
+      sim_ac_gl_header=OpenGL/gl.h
+      AC_DEFINE([HAVE_OPENGL_GL_H], 1, [define if the GL header should be included as OpenGL/gl.h])
+    ])
+  else
     SIM_AC_CHECK_HEADER_SILENT([GL/gl.h], [
       sim_ac_gl_header_avail=true
       sim_ac_gl_header=GL/gl.h
       AC_DEFINE([HAVE_GL_GL_H], 1, [define if the GL header should be included as GL/gl.h])
     ])
-  ])
+  fi
 
   CPPFLAGS="$sim_ac_gl_save_CPPFLAGS"
   if $sim_ac_gl_header_avail; then
@@ -2024,20 +2013,36 @@ if test x"$with_opengl" != x"no"; then
     fi
   fi
 
+  # On Mac OS X, GL is part of the optional X11 fraemwork
+  case $host_os in
+  darwin*)
+    AC_REQUIRE([SIM_AC_CHECK_X11])
+    if test x$sim_ac_enable_darwin_x11 = xtrue; then
+      sim_ac_gl_darwin_x11=/usr/X11R6
+      if test -d $sim_ac_gl_darwin_x11; then
+        sim_ac_gl_cppflags=-I$sim_ac_gl_darwin_x11/include
+      fi
+    fi
+    ;;
+  esac
+
   CPPFLAGS="$CPPFLAGS $sim_ac_glu_cppflags"
 
-  SIM_AC_CHECK_HEADER_SILENT([OpenGL/glu.h], [
-    sim_ac_glu_header_avail=true
-    sim_ac_glu_header=OpenGL/glu.h
-    AC_DEFINE([HAVE_OPENGL_GLU_H], 1, [define if the GLU header should be included as OpenGL/glu.h])
-  ], [
+  # Mac OS X framework (no X11, -framework OpenGL) 
+  if test x$sim_ac_enable_darwin_x11 = xfalse; then
+    SIM_AC_CHECK_HEADER_SILENT([OpenGL/glu.h], [
+      sim_ac_glu_header_avail=true
+      sim_ac_glu_header=OpenGL/glu.h
+      AC_DEFINE([HAVE_OPENGL_GLU_H], 1, [define if the GLU header should be included as OpenGL/glu.h])
+    ])
+  else
     SIM_AC_CHECK_HEADER_SILENT([GL/glu.h], [
       sim_ac_glu_header_avail=true
       sim_ac_glu_header=GL/glu.h
       AC_DEFINE([HAVE_GL_GLU_H], 1, [define if the GLU header should be included as GL/glu.h])
     ])
-  ])
-
+  fi
+ 
   CPPFLAGS="$sim_ac_glu_save_CPPFLAGS"
   if $sim_ac_glu_header_avail; then
     if test x"$sim_ac_glu_cppflags" = x""; then
@@ -2081,19 +2086,35 @@ if test x"$with_opengl" != x"no"; then
     fi
   fi
 
+  # On Mac OS X, GL is part of the optional X11 fraemwork
+  case $host_os in
+  darwin*)
+    AC_REQUIRE([SIM_AC_CHECK_X11])
+    if test x$sim_ac_enable_darwin_x11 = xtrue; then
+      sim_ac_gl_darwin_x11=/usr/X11R6
+      if test -d $sim_ac_gl_darwin_x11; then
+        sim_ac_gl_cppflags=-I$sim_ac_gl_darwin_x11/include
+      fi
+    fi
+    ;;
+  esac
+
   CPPFLAGS="$CPPFLAGS $sim_ac_glext_cppflags"
 
-  SIM_AC_CHECK_HEADER_SILENT([OpenGL/glext.h], [
-    sim_ac_glext_header_avail=true
-    sim_ac_glext_header=OpenGL/glext.h
-    AC_DEFINE([HAVE_OPENGL_GLEXT_H], 1, [define if the GLEXT header should be included as OpenGL/glext.h])
-  ], [
-    SIM_AC_CHECK_HEADER_SILENT([GL/gl.h], [
+  # Mac OS X framework (no X11, -framework OpenGL) 
+  if test x$sim_ac_enable_darwin_x11 = xfalse; then
+    SIM_AC_CHECK_HEADER_SILENT([OpenGL/glext.h], [
+      sim_ac_glext_header_avail=true
+      sim_ac_glext_header=OpenGL/glext.h
+      AC_DEFINE([HAVE_OPENGL_GLEXT_H], 1, [define if the GLEXT header should be included as OpenGL/glext.h])
+    ])
+  else
+    SIM_AC_CHECK_HEADER_SILENT([GL/glext.h], [
       sim_ac_glext_header_avail=true
       sim_ac_glext_header=GL/glext.h
       AC_DEFINE([HAVE_GL_GLEXT_H], 1, [define if the GLEXT header should be included as GL/glext.h])
     ])
-  ])
+  fi
 
   CPPFLAGS="$sim_ac_glext_save_CPPFLAGS"
   if $sim_ac_glext_header_avail; then
@@ -2123,17 +2144,19 @@ fi
 #
 #                $sim_ac_ogl_cppflags
 #                $sim_ac_ogl_ldflags
-#                $sim_ac_ogl_libs
+#                $sim_ac_ogl_libs (OpenGL library and all dependencies)
+#                $sim_ac_ogl_lib (basename of OpenGL library)
 #
 # The necessary extra options are also automatically added to CPPFLAGS,
 # LDFLAGS and LIBS.
 #
 # Authors: <larsa@sim.no>, <mortene@sim.no>.
 
-AC_DEFUN(SIM_AC_CHECK_OPENGL, [
+AC_DEFUN([SIM_AC_CHECK_OPENGL], [
 
 sim_ac_ogl_cppflags=
 sim_ac_ogl_ldflags=
+sim_ac_ogl_lib=
 sim_ac_ogl_libs=
 
 AC_ARG_WITH(
@@ -2144,8 +2167,8 @@ AC_ARG_WITH(
   [with_mesa=yes])
 
 
-sim_ac_ogl_glnames="-lGL -lopengl32"
-sim_ac_ogl_mesaglnames=-lMesaGL
+sim_ac_ogl_glnames="GL opengl32"
+sim_ac_ogl_mesaglnames=MesaGL
 
 if test "x$with_mesa" = "xyes"; then
   sim_ac_ogl_first=$sim_ac_ogl_mesaglnames
@@ -2180,8 +2203,16 @@ if test x"$with_opengl" != xno; then
   sim_ac_use_framework_option=false;
   case $host_os in
   darwin*)
-    if test x"$GCC" = x"yes"; then
+    AC_REQUIRE([SIM_AC_CHECK_X11])
+    if test x"$GCC" = x"yes" -a x$sim_ac_enable_darwin_x11 = xfalse; then
       SIM_AC_CC_COMPILER_OPTION([-framework OpenGL], [sim_ac_use_framework_option=true])
+    else
+      # On Mac OS X, OpenGL is installed as part of the optional X11 SDK.
+      sim_ac_gl_darwin_x11=/usr/X11R6
+      if test -d $sim_ac_gl_darwin_x11; then
+        sim_ac_ogl_cppflags=-I$sim_ac_gl_darwin_x11/include
+        sim_ac_ogl_ldflags=-L$sim_ac_gl_darwin_x11/lib
+      fi
     fi
     ;;
   esac
@@ -2190,6 +2221,7 @@ if test x"$with_opengl" != xno; then
     # hopefully, this is the default behavior and not needed. 20011005 larsa
     # sim_ac_ogl_cppflags="-F/System/Library/Frameworks/OpenGL.framework/"
     sim_ac_ogl_ldflags="-Wl,-framework,OpenGL"
+    sim_ac_ogl_lib=OpenGL
   fi
 
   sim_ac_save_cppflags=$CPPFLAGS
@@ -2204,7 +2236,7 @@ if test x"$with_opengl" != xno; then
 
   sim_ac_glchk_hit=false
   for sim_ac_tmp_outerloop in barebones withpthreads; do
-    if ! $sim_ac_glchk_hit; then
+    if $sim_ac_glchk_hit; then :; else
 
       sim_ac_oglchk_pthreadslib=""
       if test "$sim_ac_tmp_outerloop" = "withpthreads"; then
@@ -2222,8 +2254,12 @@ if test x"$with_opengl" != xno; then
       AC_MSG_CHECKING([for OpenGL library dev-kit])
       # Mac OS X uses nada (only LDFLAGS), which is why "" was set first
       for sim_ac_ogl_libcheck in "" $sim_ac_ogl_first $sim_ac_ogl_second; do
-        if ! $sim_ac_glchk_hit; then
-          LIBS="$sim_ac_ogl_libcheck $sim_ac_oglchk_pthreadslib $sim_ac_save_libs"
+        if $sim_ac_glchk_hit; then :; else
+          if test -n "${sim_ac_ogl_libcheck}"; then
+            LIBS="-l${sim_ac_ogl_libcheck} $sim_ac_oglchk_pthreadslib $sim_ac_save_libs"
+          else
+            LIBS="$sim_ac_oglchk_pthreadslib $sim_ac_save_libs"
+          fi
           AC_TRY_LINK(
             [#ifdef HAVE_WINDOWS_H
              #include <windows.h>
@@ -2239,7 +2275,11 @@ if test x"$with_opengl" != xno; then
             [glPointSize(1.0f);],
             [
              sim_ac_glchk_hit=true
-             sim_ac_ogl_libs="$sim_ac_ogl_libcheck $sim_ac_oglchk_pthreadslib"
+             sim_ac_ogl_libs=$sim_ac_oglchk_pthreadslib
+             if test -n "${sim_ac_ogl_libcheck}"; then
+               sim_ac_ogl_lib=$sim_ac_ogl_libcheck
+               sim_ac_ogl_libs="-l${sim_ac_ogl_libcheck} $sim_ac_oglchk_pthreadslib"
+             fi
             ]
           )
         fi
@@ -2451,7 +2491,7 @@ fi
 #
 # Author: Morten Eriksen, <mortene@sim.no>.
 
-AC_DEFUN(SIM_AC_GLU_NURBSOBJECT, [
+AC_DEFUN([SIM_AC_GLU_NURBSOBJECT], [
 AC_CACHE_CHECK(
   [what structure to use in the GLU NURBS interface],
   sim_cv_func_glu_nurbsobject,
@@ -2629,12 +2669,15 @@ sim_ac_agl_ldflags="-Wl,-framework,ApplicationServices -Wl,-framework,AGL"
 
 LDFLAGS="$LDFLAGS $sim_ac_agl_ldflags"
 
+# see comment in Coin/src/glue/gl_agl.c: regarding __CARBONSOUND__ define 
+
 AC_CACHE_CHECK(
   [whether AGL is on the system],
   sim_cv_have_agl,
   AC_TRY_LINK(
     [#include <AGL/agl.h>
-#include <Carbon/Carbon.h>],
+     #define __CARBONSOUND__ 
+     #include <Carbon/Carbon.h>],
     [aglGetCurrentContext();],
     [sim_cv_have_agl=true],
     [sim_cv_have_agl=false]))
@@ -2799,7 +2842,7 @@ if test x"$with_pthread" != xno; then
   AC_MSG_CHECKING([for POSIX threads])
   # At least under FreeBSD, we link to pthreads library with -pthread.
   for sim_ac_pthreads_libcheck in "-lpthread" "-pthread"; do
-    if ! $sim_ac_pthread_avail; then
+    if $sim_ac_pthread_avail; then :; else
       LIBS="$sim_ac_pthreads_libcheck $sim_ac_save_libs"
       AC_TRY_LINK([#include <pthread.h>],
                   [(void)pthread_create(0L, 0L, 0L, 0L);],
@@ -2881,6 +2924,47 @@ else
 fi
 ])
 
+# Usage:
+#  SIM_CHECK_OIV_QT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+#
+#  Try to compile and link against the Qt GUI glue library for
+#  the Open Inventor development system. Sets this shell
+#  variable:
+#
+#    $sim_ac_oivqt_libs     (link libraries the linker needs for InventorQt)
+#
+#  The LIBS variable will also be modified accordingly. In addition,
+#  the variable $sim_ac_oivqt_avail is set to "yes" if the Qt glue
+#  library for the Open Inventor development system is found.
+#
+# Authors:
+#   Morten Eriksen, <mortene@sim.no>.
+#   Lars J. Aas, <larsa@sim.no>.
+#
+
+AC_DEFUN([SIM_CHECK_OIV_QT], [
+sim_ac_oivqt_avail=no
+
+sim_ac_oivqt_libs="-lInventorQt"
+sim_ac_save_libs=$LIBS
+LIBS="$sim_ac_oivqt_libs $LIBS"
+
+AC_CACHE_CHECK([for Qt glue library in the Open Inventor developer kit],
+  sim_cv_lib_oivqt_avail,
+  [AC_TRY_LINK([#include <Inventor/Qt/SoQt.h>],
+               [(void)SoQt::init(0L, 0L);],
+               [sim_cv_lib_oivqt_avail=yes],
+               [sim_cv_lib_oivqt_avail=no])])
+
+if test x"$sim_cv_lib_oivqt_avail" = xyes; then
+  sim_ac_oivqt_avail=yes
+  $1
+else
+  LIBS=$sim_ac_save_libs
+  $2
+fi
+])
+
 # **************************************************************************
 # SIM_AC_WITH_INVENTOR
 # This macro just ensures the --with-inventor option is used.
@@ -2888,8 +2972,8 @@ fi
 AC_DEFUN([SIM_AC_WITH_INVENTOR], [
 : ${sim_ac_want_inventor=false}
 AC_ARG_WITH([inventor],
-  AC_HELP_STRING([--with-inventor], [use another Open Inventor than Coin [[default=no]], with InventorXt])
-AC_HELP_STRING([--with-inventor=PATH], [specify where Open Inventor and InventorXt resides]),
+  AC_HELP_STRING([--with-inventor], [use SGI or TGS Open Inventor rather than Coin [[default=no]]])
+AC_HELP_STRING([--with-inventor=PATH], [specify where SGI or TGS Open Inventor resides]),
   [case "$withval" in
   no)  sim_ac_want_inventor=false ;;
   yes) sim_ac_want_inventor=true
@@ -2900,10 +2984,48 @@ AC_HELP_STRING([--with-inventor=PATH], [specify where Open Inventor and Inventor
 ]) # SIM_AC_WITH_INVENTOR
 
 # **************************************************************************
+# SIM_AC_WITH_INVENTORXT
+# This macro just ensures the --with-inventor-xt option is used.
+
+AC_DEFUN([SIM_AC_WITH_INVENTORXT], [
+: ${sim_ac_want_inventorxt=true}
+AC_ARG_WITH([inventor-xt],
+  AC_HELP_STRING([--with-inventor-xt], [use InventorXt when using SGI or TGS Open Inventor [[default=yes]]])
+AC_HELP_STRING([--with-inventor-xt=PATH], [specify where InventorXt resides]),
+  [case "$withval" in
+  no)  sim_ac_want_inventorxt=false ;;
+  yes) sim_ac_want_inventorxt=true
+       test -n "$OIVHOME" &&
+         SIM_AC_DEBACKSLASH(sim_ac_inventorxt_path, "$OIVHOME") ;;
+  *)   sim_ac_want_inventorxt=true; sim_ac_inventorxt_path="$withval" ;;
+  esac])
+]) # SIM_AC_WITH_INVENTORXT
+
+# **************************************************************************
+# SIM_AC_WITH_INVENTORQT
+# This macro just ensures the --with-inventor-qt option is used.
+
+AC_DEFUN([SIM_AC_WITH_INVENTORQT], [
+: ${sim_ac_want_inventorqt=false}
+AC_ARG_WITH([inventor-qt],
+  AC_HELP_STRING([--with-inventor-qt], [use InventorQt when using SGI or TGS Open Inventor [[default=yes]]])
+AC_HELP_STRING([--with-inventor-qt=PATH], [specify where InventorQt resides]),
+  [case "$withval" in
+  no)  sim_ac_want_inventorqt=false ;;
+  yes) sim_ac_want_inventorqt=true
+       test -n "$OIVHOME" &&
+         SIM_AC_DEBACKSLASH(sim_ac_inventorqt_path, "$OIVHOME") ;;
+  *)   sim_ac_want_inventorqt=true; sim_ac_inventorqt_path="$withval" ;;
+  esac])
+]) # SIM_AC_WITH_INVENTORQT
+
+# **************************************************************************
 # SIM_AC_HAVE_INVENTOR_IMAGE_IFELSE
 
 AC_DEFUN([SIM_AC_HAVE_INVENTOR_IMAGE_IFELSE], [
 AC_REQUIRE([SIM_AC_WITH_INVENTOR])
+AC_REQUIRE([SIM_AC_WITH_INVENTORXT])
+AC_REQUIRE([SIM_AC_WITH_INVENTORQT])
 
 if $sim_ac_want_inventor; then
   sim_ac_inventor_image_save_CPPFLAGS="$CPPFLAGS"
@@ -2951,6 +3073,8 @@ fi
 
 AC_DEFUN([SIM_AC_HAVE_INVENTOR_IFELSE], [
 AC_REQUIRE([SIM_AC_WITH_INVENTOR])
+AC_REQUIRE([SIM_AC_WITH_INVENTORXT])
+AC_REQUIRE([SIM_AC_WITH_INVENTORQT])
 
 if $sim_ac_want_inventor; then
   sim_ac_save_CPPFLAGS="$CPPFLAGS"
@@ -3337,7 +3461,7 @@ if $sim_ac_coin_desired; then
 
   AC_PATH_PROG(sim_ac_coin_configcmd, coin-config, false, $sim_ac_path)
 
-  if ! test "X$sim_ac_coin_configcmd" = "Xfalse"; then
+  if test "X$sim_ac_coin_configcmd" != "Xfalse"; then
     test -n "$CONFIG" &&
       $sim_ac_coin_configcmd --alternate=$CONFIG >/dev/null 2>/dev/null &&
       sim_ac_coin_configcmd="$sim_ac_coin_configcmd --alternate=$CONFIG"
@@ -3382,7 +3506,8 @@ if $sim_ac_coin_desired; then
       LIBS=$sim_ac_save_libs
     ])
     sim_ac_coin_avail=$sim_cv_coin_avail
-    if ! $sim_ac_coin_avail; then
+
+    if $sim_ac_coin_avail; then :; else
       AC_MSG_WARN([
 Compilation and/or linking with the Coin main library SDK failed, for
 unknown reason. If you are familiar with configure-based configuration
@@ -3394,15 +3519,61 @@ describing the situation where this failed.
 ])
     fi
   else # no 'coin-config' found
-    locations=`IFS="${sim_ac_pathsep}"; for p in $sim_ac_path; do echo " -> $p/coin-config"; done`
-    AC_MSG_WARN([cannot find 'coin-config' at any of these locations:
+
+# FIXME: test for Coin without coin-config script here
+    if test x"$COINDIR" != x""; then
+      sim_ac_coindir=`cygpath -u "$COINDIR" 2>/dev/null || echo "$COINDIR"`
+      if test -d $sim_ac_coindir/bin && test -d $sim_ac_coindir/lib && test -d $sim_ac_coindir/include/Inventor; then
+        # using newest version (last alphabetically) in case of multiple libs
+        sim_ac_coin_lib_file=`echo $sim_ac_coindir/lib/coin*.lib | sed -e 's,.* ,,g'`
+        if test -f $sim_ac_coin_lib_file; then
+          sim_ac_coin_lib_name=`echo $sim_ac_coin_lib_file | sed -e 's,.*/,,g' -e 's,.lib,,'`
+          sim_ac_save_cppflags=$CPPFLAGS
+          sim_ac_save_libs=$LIBS
+          sim_ac_save_ldflags=$LDFLAGS
+          CPPFLAGS="$CPPFLAGS -I$sim_ac_coindir/include"
+          if test -f $sim_ac_coindir/bin/$sim_ac_coin_lib_name.dll; then
+            CPPFLAGS="$CPPFLAGS -DCOIN_DLL"
+          fi
+          LDFLAGS="$LDFLAGS -L$sim_ac_coindir/lib"
+          LIBS="-l$sim_ac_coin_lib_name -lopengl32 $LIBS"
+          
+          AC_LANG_PUSH(C++)
+
+          AC_TRY_LINK(
+            [#include <Inventor/SoDB.h>],
+            [SoDB::init();],
+            [sim_cv_coin_avail=true],
+            [sim_cv_coin_avail=false])
+
+          AC_LANG_POP
+          CPPFLAGS=$sim_ac_save_cppflags
+          LDFLAGS=$sim_ac_save_ldflags
+          LIBS=$sim_ac_save_libs
+          sim_ac_coin_avail=$sim_cv_coin_avail
+        fi
+      fi
+    fi
+
+    if $sim_ac_coin_avail; then
+      sim_ac_coin_cppflags=-I$sim_ac_coindir/include
+      if test -f $sim_ac_coindir/bin/$sim_ac_coin_lib_name.dll; then
+        sim_ac_coin_cppflags="$sim_ac_coin_cppflags -DCOIN_DLL"
+      fi
+      sim_ac_coin_ldflags=-L$sim_ac_coindir/lib
+      sim_ac_coin_libs="-l$sim_ac_coin_lib_name -lopengl32"
+      sim_ac_coin_datadir=$sim_ac_coindir/data
+    else
+      locations=`IFS="${sim_ac_pathsep}"; for p in $sim_ac_path; do echo " -> $p/coin-config"; done`
+      AC_MSG_WARN([cannot find 'coin-config' at any of these locations:
 $locations])
-    AC_MSG_WARN([
+      AC_MSG_WARN([
 Need to be able to run 'coin-config' to figure out how to build and link
 against the Coin library. To rectify this problem, you most likely need
 to a) install Coin if it has not been installed, b) add the Coin install
 bin/ directory to your PATH environment variable.
 ])
+    fi
   fi
 fi
 
@@ -3489,7 +3660,7 @@ if $sim_ac_smallchange_desired; then
 
   AC_PATH_PROG(sim_ac_smallchange_configcmd, smallchange-config, false, $sim_ac_path)
 
-  if ! test "X$sim_ac_smallchange_configcmd" = "Xfalse"; then
+  if test "X$sim_ac_smallchange_configcmd" = "Xfalse"; then :; else
     test -n "$CONFIG" &&
       $sim_ac_smallchange_configcmd --alternate=$CONFIG >/dev/null 2>/dev/null &&
       sim_ac_smallchange_configcmd="$sim_ac_smallchange_configcmd --alternate=$CONFIG"
