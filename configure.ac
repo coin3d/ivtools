@@ -142,6 +142,7 @@ AC_OUTPUT([
         Makefile
         ivNodeKitStructure/Makefile
         ivcat/Makefile
+        ivdefaults/Makefile
         ivfix/Makefile
         ivhierarchy/Makefile
         ivperf/Makefile
