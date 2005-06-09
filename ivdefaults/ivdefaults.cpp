@@ -22,12 +22,14 @@
 \**************************************************************************/
 
 #include <stdio.h>
+#include <assert.h>
 #include <Inventor/SoDB.h>
 #include <Inventor/nodekits/SoNodeKit.h>
+#include <Inventor/nodekits/SoBaseKit.h>
 #include <Inventor/SoInteraction.h>
 #include <Inventor/fields/SoFieldContainer.h>
 #include <Inventor/fields/SoField.h>
-#include <Inventor/lists/SoFieldList.h>
+#include <Inventor/SoLists.h>
 
 // *************************************************************************
 
@@ -82,6 +84,17 @@ main(int argc, char ** argv)
         SbName n;
         const SbBool ok = fc->getFieldName(f, n);
         assert(ok);
+
+        if (fc->isOfType(SoBaseKit::getClassTypeId())) {
+          SoBaseKit * bknode = (SoBaseKit *)fc;
+          const SoNodekitCatalog * nkc = bknode->getNodekitCatalog();
+          assert(nkc);
+
+          if (nkc->getPartNumber(n) != SO_CATALOG_NAME_NOT_FOUND) {
+            continue;
+          }
+        }
+
         fprintf(stdout, "        %s ", n.getString());
 
         SbString valuestring;
