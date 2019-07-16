@@ -53,20 +53,21 @@
  _____________________________________________________________
  */
 
+#include <Inventor/@Gui@/So@Gui@.h>
+#include <Inventor/@Gui@/viewers/So@Gui@ExaminerViewer.h>
+
 #include <GL/glx.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include <Inventor/Sb.h>
 #include <Inventor/SbTime.h>
 #include <Inventor/SbViewportRegion.h>
 #include <Inventor/SoDB.h>
 #include <Inventor/SoInteraction.h>
-#include <Inventor/Xt/SoXt.h>
-#include <Inventor/Xt/viewers/SoXtExaminerViewer.h>
 #include <Inventor/actions/SoActions.h>
 #include <Inventor/actions/SoCallbackAction.h>
 #include <Inventor/actions/SoGLRenderAction.h>
@@ -765,7 +766,7 @@ drawBar(float asisTime, float noClearTime, float noMatTime,
     static const char *barYLabels[] = { "seconds/frame" };
     int i;
 
-    Widget barWindow = SoXt::init("Timing display");
+    @WINWIDGET@ barWindow = So@Gui@::init("Timing display");
     
     BarChart::initClass();
 
@@ -806,13 +807,13 @@ drawBar(float asisTime, float noClearTime, float noMatTime,
     bar->yLabelScale.setValue(2, 1, 1);
     bar->zLabelIncrement = asisTime / 4;
 	
-    SoXtExaminerViewer *viewer = new SoXtExaminerViewer(barWindow);
+    So@Gui@ExaminerViewer *viewer = new So@Gui@ExaminerViewer(barWindow);
     viewer->setTitle("Timing Display");
     viewer->setSceneGraph(root);
     viewer->show();
     
-    SoXt::show(barWindow);
-    SoXt::mainLoop(); 
+    So@Gui@::show(barWindow);
+    So@Gui@::mainLoop(); 
 }
 
 
@@ -823,7 +824,7 @@ drawBar(float asisTime, float noClearTime, float noMatTime,
 //    Mainline
 //
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 //
 //////////////////////////////////////////////////////////////
 {
