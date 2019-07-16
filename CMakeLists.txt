@@ -10,6 +10,7 @@ coin_project(ivtools VERSION 1.0.0 DESCRIPTION "Inventor Mentor tools for the Co
 # CMake module includes
 # ############################################################################
 
+include(GNUInstallDirs)
 include(CheckCXXSymbolExists)
 include(CheckIncludeFileCXX)
 
@@ -61,3 +62,7 @@ add_subdirectory(ivfix)
 add_subdirectory(ivhierarchy)
 add_subdirectory(ivperf)
 add_subdirectory(renderos)
+
+############################################################################
+# New CPACK section, please see the README file inside cpack.d directory.
+add_subdirectory(cpack.d)

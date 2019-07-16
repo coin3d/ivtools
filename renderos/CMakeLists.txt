@@ -1,2 +1,1 @@
-add_executable(renderos renderos.cpp)
-target_link_libraries(renderos Coin::Coin)
+add_tool(renderos SRCS renderos.cpp LIBS Coin::Coin)

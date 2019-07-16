@@ -1,2 +1,1 @@
-add_executable(ivcat ivcat.cpp)
-target_link_libraries(ivcat Coin::Coin)
+add_tool(ivcat SRCS ivcat.cpp LIBS Coin::Coin)

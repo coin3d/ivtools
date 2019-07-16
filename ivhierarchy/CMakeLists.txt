@@ -1,2 +1,1 @@
-add_executable(ivhierarchy ivhierarchy.cpp)
-target_link_libraries(ivhierarchy Coin::Coin)
+add_tool(ivhierarchy SRCS ivhierarchy.cpp LIBS Coin::Coin)

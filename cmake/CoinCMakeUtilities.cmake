@@ -38,3 +38,37 @@ function(dump_variable)
     endforeach()
   endif()
 endfunction()
+
+function(add_tool)
+  set(options INCLUDE_CURRENT_DIR)
+  set(oneValueArgs)
+  set(multiValueArgs LIBS SRCS)
+  cmake_parse_arguments(TOOL "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+  set(TOOL_NAME ${TOOL_UNPARSED_ARGUMENTS})
+
+  foreach(FILE ${TOOL_SRCS})
+    string(REGEX MATCH "\.cpp\.in$" MATCH "${FILE}")
+    if (MATCH)
+      string(REGEX REPLACE "\.in$" "" SOURCE "${FILE}")
+      configure_file("${FILE}" "${SOURCE}" @ONLY) 
+      list(REMOVE_ITEM TOOL_SRCS "${FILE}")
+      list(APPEND TOOL_SRCS "${CMAKE_CURRENT_BINARY_DIR}/${SOURCE}")
+    endif()
+  endforeach()
+
+  dump_variable(
+    TOOL_NAME
+    TOOL_INCLUDE_CURRENT_DIR
+    TOOL_LIBS
+    TOOL_SRCS
+  )
+  add_executable(${TOOL_NAME} ${TOOL_SRCS})
+  if (TOOL_INCLUDE_CURRENT_DIR)
+    target_include_directories(${TOOL_NAME} BEFORE PRIVATE 
+      ${CMAKE_CURRENT_SOURCE_DIR} 
+      ${CMAKE_CURRENT_BINARY_DIR}
+    )
+  endif()
+  target_link_libraries(${TOOL_NAME} ${TOOL_LIBS})
+  install(TARGETS ${TOOL_NAME} RUNTIME COMPONENT runtime)
+endfunction(add_tool)

@@ -1,2 +1,1 @@
-add_executable(ivdefaults ivdefaults.cpp)
-target_link_libraries(ivdefaults Coin::Coin)
+add_tool(ivdefaults SRCS ivdefaults.cpp LIBS Coin::Coin)

@@ -1,4 +1,5 @@
-add_executable(ivfix
+add_tool(ivfix 
+SRCS
   IfBuilder.cpp
   IfCondenser.cpp
   IfFlattener.cpp
@@ -16,5 +17,5 @@ add_executable(ivfix
   IfShapeList.cpp  
   IfStripper.cpp  
   IfWeeder.cpp
-)
-target_link_libraries(ivfix Coin::Coin)
+LIBS 
+  Coin::Coin)

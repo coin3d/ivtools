@@ -1,2 +1,1 @@
-add_executable(ivNodeKitStructure ivNodeKitStructure.cpp)
-target_link_libraries(ivNodeKitStructure Coin::Coin)
+add_tool(ivNodeKitStructure SRCS ivNodeKitStructure.cpp LIBS Coin::Coin)
