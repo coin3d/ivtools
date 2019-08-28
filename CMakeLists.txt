@@ -60,7 +60,11 @@ add_subdirectory(ivcat)
 add_subdirectory(ivdefaults)
 add_subdirectory(ivfix)
 add_subdirectory(ivhierarchy)
-add_subdirectory(ivperf)
+if(NOT WIN32)
+  add_subdirectory(ivperf)
+else()
+  message(WARNING "ivperf cannot be compiled (yet) under Windows systems")
+endif()
 add_subdirectory(renderos)
 
 ############################################################################
