@@ -30,13 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
-#include <string.h>
+#include <cstring>
 #include <Inventor/SoDB.h>
 #include <Inventor/nodekits/SoNodeKit.h>
 #include <Inventor/SoInteraction.h>
 #include <Inventor/SoLists.h>
 #include <Inventor/SbPList.h>
-#include <stdio.h>
+#include <cstdio>
 
 const int INDENTSIZE = 2;
 static int indentation;

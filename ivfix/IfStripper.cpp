@@ -189,7 +189,7 @@ IfStripper::createVertexList()
 	curVert->normIndex	= (haveNormals   ?   normalIndices[i] : -1);
 	curVert->texCoordIndex	= (haveTexCoords ? texCoordIndices[i] : -1);
 	curVert->mtlIndex	= (haveMaterials ?      mtlIndices[i] : -1);
-	curVert->uniqueID	= curVert - allVertices;
+	curVert->uniqueID	= (int)(ptrdiff_t)(curVert - allVertices);
 
 	// See if we have any entries at that slot in the table
 	StripVertex *oldVert;
@@ -218,7 +218,7 @@ IfStripper::createVertexList()
 
     // Step 6: The number of vertices we stored is the number of
     // distinct vertices
-    numVertices = curVert - allVertices;
+    numVertices = (int)(ptrdiff_t)(curVert - allVertices);
 
     // Step 7: Copy the distinct vertices into the real array
     vertices = new StripVertex[numVertices];

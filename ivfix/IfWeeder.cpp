@@ -181,7 +181,7 @@ IfWeeder::findMaterialsAndShapes(SoNode *root)
 	// entry
 	void *entryPtr;
 	IfWeederMaterialEntry *entry;
-	if (materialDict.find((unsigned long) material, entryPtr)) {
+	if (materialDict.find((uintptr_t) material, entryPtr)) {
 	    entry = (IfWeederMaterialEntry *) entryPtr;
 	    if (! entry->canWeed)
 		continue;
@@ -190,7 +190,7 @@ IfWeeder::findMaterialsAndShapes(SoNode *root)
 	    entry = new IfWeederMaterialEntry;
 	    entry->material = material;
 	    entry->canWeed  = TRUE;
-	    materialDict.enter((unsigned long) material, entry);
+	    materialDict.enter((uintptr_t) material, entry);
 	    materialList->append(entry);
 	}
 

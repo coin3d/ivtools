@@ -1,1 +1,1 @@
-add_tool(ivhierarchy SRCS ivhierarchy.cpp LIBS Coin::Coin)
+add_tool(ivhierarchy SRCS ivhierarchy.cpp LIBS ${IVTOOLS_ADDITIONAL_LIBRARIES} Coin::Coin)

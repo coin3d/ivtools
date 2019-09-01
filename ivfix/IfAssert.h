@@ -43,7 +43,7 @@
 #ifndef  _IF_ASSERT_
 #define  _IF_ASSERT_
 
-#include <assert.h>
+#include <cassert>
 
 #ifdef DEBUG
 

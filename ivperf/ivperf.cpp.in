@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2000 Silicon Graphics, Inc.  All Rights Reserved. 
+ *  Copyright (C) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -18,18 +18,18 @@
  *  otherwise, applies only to this software file.  Patent licenses, if
  *  any, provided herein do not apply to combinations of this program with
  *  other software, or any other product whatsoever.
- * 
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *  Contact information: Silicon Graphics, Inc., 1600 Amphitheatre Pkwy,
  *  Mountain View, CA  94043, or:
- * 
- *  http://www.sgi.com 
- * 
- *  For further information regarding this notice, see: 
- * 
+ *
+ *  http://www.sgi.com
+ *
+ *  For further information regarding this notice, see:
+ *
  *  http://oss.sgi.com/projects/GenInfo/NoticeExplan/
  *
  */
@@ -43,23 +43,33 @@
  |   $Revision$
  |
  |   Description:
- |	Benchmarks rendering by spinning scene graph.
+ |        Benchmarks rendering by spinning scene graph.
  |      See printUsage() for usage.
- |	Based on older ivRender by Gavin Bell and Paul Strauss
+ |        Based on older ivRender by Gavin Bell and Paul Strauss
  |
- |   Author(s)		: Ajay Sreekanth
+ |   Author(s)                : Ajay Sreekanth
  |
  _________  S I L I C O N   G R A P H I C S   I N C .  _______
  _____________________________________________________________
  */
 
-#include <Inventor/@Gui@/So@Gui@.h>
-#include <Inventor/@Gui@/viewers/So@Gui@ExaminerViewer.h>
+#ifdef WIN32
+#  include <windows.h>
+#else
+#  include <GL/glx.h>
+#  ifdef HAVE_GETOPT
+#    include <getopt.h>
+#  endif
+#endif
+#ifdef HAVE_LOCAL_GETOPT_H
+  #include "getopt.h"
+#endif
 
-#include <GL/glx.h>
-#include <GL/gl.h>
+#include <Inventor/system/gl.h>
 #include <GL/glu.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+  #include <unistd.h>
+#endif
 #include <cstdio>
 #include <cstdlib>
 
@@ -68,6 +78,8 @@
 #include <Inventor/SbViewportRegion.h>
 #include <Inventor/SoDB.h>
 #include <Inventor/SoInteraction.h>
+#include <Inventor/@Gui@/So@Gui@.h>
+#include <Inventor/@Gui@/viewers/So@Gui@ExaminerViewer.h>
 #include <Inventor/actions/SoActions.h>
 #include <Inventor/actions/SoCallbackAction.h>
 #include <Inventor/actions/SoGLRenderAction.h>
@@ -93,44 +105,44 @@
 #include <Inventor/nodes/SoTransform.h>
 
 // default window size
-#define WINDOW_X	400	
-#define WINDOW_Y	400	
+#define WINDOW_X        400
+#define WINDOW_Y        400
 
 // number of frame to draw before autocaching kicks in
 // typically needs only 2 but we use 4 just in case
-#define NUM_FRAMES_AUTO_CACHING	4
+#define NUM_FRAMES_AUTO_CACHING        4
 
-// default number of frames 
-#define NUM_FRAMES	60
+// default number of frames
+#define NUM_FRAMES        60
 
 // the name used in the scene graph to indicate that the application
 // will modify something below this separator
 // the children of these nodes are touched to destroy the caches there
-#define NO_CACHE_NAME	"NoCache"
+#define NO_CACHE_NAME        "NoCache"
 
 // the name of the transformation node added to spin the scene
-#define SCENE_XFORM_NAME   	"SCENE_XFORM_#####"
+#define SCENE_XFORM_NAME     "SCENE_XFORM_#####"
 
 
 struct Options {
     // fields initialized by the user
-    SbBool	showBars;
-    int		numFrames;
-    const char	*inputFileName;
+    SbBool        showBars;
+    int           numFrames;
+    const char    *inputFileName;
     unsigned int windowX, windowY;
     // fields set based on structure of scene graph
-    SbBool	hasLights;
-    SbBool	hasTextures;
+    SbBool        hasLights;
+    SbBool        hasTextures;
     // fields used internally
-    SbBool	noClear;
-    SbBool	noMaterials;
-    SbBool	noTextures;
-    SbBool	oneTexture;
-    SbBool	noXforms;
-    SbBool	noFill;
-    SbBool	noVtxXforms;
-    SbBool	noLights;
-    SbBool	freeze;
+    SbBool        noClear;
+    SbBool        noMaterials;
+    SbBool        noTextures;
+    SbBool        oneTexture;
+    SbBool        noXforms;
+    SbBool        noFill;
+    SbBool        noVtxXforms;
+    SbBool        noLights;
+    SbBool        freeze;
 };
 
 
@@ -142,9 +154,9 @@ struct Options {
 
 static void
 countTriangleCB(void *userData, SoCallbackAction *,
-		const SoPrimitiveVertex *,
-		const SoPrimitiveVertex *,
-		const SoPrimitiveVertex *)
+                const SoPrimitiveVertex *,
+                const SoPrimitiveVertex *,
+                const SoPrimitiveVertex *)
 //
 ////////////////////////////////////////////////////////////////////////
 {
@@ -161,8 +173,8 @@ countTriangleCB(void *userData, SoCallbackAction *,
 
 static void
 countLinesCB(void *userData, SoCallbackAction *,
-		const SoPrimitiveVertex *,
-		const SoPrimitiveVertex *)
+                const SoPrimitiveVertex *,
+                const SoPrimitiveVertex *)
 //
 ////////////////////////////////////////////////////////////////////////
 {
@@ -180,7 +192,7 @@ countLinesCB(void *userData, SoCallbackAction *,
 
 static void
 countPointsCB(void *userData, SoCallbackAction *,
-		const SoPrimitiveVertex *)
+                const SoPrimitiveVertex *)
 //
 ////////////////////////////////////////////////////////////////////////
 {
@@ -197,7 +209,7 @@ countPointsCB(void *userData, SoCallbackAction *,
 
 static SoCallbackAction::Response
 countNodesCB(void *userData, SoCallbackAction *,
-		const SoNode *)
+                const SoNode *)
 //
 ////////////////////////////////////////////////////////////////////////
 {
@@ -218,7 +230,7 @@ countNodesCB(void *userData, SoCallbackAction *,
 
 void
 countPrimitives(SoNode *root, int32_t &numTris, int32_t &numLines, int32_t &numPoints,
-		int32_t &numNodes)
+                int32_t &numNodes)
 //
 ////////////////////////////////////////////////////////////////////////
 {
@@ -226,20 +238,20 @@ countPrimitives(SoNode *root, int32_t &numTris, int32_t &numLines, int32_t &numP
     numLines = 0;
     numPoints = 0;
     numNodes = 0;
-    SoCallbackAction	ca;
+    SoCallbackAction        ca;
 
     ca.addPointCallback(SoShape::getClassTypeId(),
-			   countPointsCB,
-			   (void *) &numPoints);
+                           countPointsCB,
+                           (void *) &numPoints);
     ca.addLineSegmentCallback(SoShape::getClassTypeId(),
-			   countLinesCB,
-			   (void *) &numLines);
+                           countLinesCB,
+                           (void *) &numLines);
     ca.addTriangleCallback(SoShape::getClassTypeId(),
-			   countTriangleCB,
-			   (void *) &numTris);
+                           countTriangleCB,
+                           (void *) &numTris);
     ca.addPreCallback( SoNode::getClassTypeId(),
-			countNodesCB, (void *)&numNodes
-		    );
+                        countNodesCB, (void *)&numNodes
+                    );
     ca.apply(root);
 }
 
@@ -255,65 +267,67 @@ parseArgs(int argc, char *argv[], Options &options)
 //
 //////////////////////////////////////////////////////////////
 {
-    SbBool	ok = TRUE;
-    int		c, curArg;
+    SbBool        ok = TRUE;
+    int           c, curArg;
 
     // Initialize options
-    options.showBars		= FALSE;
-    options.numFrames		= NUM_FRAMES;
-    options.inputFileName	= NULL;
-    options.windowX		= WINDOW_X;
-    options.windowY		= WINDOW_Y;
-    options.hasLights		= FALSE;
-    options.hasTextures		= FALSE;
-    options.noClear		= FALSE;
-    options.noMaterials		= FALSE;
-    options.noTextures		= FALSE;
-    options.oneTexture		= FALSE;
-    options.noXforms		= FALSE;
-    options.noFill		= FALSE;
-    options.noVtxXforms		= FALSE;
-    options.freeze		= FALSE;
-    options.noLights		= FALSE;
+    options.showBars            = FALSE;
+    options.numFrames           = NUM_FRAMES;
+    options.inputFileName       = NULL;
+    options.windowX             = WINDOW_X;
+    options.windowY             = WINDOW_Y;
+    options.hasLights           = FALSE;
+    options.hasTextures         = FALSE;
+    options.noClear             = FALSE;
+    options.noMaterials         = FALSE;
+    options.noTextures          = FALSE;
+    options.oneTexture          = FALSE;
+    options.noXforms            = FALSE;
+    options.noFill              = FALSE;
+    options.noVtxXforms         = FALSE;
+    options.freeze              = FALSE;
+    options.noLights            = FALSE;
 
     while ((c = getopt(argc, argv, "bf:w:")) != -1) {
-	switch (c) {
-	  case 'b':
-	    options.showBars = TRUE;
-	    break;
-	  case 'f':
-	    options.numFrames = atoi(optarg);
-	    break;
-	  case 'w':
-	    sscanf(optarg, " %d , %d", &options.windowX, &options.windowY);
-	    break;
-	  default:
-	    ok = FALSE;
-	    break;
-	}
+        switch (c) {
+          case 'b':
+            options.showBars = TRUE;
+            break;
+          case 'f':
+            options.numFrames = atoi(optarg);
+            break;
+          case 'w':
+            sscanf(optarg, " %d , %d", &options.windowX, &options.windowY);
+            break;
+          default:
+            ok = FALSE;
+            break;
+        }
     }
 
     curArg = optind;
 
     // Check for input filename at end
     if (curArg < argc)
-	options.inputFileName = argv[curArg++];
+        options.inputFileName = argv[curArg++];
 
     // Not enough or extra arguments? Error!
     if (options.inputFileName == NULL || curArg < argc)
-	ok = FALSE;
+        ok = FALSE;
 
     // Report options and file names
     if (ok) {
-	printf("\n");
-	system("hinv -c processor"); printf("\n");
-	system("hinv -t memory"); printf("\n");
-	system("hinv -c graphics"); printf("\n");
-	printf("Reading graph from %s\n", options.inputFileName);
-	printf("Number of frames: %d\n", options.numFrames);
-	printf("Window size: %d x %d pixels\n", options.windowX, 
-	       options.windowY);
-	printf("\n");
+        printf("\n");
+#ifdef __sgi
+        system("hinv -c processor"); printf("\n");
+        system("hinv -t memory"); printf("\n");
+        system("hinv -c graphics"); printf("\n");
+#endif
+        printf("Reading graph from %s\n", options.inputFileName);
+        printf("Number of frames: %d\n", options.numFrames);
+        printf("Window size: %d x %d pixels\n", options.windowX,
+               options.windowY);
+        printf("\n");
     }
 
     return ok;
@@ -325,14 +339,36 @@ parseArgs(int argc, char *argv[], Options &options)
 //    Callback used by openWindow() and by main()
 //
 
+#ifndef WIN32
 static Bool
 waitForNotify(Display *, XEvent *e, char *arg)
 //
 //////////////////////////////////////////////////////////////
 {
     return ((e->type == MapNotify) || (e->type == UnmapNotify)) &&
-	(e->xmap.window == (Window) arg);
+        (e->xmap.window == (Window) arg);
 }
+#else // WIN32
+#define ERROR_RETURN(funcname) {                          \
+    DWORD error = GetLastError();                         \
+    fprintf(stderr, "*** %s failed, error = %d (0x%x)\n", \
+            funcname, error, error);                      \
+    return;                                               \
+}
+
+//
+////////////////////////////////////////////////////////////////////////
+LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
+                         WPARAM wParam, LPARAM lParam)
+{
+    switch (message) {
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+    }
+    return DefWindowProc(hwnd, message, wParam, lParam);
+}
+#endif // WIN32
 
 //////////////////////////////////////////////////////////////
 //
@@ -341,42 +377,135 @@ waitForNotify(Display *, XEvent *e, char *arg)
 //
 
 static void
-openWindow(Display *&display, Window &window, unsigned int windowX,
-	   unsigned int windowY, char *title)
+openWindow(@GUIDISPLAY@ &display, @GUIWINDOW@ &window, unsigned int windowX,
+           unsigned int windowY, char *title)
 //
 //////////////////////////////////////////////////////////////
 {
-    XVisualInfo			*vi;
-    Colormap			cmap;
-    XSetWindowAttributes	swa;
-    GLXContext			cx;
-    XEvent			event;
-    static int			attributeList[] = {
-	GLX_RGBA,
-	GLX_RED_SIZE, 1,
-	GLX_GREEN_SIZE, 1,
-	GLX_BLUE_SIZE, 1,
-	GLX_DEPTH_SIZE, 1,
-	None,		// May be replaced w/GLX_DOUBLEBUFFER
-	None,
+#ifdef WIN32
+    // Register class for OpenGL window
+    WNDCLASS wndclass;
+    wndclass.style = CS_HREDRAW | CS_VREDRAW;
+    wndclass.lpfnWndProc = WndProc;
+    wndclass.cbClsExtra = 0;
+    wndclass.cbWndExtra = 0;
+    wndclass.hInstance = GetModuleHandle(NULL);
+    wndclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    wndclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wndclass.hbrBackground = NULL;
+    wndclass.lpszMenuName = NULL;
+    wndclass.lpszClassName = "ivperf class";
+
+    ATOM result = RegisterClass(&wndclass);
+    if (result == 0)
+        ERROR_RETURN("RegisterClass");
+
+    // Create window for OpenGL queries
+    // Note: WS_CLIPxxx are required for MS-OpenGL to work...
+    HMODULE hApp = GetModuleHandle(NULL);
+    HWND hwnd = CreateWindow("ivperf class",
+                             title,
+                             WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+                             10,                    // X position
+                             10,                    // Y position
+                             windowX,               // Width
+                             windowY,               // Height
+                             NULL,                  // Parent
+                             NULL,                  // Menu
+                             hApp,                  // App instance handle
+                             NULL);                 // Window creation data
+    if (hwnd == NULL)
+        ERROR_RETURN("CreateWindow");
+
+    // Make window visible
+    ShowWindow(hwnd, SW_SHOWNORMAL);
+
+    // Get device context for OpenGL window
+    HDC hdc = GetDC(hwnd);
+
+    // Setup pixel format descriptor
+    // Shouldn't matter exactly what we use here, but these are the
+    // default values used by Inventor.
+    PIXELFORMATDESCRIPTOR pfd = {0};
+    pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+    pfd.nVersion = 1;
+    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL /*| PFD_DOUBLEBUFFER*/ | PFD_GENERIC_ACCELERATED;
+    pfd.iPixelType = PFD_TYPE_RGBA;
+    pfd.cColorBits = 32;
+    //pfd.cRedBits = 8;
+    //pfd.cRedShift = 0;
+    //pfd.cGreenBits = 8;
+    //pfd.cGreenShift = 0;
+    //pfd.cBlueBits = 8;
+    //pfd.cBlueShift = 0;
+    //pfd.cAlphaBits = 8;
+    //pfd.cAlphaShift = 0;
+    //pfd.cAccumBits = 64;
+    //pfd.cAccumRedBits = 16;
+    //pfd.cAccumGreenBits = 16;
+    //pfd.cAccumBlueBits = 16;
+    //pfd.cAccumAlphaBits = 16;
+    pfd.cDepthBits = 24;
+    //pfd.cStencilBits = 1;
+    pfd.cAuxBuffers = 0;
+    pfd.iLayerType = PFD_MAIN_PLANE;
+    pfd.bReserved = 0;
+    pfd.dwLayerMask = 0;
+    pfd.dwVisibleMask = 0;
+    pfd.dwDamageMask = 0;
+
+    // Get a pixel format
+    int pixelformat = ChoosePixelFormat(hdc, &pfd);
+    if (pixelformat == 0)
+        ERROR_RETURN("ChoosePixelFormat");
+
+    // Set the pixel format
+    if (SetPixelFormat(hdc, pixelformat, &pfd) == FALSE)
+        ERROR_RETURN("SetPixelFormat");
+
+    // Create an OpenGL render context
+    HGLRC ctx = wglCreateContext(hdc);
+    if (ctx == NULL)
+        ERROR_RETURN("wglCreateContext");
+
+    // Make OpenGL context current
+    if (!wglMakeCurrent(hdc, ctx))
+        ERROR_RETURN("wglMakeCurrent");
+
+    window = hwnd;
+
+#else //Motif
+    XVisualInfo                 *vi;
+    Colormap                    cmap;
+    XSetWindowAttributes        swa;
+    GLXContext                  cx;
+    XEvent                      event;
+    static int                  attributeList[] = {
+        GLX_RGBA,
+        GLX_RED_SIZE, 1,
+        GLX_GREEN_SIZE, 1,
+        GLX_BLUE_SIZE, 1,
+        GLX_DEPTH_SIZE, 1,
+        None,                // May be replaced w/GLX_DOUBLEBUFFER
+        None,
     };
 
     display = XOpenDisplay(0);
     vi   = glXChooseVisual(display,
-			   DefaultScreen(display),
-			   attributeList);
+                           DefaultScreen(display),
+                           attributeList);
     cx   = glXCreateContext(display, vi, 0, GL_TRUE);
     cmap = XCreateColormap(display,
-			   RootWindow(display, vi->screen),
-			   vi->visual, AllocNone);
-    swa.colormap	= cmap;
-    swa.border_pixel	= 0;
-    swa.event_mask	= StructureNotifyMask;
+                           RootWindow(display, vi->screen),
+                           vi->visual, AllocNone);
+    swa.colormap        = cmap;
+    swa.border_pixel        = 0;
+    swa.event_mask        = StructureNotifyMask;
     window = XCreateWindow(display,
-	   RootWindow(display, vi->screen),
-	   10, 10, windowX, windowY,
-	   0, vi->depth, InputOutput, vi->visual,
-	   (CWBorderPixel | CWColormap | CWEventMask), &swa);
+           RootWindow(display, vi->screen),
+           10, 10, windowX, windowY,
+           0, vi->depth, InputOutput, vi->visual,
+           (CWBorderPixel | CWColormap | CWEventMask), &swa);
 
     // Make the window appear in the lower left corner
     XSizeHints *xsh = XAllocSizeHints();
@@ -388,10 +517,11 @@ openWindow(Display *&display, Window &window, unsigned int windowX,
     XMapWindow(display, window);
     XIfEvent(display, &event, waitForNotify, (char *) window);
     glXMakeCurrent(display, window, cx);
+#endif //WIN32
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.5, 0.5, 0.5, 1);
-    
+
     // clear the graphics window and depth planes
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -407,8 +537,8 @@ openWindow(Display *&display, Window &window, unsigned int windowX,
 
 static SoSeparator *
 setUpGraph(const SbViewportRegion &vpReg,
-	   SoInput *sceneInput,
-	   Options &options)
+           SoInput *sceneInput,
+           Options &options)
 //
 //////////////////////////////////////////////////////////////
 {
@@ -432,51 +562,51 @@ setUpGraph(const SbViewportRegion &vpReg,
     // Read and add input scene graph
     SoSeparator *inputRoot = SoDB::readAll(sceneInput);
     if (inputRoot == NULL) {
-	fprintf(stderr, "Cannot read scene graph\n");
-	root->unref();
-	exit(1);
+        fprintf(stderr, "Cannot read scene graph\n");
+        root->unref();
+        exit(1);
     }
     root->addChild(inputRoot);
 
-    SoPath 	*path;
-    SoGroup	*parent, *group;
-    SoSearchAction	act;
+    SoPath         *path;
+    SoGroup        *parent, *group;
+    SoSearchAction act;
 
     // expand out all File nodes and replace them with groups
     //    containing the children
-    SoFile 	*fileNode;
+    SoFile         *fileNode;
     act.setType(SoFile::getClassTypeId());
     act.setInterest(SoSearchAction::FIRST);
     act.apply(inputRoot);
     while ((path = act.getPath()) != NULL) {
-	fileNode = (SoFile *) path->getTail();
-	path->pop();
-	parent = (SoGroup *) path->getTail();
-	group = fileNode->copyChildren();
-	if (group) {
-	    parent->replaceChild(fileNode, group);
-	    // apply action again and continue
-	    act.apply(inputRoot);
-	}
+        fileNode = (SoFile *) path->getTail();
+        path->pop();
+        parent = (SoGroup *) path->getTail();
+        group = fileNode->copyChildren();
+        if (group) {
+            parent->replaceChild(fileNode, group);
+            // apply action again and continue
+            act.apply(inputRoot);
+        }
     }
 
     // expand out all node kits and replace them with groups
     //    containing the children
-    SoBaseKit	*kitNode;
-    SoChildList	*childList;
+    SoBaseKit        *kitNode;
+    SoChildList        *childList;
     act.setType(SoBaseKit::getClassTypeId());
     act.setInterest(SoSearchAction::FIRST);
     act.apply(inputRoot);
     while ((path = act.getPath()) != NULL) {
-	kitNode = (SoBaseKit *) path->getTail();
-	path->pop();
-	parent = (SoGroup *) path->getTail();
-	group = new SoGroup;
-	childList = kitNode->getChildren();
-	for (int i=0; i<childList->getLength(); i++) 
-	    group->addChild((*childList)[i]);
-	parent->replaceChild(kitNode, group);
-	act.apply(inputRoot);
+        kitNode = (SoBaseKit *) path->getTail();
+        path->pop();
+        parent = (SoGroup *) path->getTail();
+        group = new SoGroup;
+        childList = kitNode->getChildren();
+        for (int i=0; i<childList->getLength(); i++)
+            group->addChild((*childList)[i]);
+        parent->replaceChild(kitNode, group);
+        act.apply(inputRoot);
     }
 
     // check to see if there are any lights
@@ -485,18 +615,18 @@ setUpGraph(const SbViewportRegion &vpReg,
     act.setInterest(SoSearchAction::FIRST);
     act.apply(inputRoot);
     if (act.getPath() == NULL) { // no lights
-	SoDirectionalLight *light = new SoDirectionalLight;
-	root->insertChild(light, 1);
+        SoDirectionalLight *light = new SoDirectionalLight;
+        root->insertChild(light, 1);
     }
-    else 
-	options.hasLights = TRUE;
+    else
+        options.hasLights = TRUE;
 
     // check to see if there are any texures in the scene
     act.setType(SoTexture2::getClassTypeId());
     act.setInterest(SoSearchAction::FIRST);
     act.apply(inputRoot);
     if (act.getPath() != NULL)
-	options.hasTextures = TRUE;
+        options.hasTextures = TRUE;
 
     camera->viewAll(root, vpReg);
 
@@ -511,7 +641,7 @@ setUpGraph(const SbViewportRegion &vpReg,
 
     // Make the center of rotation the center of
     // the scene
-    SoGetBoundingBoxAction	bba(vpReg);
+    SoGetBoundingBoxAction        bba(vpReg);
     bba.apply(root);
     sceneTransform->center = bba.getBoundingBox().getCenter();
 
@@ -536,22 +666,22 @@ replaceSeparators(SoNode *root)
     //  children over
     //
     if (root->isOfType(SoGroup::getClassTypeId())) {
-	SoGroup *group = (SoGroup *) root;
+        SoGroup *group = (SoGroup *) root;
         SoGroup *newGroup = (SoGroup *) group->getTypeId().createInstance();
         newGroup->SoNode::copyContents(group, FALSE);
 
-	int	i;
-	for (i=0; i<group->getNumChildren(); i++) {
-	    SoNode *child = replaceSeparators(group->getChild(i));
-	    newGroup->addChild(child);
-	}
-	return newGroup;
+        int        i;
+        for (i=0; i<group->getNumChildren(); i++) {
+            SoNode *child = replaceSeparators(group->getChild(i));
+            newGroup->addChild(child);
+        }
+        return newGroup;
     }
     //
     // if not a group, return the node
     //
-    else 
-	return root;
+    else
+        return root;
 }
 
 //////////////////////////////////////////////////////////////
@@ -571,10 +701,10 @@ removeNodes(SoGroup *root, SoType type)
     act.apply(root);
     SoPathList &paths = act.getPaths();
     for (int i = 0; i < paths.getLength(); i++) {
-	SoNode *kid = paths[i]->getTail();
-	paths[i]->pop();
-	SoGroup *parent = (SoGroup *)paths[i]->getTail();
-	parent->removeChild(kid);
+        SoNode *kid = paths[i]->getTail();
+        paths[i]->pop();
+        SoGroup *parent = (SoGroup *)paths[i]->getTail();
+        parent->removeChild(kid);
     }
 }
 
@@ -590,37 +720,37 @@ printUsage(const char *progName)
 //////////////////////////////////////////////////////////////
 {
     fprintf(stderr,
-	    "Usage: %s [-b] [-f N] [-w X,Y] datafile\n",
-	    progName);
+            "Usage: %s [-b] [-f N] [-w X,Y] datafile\n",
+            progName);
     fprintf(stderr,
-	    "\t-b      display results as bar chart\n"
-	    "\t-f N    render N frames for each test\n"
-	    "\t-w X,Y  make window size X by Y pixels\n");
+            "\t-b      display results as bar chart\n"
+            "\t-f N    render N frames for each test\n"
+            "\t-w X,Y  make window size X by Y pixels\n");
 }
 
 
 //////////////////////////////////////////////////////////////
 //
 // Description:
-//    Returns the time taken PER FRAME to render the scene 
+//    Returns the time taken PER FRAME to render the scene
 //    graph anchored at root
 //    Different types of rendering performance are measured
 //    depending on options
-//    
+//
 
 static float
 timeRendering(Options &options,
-	      const SbViewportRegion &vpr,
-	      SoSeparator *&root)
+              const SbViewportRegion &vpr,
+              SoSeparator *&root)
 //
 //////////////////////////////////////////////////////////////
 {
-    SbTime 		timeDiff, startTime;
-    int 		frameIndex;
-    SoTransform		*sceneTransform;
-    SoGLRenderAction 	ra(vpr);
-    SoNodeList		noCacheList;
-    SoSeparator 	*newRoot;
+    SbTime                 timeDiff, startTime;
+    int                 frameIndex;
+    SoTransform                *sceneTransform;
+    SoGLRenderAction         ra(vpr);
+    SoNodeList                noCacheList;
+    SoSeparator         *newRoot;
 
     // clear the window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -638,107 +768,107 @@ timeRendering(Options &options,
     newRoot->getByName(NO_CACHE_NAME, noCacheList);
 
     // find the transform node that spins the scene
-    SoNodeList	xformList;
+    SoNodeList        xformList;
     newRoot->getByName(SCENE_XFORM_NAME, xformList);
     sceneTransform = (SoTransform *) xformList[0];
 
     if (options.noMaterials) {  // nuke material node
-	removeNodes(newRoot, SoMaterial::getClassTypeId());
-	removeNodes(newRoot, SoPackedColor::getClassTypeId());
-	removeNodes(newRoot, SoBaseColor::getClassTypeId());
+        removeNodes(newRoot, SoMaterial::getClassTypeId());
+        removeNodes(newRoot, SoPackedColor::getClassTypeId());
+        removeNodes(newRoot, SoBaseColor::getClassTypeId());
     }
 
     if (options.noXforms) {  // nuke transforms
-	removeNodes(newRoot, SoTransformation::getClassTypeId());
+        removeNodes(newRoot, SoTransformation::getClassTypeId());
     }
 
     if (options.noTextures || options.oneTexture) {  // override texture node
 
-	removeNodes(newRoot, SoTexture2::getClassTypeId());
+        removeNodes(newRoot, SoTexture2::getClassTypeId());
 
-	if (options.oneTexture) {
-	    // texture node with simple texture
-	    static unsigned char img[] = {
-		255, 255, 0, 0,
-		255, 255, 0, 0,
-		0, 0, 255, 255,
-		0, 0, 255, 255
-		};
-	    SoTexture2 *overrideTex = new SoTexture2;	
-	    overrideTex->image.setValue(SbVec2s(4, 4), 1, img);
-	    newRoot->insertChild(overrideTex, 1);
-	}
+        if (options.oneTexture) {
+            // texture node with simple texture
+            static unsigned char img[] = {
+                255, 255, 0, 0,
+                255, 255, 0, 0,
+                0, 0, 255, 255,
+                0, 0, 255, 255
+                };
+            SoTexture2 *overrideTex = new SoTexture2;
+            overrideTex->image.setValue(SbVec2s(4, 4), 1, img);
+            newRoot->insertChild(overrideTex, 1);
+        }
     }
 
     if (options.noFill) {  // draw as points
-	SoDrawStyle *overrideFill = new SoDrawStyle;
-	overrideFill->style.setValue(SoDrawStyle::POINTS);
-	overrideFill->lineWidth.setIgnored(TRUE);
-	overrideFill->linePattern.setIgnored(TRUE);
-	overrideFill->setOverride(TRUE);
-	newRoot->insertChild(overrideFill, 0);
+        SoDrawStyle *overrideFill = new SoDrawStyle;
+        overrideFill->style.setValue(SoDrawStyle::POINTS);
+        overrideFill->lineWidth.setIgnored(TRUE);
+        overrideFill->linePattern.setIgnored(TRUE);
+        overrideFill->setOverride(TRUE);
+        newRoot->insertChild(overrideFill, 0);
 
-	// cull backfaces so that extra points don't get drawn
-	SoShapeHints *cullBackfaces = new SoShapeHints;
-	cullBackfaces->shapeType = SoShapeHints::SOLID;
-	cullBackfaces->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
-	cullBackfaces->setOverride(TRUE);
-	newRoot->insertChild(cullBackfaces, 0);
+        // cull backfaces so that extra points don't get drawn
+        SoShapeHints *cullBackfaces = new SoShapeHints;
+        cullBackfaces->shapeType = SoShapeHints::SOLID;
+        cullBackfaces->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
+        cullBackfaces->setOverride(TRUE);
+        newRoot->insertChild(cullBackfaces, 0);
     }
 
     if (options.noVtxXforms) {  // draw invisible
-	SoDrawStyle *overrideVtxXforms = new SoDrawStyle;
-	overrideVtxXforms->style.setValue(SoDrawStyle::INVISIBLE);
-	overrideVtxXforms->setOverride(TRUE);
-	newRoot->insertChild(overrideVtxXforms, 0);
+        SoDrawStyle *overrideVtxXforms = new SoDrawStyle;
+        overrideVtxXforms->style.setValue(SoDrawStyle::INVISIBLE);
+        overrideVtxXforms->setOverride(TRUE);
+        newRoot->insertChild(overrideVtxXforms, 0);
     }
 
     if (options.noLights) {  // set lighting model to base color
-	SoLightModel *baseColor = new SoLightModel;
-	baseColor->model = SoLightModel::BASE_COLOR;
-	newRoot->insertChild(baseColor, 0);
+        SoLightModel *baseColor = new SoLightModel;
+        baseColor->model = SoLightModel::BASE_COLOR;
+        newRoot->insertChild(baseColor, 0);
     }
- 
+
     for (frameIndex = 0; ; frameIndex++) {
 
-	// wait till autocaching has kicked in then start timing
-	if (frameIndex == NUM_FRAMES_AUTO_CACHING)
-	    startTime = SbTime::getTimeOfDay();
+        // wait till autocaching has kicked in then start timing
+        if (frameIndex == NUM_FRAMES_AUTO_CACHING)
+            startTime = SbTime::getTimeOfDay();
 
-	// stop timing and exit loop when requisite number of
-	//    frames have been drawn
-	if (frameIndex == options.numFrames + NUM_FRAMES_AUTO_CACHING) {
-	    glFinish();
-	    timeDiff = SbTime::getTimeOfDay() - startTime;
-	    break;
-	}
-	    
-	// if not frozen, update realTime and destroy labelled caches
-	if (! options.freeze) { 
+        // stop timing and exit loop when requisite number of
+        //    frames have been drawn
+        if (frameIndex == options.numFrames + NUM_FRAMES_AUTO_CACHING) {
+            glFinish();
+            timeDiff = SbTime::getTimeOfDay() - startTime;
+            break;
+        }
 
-	    // update realTime 
-	    SoSFTime *realTime = (SoSFTime *) SoDB::getGlobalField("realTime");
-	    realTime->setValue(SbTime::getTimeOfDay());
+        // if not frozen, update realTime and destroy labelled caches
+        if (! options.freeze) {
 
-	    // touch the separators marked NoCache 
-	    for (int i=0; i<noCacheList.getLength(); i++)
-		((SoSeparator *) noCacheList[i])->getChild(0)->touch();
-	}
+            // update realTime
+            SoSFTime *realTime = (SoSFTime *) SoDB::getGlobalField("realTime");
+            realTime->setValue(SbTime::getTimeOfDay());
 
-	// Rotate the scene
-	sceneTransform->rotation.setValue(SbVec3f(1, 1, 1), 
-                           frameIndex * 2 * M_PI / options.numFrames);
+            // touch the separators marked NoCache
+            for (int i=0; i<noCacheList.getLength(); i++)
+                ((SoSeparator *) noCacheList[i])->getChild(0)->touch();
+        }
 
-	if (! options.noClear)
-	    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Rotate the scene
+        sceneTransform->rotation.setValue(SbVec3f(1, 1, 1),
+                           frameIndex * 2 * float(M_PI) / options.numFrames);
 
-	ra.apply(newRoot);
+        if (! options.noClear)
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        ra.apply(newRoot);
     }
 
     // Get rid of newRoot
     newRoot->unref();
 
-    return (timeDiff.getValue() / options.numFrames);
+    return float(timeDiff.getValue() / options.numFrames);
 }
 
 
@@ -753,21 +883,21 @@ timeRendering(Options &options,
 
 static void
 drawBar(float asisTime, float noClearTime, float noMatTime,
-	float noXformTime, float noTexTime, float oneTexTime,
-	float noLitTime, float ptsTime, float invisTime, float freezeTime)
+        float noXformTime, float noTexTime, float oneTexTime,
+        float noLitTime, float ptsTime, float invisTime, float freezeTime)
 //
 //////////////////////////////////////////////////////////////
 {
     float barValues[10];
-    static const char *barXLabels[] = { "Total", "Clear", "Trav", 
-				  "Mat", "Xform", "Tex",
-				  "TMgmt", "Lit", "Pipe",
-				  "Fill" };
+    static const char *barXLabels[] = { "Total", "Clear", "Trav",
+                                  "Mat", "Xform", "Tex",
+                                  "TMgmt", "Lit", "Pipe",
+                                  "Fill" };
     static const char *barYLabels[] = { "seconds/frame" };
     int i;
 
     @WINWIDGET@ barWindow = So@Gui@::init("Timing display");
-    
+
     BarChart::initClass();
 
     SoSeparator *root = new SoSeparator;
@@ -792,9 +922,9 @@ drawBar(float asisTime, float noClearTime, float noMatTime,
     barValues[9] = asisTime - ptsTime;
 
     for (i=1; i<10; i++) {
-	bar->valueColors.set1Value(i, 1, 1, 0, 0);
-	bar->xLabelColors.set1Value(i, 1, 1, 0, 0);
-	if (barValues[i] < 0) barValues[i] = 0;
+        bar->valueColors.set1Value(i, 1, 1, 0, 0);
+        bar->xLabelColors.set1Value(i, 1, 1, 0, 0);
+        if (barValues[i] < 0) barValues[i] = 0;
     }
     bar->values.setValues(0, 10, barValues);
     bar->xLabels.setValues(0, 10, barXLabels);
@@ -803,17 +933,17 @@ drawBar(float asisTime, float noClearTime, float noMatTime,
     bar->yDimension = 1;
     bar->minValue = 0.0;
     bar->maxValue = asisTime;
-    bar->xLabelScale.setValue(0.6, 1, 1);
+    bar->xLabelScale.setValue(0.6f, 1, 1);
     bar->yLabelScale.setValue(2, 1, 1);
     bar->zLabelIncrement = asisTime / 4;
-	
+
     So@Gui@ExaminerViewer *viewer = new So@Gui@ExaminerViewer(barWindow);
     viewer->setTitle("Timing Display");
     viewer->setSceneGraph(root);
     viewer->show();
-    
+
     So@Gui@::show(barWindow);
-    So@Gui@::mainLoop(); 
+    So@Gui@::mainLoop();
 }
 
 
@@ -828,11 +958,11 @@ int main(int argc, char **argv)
 //
 //////////////////////////////////////////////////////////////
 {
-    Options		options;
-    SoSeparator		*root;
-    Display		*display;
-    Window		window;
-    float		asisTime, ptsTime, invisTime, freezeTime,
+    Options             options;
+    SoSeparator         *root;
+    @GUIDISPLAY@        display;
+    @GUIWINDOW@         window;
+    float               asisTime, ptsTime, invisTime, freezeTime,
                         noMatTime, noTexTime, noLitTime, noXformTime,
                         noClearTime, oneTexTime;
 
@@ -841,16 +971,17 @@ int main(int argc, char **argv)
 
     // Parse arguments
     if (! parseArgs(argc, argv, options)) {
-	printUsage(argv[0]);
-	return 1;
+        printUsage(argv[0]);
+        return 1;
     }
+    SoFieldContainer::initCopyDict();
 
     // Open scene graphs
-    SoInput	sceneInput;
+    SoInput        sceneInput;
     if (! sceneInput.openFile(options.inputFileName)) {
-	fprintf(stderr,
-		"Cannot open %s\n", options.inputFileName);
-	return 1;
+        fprintf(stderr,
+                "Cannot open %s\n", options.inputFileName);
+        return 1;
     }
 
     SbViewportRegion vpr(options.windowX, options.windowY);
@@ -860,7 +991,7 @@ int main(int argc, char **argv)
     openWindow(display, window, options.windowX, options.windowY, argv[0]);
 
     // Timing tests
-   
+
     printf("\t\t\tseconds/frame\tframes/second\n");
     // as is rendering
     asisTime = timeRendering(options, vpr, root);
@@ -872,13 +1003,13 @@ int main(int argc, char **argv)
     noClearTime = timeRendering(options, vpr, root);
     options.noClear = FALSE;
     printf("No Clear:\t\t%10.3f\t%10.2f\n", noClearTime, 1.0/noClearTime);
-    
+
     // time for rendering without materials
     options.noMaterials = TRUE;
     noMatTime = timeRendering(options, vpr, root);
     options.noMaterials = FALSE;
     printf("No Materials:\t\t%10.3f\t%10.2f\n", noMatTime, 1.0/noMatTime);
-    
+
     // time for rendering without xforms
     options.noXforms = TRUE;
     noXformTime = timeRendering(options, vpr, root);
@@ -887,37 +1018,37 @@ int main(int argc, char **argv)
 
     if (options.hasTextures) { // do tests only if scene has textures
 
-	// time for rendering without any textures
-	options.noTextures = TRUE;
-	noTexTime = timeRendering(options, vpr, root);
-	options.noTextures = FALSE;
-	printf("No Textures:\t\t%10.3f\t%10.2f\n", noTexTime, 1.0/noTexTime);
+        // time for rendering without any textures
+        options.noTextures = TRUE;
+        noTexTime = timeRendering(options, vpr, root);
+        options.noTextures = FALSE;
+        printf("No Textures:\t\t%10.3f\t%10.2f\n", noTexTime, 1.0/noTexTime);
 
-	// time for rendering without only one texture
-	options.oneTexture = TRUE;
-	oneTexTime = timeRendering(options, vpr, root);
-	options.oneTexture = FALSE;
-	printf("One Texture:\t\t%10.3f\t%10.2f\n", oneTexTime, 1.0/oneTexTime);
+        // time for rendering without only one texture
+        options.oneTexture = TRUE;
+        oneTexTime = timeRendering(options, vpr, root);
+        options.oneTexture = FALSE;
+        printf("One Texture:\t\t%10.3f\t%10.2f\n", oneTexTime, 1.0/oneTexTime);
     }
-    else 
-	noTexTime = oneTexTime = asisTime;
+    else
+        noTexTime = oneTexTime = asisTime;
 
 
     // time for rendering without fill
     options.noFill = TRUE;
     ptsTime = timeRendering(options, vpr, root);
-    options.noFill = FALSE;    
+    options.noFill = FALSE;
     printf("No Fills:\t\t%10.3f\t%10.2f\n", ptsTime, 1.0/ptsTime);
 
     if (options.hasLights) { // do test only if scene has lights
-	// time for rendering with lights turned off
-	options.noLights = TRUE;
-	noLitTime = timeRendering(options, vpr, root);
-	options.noLights = FALSE;
-	printf("No Lights:\t\t%10.3f\t%10.2f\n", noLitTime, 1.0/noLitTime);
+        // time for rendering with lights turned off
+        options.noLights = TRUE;
+        noLitTime = timeRendering(options, vpr, root);
+        options.noLights = FALSE;
+        printf("No Lights:\t\t%10.3f\t%10.2f\n", noLitTime, 1.0/noLitTime);
     }
     else
-	noLitTime = asisTime;
+        noLitTime = asisTime;
 
     printf("\n");
 
@@ -925,27 +1056,31 @@ int main(int argc, char **argv)
     options.noVtxXforms = TRUE;
     invisTime = timeRendering(options, vpr, root);
     options.noVtxXforms = FALSE;
-    printf("Time taken by vertex transformations:\t%10.3f seconds/frame\n", 
-	   ptsTime-invisTime);
-    
+    printf("Time taken by vertex transformations:\t%10.3f seconds/frame\n",
+           ptsTime-invisTime);
+
     // time for rendering with scene graph frozen
     options.freeze = TRUE;
     freezeTime = timeRendering(options, vpr, root);
     options.freeze = FALSE;
-    printf("Time taken to traverse scene graph:\t%10.3f seconds/frame\n\n", 
-	   asisTime-freezeTime);
+    printf("Time taken to traverse scene graph:\t%10.3f seconds/frame\n\n",
+           asisTime-freezeTime);
 
 
     // kill window
-    XEvent 	event;
+#ifdef WIN32
+    ShowWindow(window, SW_HIDE);
+#else
+    XEvent         event;
     XUnmapWindow(display, window);
     XIfEvent(display, &event, waitForNotify, (char *) window);
+#endif
 
     // draw timing bars
-    if (options.showBars) 
-	drawBar(asisTime, noClearTime, noMatTime,
-		noXformTime, noTexTime, oneTexTime,
-		noLitTime, ptsTime, invisTime, freezeTime);
+    if (options.showBars)
+        drawBar(asisTime, noClearTime, noMatTime,
+                noXformTime, noTexTime, oneTexTime,
+                noLitTime, ptsTime, invisTime, freezeTime);
 
     return 0;
 }

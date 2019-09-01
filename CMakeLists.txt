@@ -42,10 +42,15 @@ endif()
 check_symbol_exists(getopt "unistd.h" HAVE_GETOPT)
 if (HAVE_GETOPT)
   add_definitions(-DHAVE_GETOPT)
+else()
+  add_definitions(-DHAVE_LOCAL_GETOPT_H) # use locally provided getopt
 endif()
 check_symbol_exists(isatty "unistd.h" HAVE_ISATTY)
 if (HAVE_ISATTY)
   add_definitions(-DHAVE_ISATTY)
+endif()
+if (MSVC)
+  add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE -D_CRT_SECURE_NO_WARNINGS -D_USE_MATH_DEFINES -DNOMINMAX)
 endif()
 
 find_package(Coin REQUIRED)
@@ -55,16 +60,17 @@ find_package(So${Gui} REQUIRED)
 # Project setup
 # ############################################################################
 
+if(NOT HAVE_GETOPT)
+  add_subdirectory(getopt)
+  list(APPEND IVTOOLS_ADDITIONAL_LIBRARIES localgetopt)
+endif()
+
 add_subdirectory(ivNodeKitStructure)
 add_subdirectory(ivcat)
 add_subdirectory(ivdefaults)
 add_subdirectory(ivfix)
 add_subdirectory(ivhierarchy)
-if(NOT WIN32)
-  add_subdirectory(ivperf)
-else()
-  message(WARNING "ivperf cannot be compiled (yet) under Windows systems")
-endif()
+add_subdirectory(ivperf)
 add_subdirectory(renderos)
 
 ############################################################################

@@ -38,9 +38,9 @@
 // Source file for "BarChart" shape node.
 //
 
-#include <assert.h>
+#include <cassert>
 
-#include <GL/gl.h>
+#include <Inventor/system/gl.h>
 #include <Inventor/SoDB.h>
 
 #include <Inventor/SbBox.h>
@@ -67,7 +67,7 @@ SO_NODE_SOURCE(BarChart);
 
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
 #define MIN(x,y) ((x) < (y) ? (x) : (y))
-#define TWOPI (2.0*M_PI)
+#define TWOPI (2.0f*float(M_PI))
 
 //
 // This initializes the BarChart class.
@@ -88,26 +88,26 @@ BarChart::BarChart()
     children = new SoChildList(this);
     
     SO_NODE_CONSTRUCTOR(BarChart);
-    SO_NODE_ADD_FIELD(plateColor,	(0.3, 0.3, 0.3, 0));
-    SO_NODE_ADD_FIELD(poleColor,	(0, 0.3, 0.5, 0));
-    SO_NODE_ADD_FIELD(values,		(1.0));
-    SO_NODE_ADD_FIELD(valueColors,	(0.8, 0, 0, 0));
+    SO_NODE_ADD_FIELD(plateColor,	(0.3f, 0.3f, 0.3f, 0));
+    SO_NODE_ADD_FIELD(poleColor,	(0, 0.3f, 0.5f, 0));
+    SO_NODE_ADD_FIELD(values,		(1.0f));
+    SO_NODE_ADD_FIELD(valueColors,	(0.8f, 0, 0, 0));
     SO_NODE_ADD_FIELD(xLabels,		("X Label"));
-    SO_NODE_ADD_FIELD(xLabelColors,	(0.8, 0, 0, 0));
+    SO_NODE_ADD_FIELD(xLabelColors,	(0.8f, 0, 0, 0));
     SO_NODE_ADD_FIELD(xLabelScale,	(1, 1, 1));
     SO_NODE_ADD_FIELD(yLabels,		("Y Label"));
-    SO_NODE_ADD_FIELD(yLabelColors,	(0.8, 0.8, 0, 0));
+    SO_NODE_ADD_FIELD(yLabelColors,	(0.8f, 0.8f, 0, 0));
     SO_NODE_ADD_FIELD(yLabelScale,	(1, 1, 1));
     SO_NODE_ADD_FIELD(xDimension,	(1));
     SO_NODE_ADD_FIELD(yDimension,	(1));
-    SO_NODE_ADD_FIELD(xBarProportion,	(0.7));
-    SO_NODE_ADD_FIELD(yBarProportion,	(0.7));
+    SO_NODE_ADD_FIELD(xBarProportion,	(0.7f));
+    SO_NODE_ADD_FIELD(yBarProportion,	(0.7f));
     SO_NODE_ADD_FIELD(minValue,		(0));
-    SO_NODE_ADD_FIELD(maxValue,		(1.0));
-    SO_NODE_ADD_FIELD(zLabelColor,	(0.8, 0.8, 0, 0));
-    SO_NODE_ADD_FIELD(zMarkerColor,	(0.8, 0, 0, 0));
+    SO_NODE_ADD_FIELD(maxValue,		(1.0f));
+    SO_NODE_ADD_FIELD(zLabelColor,	(0.8f, 0.8f, 0, 0));
+    SO_NODE_ADD_FIELD(zMarkerColor,	(0.8f, 0, 0, 0));
     SO_NODE_ADD_FIELD(zLabelScale,	(1, 1, 1));
-    SO_NODE_ADD_FIELD(zLabelIncrement,	(0.2));
+    SO_NODE_ADD_FIELD(zLabelIncrement,	(0.2f));
     SO_NODE_ADD_FIELD(barStyle,		(BAR));
 }
 
@@ -135,7 +135,7 @@ void
 BarChart::computeBBox(SoAction *, SbBox3f &box, SbVec3f &center)
 {
     box = getBbox();
-    center.setValue(0.0, 0.0, 0.0);
+    center.setValue(0.0f, 0.0f, 0.0f);
 }
 
 //
@@ -195,7 +195,7 @@ BarChart::generateChildren()
     sep = new SoSeparator();
     children->append(sep);
     tr = new SoTranslation();
-    tr->translation.setValue(0, -0.95, 0);
+    tr->translation.setValue(0, -0.95f, 0);
     sep->addChild(tr);
     mtl = new SoMaterial();
     mtl->diffuseColor.setValue( plateColor.getValue()[0], 
@@ -204,9 +204,9 @@ BarChart::generateChildren()
     mtl->transparency.setValue( plateColor.getValue()[3] );
     sep->addChild(mtl);
     SoCube *plate = new SoCube();
-    plate->height = 0.1;
-    plate->width = 1.9;
-    plate->depth = 1.9;
+    plate->height = 0.1f;
+    plate->width = 1.9f;
+    plate->depth = 1.9f;
     sep->addChild(plate);
     
     // boundary poles
@@ -219,27 +219,27 @@ BarChart::generateChildren()
     mtl->transparency.setValue( poleColor.getValue()[3] );
     sep->addChild(mtl);
     SoCylinder *pole = new SoCylinder();
-    pole->radius = 0.03;
+    pole->radius = 0.03f;
     tr = new SoTranslation();
-    tr->translation.setValue(-0.95, 0, -0.95);
+    tr->translation.setValue(-0.95f, 0, -0.95f);
     sep->addChild(tr);
     sep->addChild(pole);
     tr = new SoTranslation();
-    tr->translation.setValue(0, 0, 1.9);
+    tr->translation.setValue(0, 0, 1.9f);
     sep->addChild(tr);
     sep->addChild(pole);
     tr = new SoTranslation();
-    tr->translation.setValue(1.9, 0, 0);
+    tr->translation.setValue(1.9f, 0, 0);
     sep->addChild(tr);
     sep->addChild(pole);
     tr = new SoTranslation();
-    tr->translation.setValue(0, 0, -1.9);
+    tr->translation.setValue(0, 0, -1.9f);
     sep->addChild(tr);
     sep->addChild(pole);
 
     // generate appropriate bars
-    float barXSpace = 1.8/MAX(xDimension.getValue(), 1);
-    float barYSpace = 1.8/MAX(yDimension.getValue(), 1);
+    float barXSpace = 1.8f/MAX(xDimension.getValue(), 1);
+    float barYSpace = 1.8f/MAX(yDimension.getValue(), 1);
     float barWidth = barXSpace*MIN(xBarProportion.getValue(), 1);
     float barDepth = barYSpace*MIN(yBarProportion.getValue(), 1);
     
@@ -253,12 +253,12 @@ BarChart::generateChildren()
     sep = new SoSeparator();
     children->append(sep);
     tr = new SoTranslation();
-    tr->translation.setValue(-0.9+barXSpace/2, -0.95, 0.98);
+    tr->translation.setValue(-0.9f+barXSpace/2, -0.95f, 0.98f);
     sep->addChild(tr);
     sc = new SoScale();
-    sc->scaleFactor.setValue(   xLabelScale.getValue()[0]*0.01, 
-				xLabelScale.getValue()[1]*0.01, 
-				xLabelScale.getValue()[2]*0.01 );
+    sc->scaleFactor.setValue(   xLabelScale.getValue()[0]*0.01f, 
+				xLabelScale.getValue()[1]*0.01f, 
+				xLabelScale.getValue()[2]*0.01f );
     sep->addChild(sc);
     
     int i;
@@ -280,7 +280,7 @@ BarChart::generateChildren()
 	sep->addChild(text);
 	
 	tr = new SoTranslation();
-	tr->translation.setValue(barXSpace/(xLabelScale.getValue()[0]*0.01), 
+	tr->translation.setValue(barXSpace/(xLabelScale.getValue()[0]*0.01f), 
 				 0, 0);
 	sep->addChild(tr);
     }
@@ -293,12 +293,12 @@ BarChart::generateChildren()
     rot->angle = TWOPI/4;
     sep->addChild(rot);
     tr = new SoTranslation();
-    tr->translation.setValue(-0.9+barYSpace/2, -0.95, 0.98);
+    tr->translation.setValue(-0.9f+barYSpace/2, -0.95f, 0.98f);
     sep->addChild(tr);
     sc = new SoScale();
-    sc->scaleFactor.setValue(   yLabelScale.getValue()[0]*0.01, 
-				yLabelScale.getValue()[1]*0.01, 
-				yLabelScale.getValue()[2]*0.01 );
+    sc->scaleFactor.setValue(   yLabelScale.getValue()[0]*0.01f, 
+				yLabelScale.getValue()[1]*0.01f, 
+				yLabelScale.getValue()[2]*0.01f );
     sep->addChild(sc);
     
     for (i = 0; i < yLabels.getNum() && i < yDimension.getValue(); ++i)
@@ -318,7 +318,7 @@ BarChart::generateChildren()
 	sep->addChild(text);
 	
 	tr = new SoTranslation();
-	tr->translation.setValue(barYSpace/(yLabelScale.getValue()[0]*0.01), 
+	tr->translation.setValue(barYSpace/(yLabelScale.getValue()[0]*0.01f), 
 				 0, 0);
 	sep->addChild(tr);
     }
@@ -327,7 +327,7 @@ BarChart::generateChildren()
     SoSeparator *zsep = new SoSeparator();
     children->append(zsep);
     tr = new SoTranslation();
-    tr->translation.setValue(-0.95, -0.95, 0.95);
+    tr->translation.setValue(-0.95f, -0.95f, 0.95f);
     zsep->addChild(tr);
     sep = new SoSeparator();
     zsep->addChild(sep);
@@ -345,14 +345,14 @@ BarChart::generateChildren()
 	
     float val;
     SoSphere *sph = new SoSphere(); // sphere for instancing
-    sph->radius = 0.04;
+    sph->radius = 0.04f;
     
     for (val = minValue.getValue() + zLabelIncrement.getValue(); 
 	 val <= maxValue.getValue(); 
 	 val += zLabelIncrement.getValue())
     {
 	tr = new SoTranslation();
-	tr->translation.setValue(0, (1.8/nzLabels), 0);
+	tr->translation.setValue(0, (1.8f/nzLabels), 0);
 	sep->addChild(tr);
 	sep->addChild(sph);
     }
@@ -361,10 +361,10 @@ BarChart::generateChildren()
     sep = new SoSeparator();
     zsep->addChild(sep);
     SoTransform *xform = new SoTransform();
-    xform->scaleFactor.setValue(zLabelScale.getValue()[0]*0.01, 
-				zLabelScale.getValue()[1]*0.01, 
-				zLabelScale.getValue()[2]*0.01 );
-    xform->center.setValue(0, 0, 0.05);
+    xform->scaleFactor.setValue(zLabelScale.getValue()[0]*0.01f, 
+				zLabelScale.getValue()[1]*0.01f, 
+				zLabelScale.getValue()[2]*0.01f );
+    xform->center.setValue(0, 0, 0.05f);
     xform->rotation.setValue(SbVec3f(0, 1, 0), TWOPI/10);
     sep->addChild(xform);
     
@@ -381,15 +381,15 @@ BarChart::generateChildren()
     {
 	SoText3 *text = new SoText3();
 	char s[40];
-	sprintf(s, "%hg", val);
+	sprintf(s, "%g", val);
 	text->string = s;
 	text->justification = SoText3::CENTER;
 	text->parts = SoText3::ALL;
 	sep->addChild(text);
 	
 	tr = new SoTranslation();
-	tr->translation.setValue(0, (1.8/nzLabels) /
-				    (zLabelScale.getValue()[0]*0.01), 0);
+	tr->translation.setValue(0, (1.8f/nzLabels) /
+				    (zLabelScale.getValue()[0]*0.01f), 0);
 	sep->addChild(tr);
     }
 }
@@ -410,7 +410,7 @@ void BarChart::generateBars(float barXSpace, float barYSpace,
     SoSeparator *sep = new SoSeparator();
     children->append(sep);
     SoTranslation *tr = new SoTranslation();
-    tr->translation.setValue(-0.9+barXSpace/2, 0.09, 0.9-barYSpace/2);
+    tr->translation.setValue(-0.9f+barXSpace/2, 0.09f, 0.9f-barYSpace/2);
     sep->addChild(tr);
     
     int n = 0;
@@ -433,7 +433,7 @@ void BarChart::generateBars(float barXSpace, float barYSpace,
 	    if (n >= values.getNum()) break;
 	    
 	    // translate in Y to plant on base plate
-	    float curZ = (values[n]-minbar) / maxbar * 1.8;
+	    float curZ = (values[n]-minbar) / maxbar * 1.8f;
 	    
 	    tr = new SoTranslation();
 	    tr->translation.setValue(0, curPlant-(1-curZ/2), 0);

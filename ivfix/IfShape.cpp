@@ -34,7 +34,7 @@
  *
  */
 
-#include <string.h>
+#include <cstring>
 #include <Inventor/SoLists.h>
 #include <Inventor/nodes/SoCamera.h>
 #include <Inventor/nodes/SoComplexity.h>
@@ -145,7 +145,7 @@ IfShape::compare(const IfShape *s1, const IfShape *s2,
 #define COMPARE_NODES(node, code)					      \
     if (s1->node != s2->node) {						      \
 	diffCode = code;						      \
-	return s2->node - s1->node;					      \
+	return (int)(ptrdiff_t)(s2->node - s1->node);					      \
     }
 
 #define COMPARE_LISTS(list, code)					      \
@@ -196,7 +196,7 @@ IfShape::compare(const IfShape *s1, const IfShape *s2,
     }									      \
     else {								      \
 	diffCode = code;						      \
-	return s2->node - s1->node;					      \
+	return (int)(ptrdiff_t)(s2->node - s1->node);					      \
     }
 
 #define COMPARE_MCOLOR_FIELDS(node, field, code)			      \
@@ -211,7 +211,7 @@ IfShape::compare(const IfShape *s1, const IfShape *s2,
     }									      \
     else {								      \
 	diffCode = code;						      \
-	return s2->node - s1->node;					      \
+	return (int)(ptrdiff_t)(s2->node - s1->node);					      \
     }
 
     //////////////////////////////////////////////////////////////////
@@ -233,7 +233,7 @@ IfShape::compare(const IfShape *s1, const IfShape *s2,
 	const SbString &name2 = s2->texture->filename.getValue();
 	// If no names, use the texture nodes themselves
 	if (! name1)
-	    return s2->texture - s1->texture;
+	    return (int)(ptrdiff_t)(s2->texture - s1->texture);
 	int c = strcmp(name1.getString(), name2.getString());
 	if (c != 0)
 	    return c;
@@ -314,7 +314,7 @@ IfShape::compareLists(const SoNodeList *l1, const SoNodeList *l2)
 
     for (int i = 0; i < l1->getLength(); i++)
 	if ((*l1)[i] != (*l2)[i])
-	    return (*l2)[i] - (*l2)[i];
+	    return (int)(ptrdiff_t)((*l2)[i] - (*l1)[i]);
 
     return 0;
 }

@@ -1,21 +1,22 @@
-add_tool(ivfix 
+add_tool(ivfix
 SRCS
   IfBuilder.cpp
   IfCondenser.cpp
   IfFlattener.cpp
   IfHolder.cpp
-  IfReplacer.cpp  
-  IfShape.cpp      
-  IfSorter.cpp    
-  IfTypes.cpp   
+  IfReplacer.cpp
+  IfShape.cpp
+  IfSorter.cpp
+  IfTypes.cpp
   ivfix.cpp
-  IfCollector.cpp  
-  IfFixer.cpp      
-  IfHasher.cpp     
-  IfMerger.cpp  
-  IfReporter.cpp  
-  IfShapeList.cpp  
-  IfStripper.cpp  
+  IfCollector.cpp
+  IfFixer.cpp
+  IfHasher.cpp
+  IfMerger.cpp
+  IfReporter.cpp
+  IfShapeList.cpp
+  IfStripper.cpp
   IfWeeder.cpp
-LIBS 
+LIBS
+  ${IVTOOLS_ADDITIONAL_LIBRARIES}
   Coin::Coin)

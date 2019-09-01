@@ -34,38 +34,28 @@
 #include <Inventor/nodekits/SoNodeKit.h>
 #include <Inventor/SoInteraction.h>
 #include <Inventor/nodekits/SoBaseKit.h>
-#include <stdio.h>
+#include <cstdio>
 
 #if HAVE_CONFIG_H
-#include <config.h>
+  #include <config.h>
 #endif /* HAVE_CONFIG_H */
 #if HAVE_UNISTD_H
-#include <unistd.h> // getopt()
+  #include <unistd.h> // getopt()
 #endif /* HAVE_UNISTD_H */
-
-
-#ifdef HAVE_GETOPT
-/* These two externs are for interfacing against getopt(). */
-extern int optind;
-extern char * optarg;
-#endif // HAVE_GETOPT
-
+#ifdef HAVE_LOCAL_GETOPT_H
+  #include "getopt.h"
+#endif
 
 void
 usage(const char * invname)
 {
-#ifdef HAVE_GETOPT
   fprintf(stderr, "\nUsage: %s [-h] <kitclassname>\n\n", invname);
   fprintf(stderr, "\t-h:\tshow usage\n\n");
-#else // !HAVE_GETOPT
-  fprintf(stderr, "\nUsage: %s <kitclassname>\n\n", invname);
-#endif // !HAVE_GETOPT
 }
 
 int
 main(int argc, char ** argv)
 {
-#ifdef HAVE_GETOPT
   /* Parse command line. */
   int getoptchar;
   while ((getoptchar = getopt(argc, argv, "h")) != EOF) {
@@ -80,9 +70,6 @@ main(int argc, char ** argv)
   }
 
   int i = optind;
-#else // !HAVE_GETOPT
-  int i = 1;
-#endif // !HAVE_GETOPT
 
   if ((argc - i) != 1) {
     usage(argv[0]);

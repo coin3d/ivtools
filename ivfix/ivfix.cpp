@@ -35,17 +35,17 @@
  */
 
 #if HAVE_CONFIG_H
-#include <config.h>
+  #include <config.h>
 #endif // HAVE_CONFIG_H
 #if HAVE_UNISTD_H
-#include <unistd.h>
+  #include <unistd.h>
 #endif // HAVE_UNISTD_H
-#if HAVE_GETOPT_H
-#include <getopt.h>
-#endif // HAVE_GETOPT_H
+#if HAVE_LOCAL_GETOPT_H
+  #include "getopt.h"
+#endif // HAVE_LOCAL_GETOPT_H
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 #include <Inventor/SoDB.h>
 #include <Inventor/SoInput.h>
@@ -150,7 +150,6 @@ int main(int argc, char **argv)
 static void
 printUsage(const char *progname)
 {
-#ifdef HAVE_GETOPT
     fprintf(stderr, "Usage: %s [options] [infile] [outfile]\n", progname);
     fprintf(stderr,
 	    "\t-a     : Write out an ascii file.  Default is binary\n"
@@ -163,9 +162,6 @@ printUsage(const char *progname)
 	    "\t-v     : (Verbose) Display status info during processing\n"
 	    "\t-V     : (Very verbose) Display more detailed status info\n"
 	    );
-#else // !HAVE_GETOPT
-    fprintf(stderr, "Usage: %s [infile] [outfile]\n", progname);
-#endif // !HAVE_GETOPT
     exit(99);
 }
 
@@ -181,7 +177,6 @@ parseArgs(int argc, char **argv, OptionInfo &options)
     SbBool uhoh = FALSE;
     int c;
     
-#ifdef HAVE_GETOPT
     while ((c = getopt(argc, argv, "ad:fhnptvV")) != -1) {
 	switch(c) {
 	  case 'a':
@@ -214,9 +209,6 @@ parseArgs(int argc, char **argv, OptionInfo &options)
 	    break;
 	}
     }
-#else // !HAVE_GETOPT
-    int optind = 1;
-#endif // !HAVE_GETOPT
 
     // Handle optional input file name
     if (optind < argc) {

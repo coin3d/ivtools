@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
-#include <stdio.h>
-#include <assert.h>
+#include <cstdio>
+#include <cassert>
 
 #include <Inventor/SoDB.h>
 #include <Inventor/SoInput.h>
@@ -57,18 +57,14 @@
 #include <SmallChange/misc/Init.h>
 #endif // HAVE_SMALLCHANGE_LIBRARY
 
-
-#ifdef HAVE_GETOPT
-/* These two externs are for interfacing against getopt(). */
-extern int optind;
-extern char * optarg;
-#endif // HAVE_GETOPT
+#ifdef HAVE_LOCAL_GETOPT_H
+  #include "getopt.h"
+#endif
 
 
 void
 usage(const char * invname)
 {
-#ifdef HAVE_GETOPT
   // FIXME: the -r option is not activated yet (don't know how to have
   // multiple values on an option with getopt(). 20011024 mortene.
 //    fprintf(stderr, "\nUsage: %s [-h] [-x width] [-y height] [-c components] [-r x y z a] <modelfile.iv> <snapshot.rgb>\n\n", invname);
@@ -98,9 +94,6 @@ usage(const char * invname)
   // FIXME: see FIXME above about "-r". 20011024 mortene.
 //    fprintf(stderr, "\t-r:\tcamera rotation, axis plus angle (default none)\n");
   fprintf(stderr, "\n");
-#else // !HAVE_GETOPT
-  fprintf(stderr, "\nUsage: %s <modelfile.iv> <snapshot.rgb>\n\n", invname);
-#endif // !HAVE_GETOPT
 }
 
 int
@@ -118,7 +111,6 @@ main(int argc, char ** argv)
 
   SbBool viewall = FALSE;
 
-#ifdef HAVE_GETOPT
   /* Parse command line. */
   int getoptchar;
   while ((getoptchar = getopt(argc, argv, "?hvx:y:c:t:")) != EOF) {
@@ -160,9 +152,6 @@ main(int argc, char ** argv)
   }
 
   int i = optind;
-#else // !HAVE_GETOPT
-  int i = 1;
-#endif // !HAVE_GETOPT
 
   if ((argc - i) != 2) {
     usage(argv[0]);
@@ -244,7 +233,7 @@ main(int argc, char ** argv)
                            "default will be set up.");
 
     SoDirectionalLight * light = new SoDirectionalLight;
-    light->direction.setValue(0.25, 0.25, -0.8);
+    light->direction.setValue(0.25f, 0.25f, -0.8f);
     root->insertChild(light, 0);
   }
 

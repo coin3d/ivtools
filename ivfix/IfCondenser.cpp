@@ -116,7 +116,7 @@ IfCondenser::condenseCoordinates()
     SbVec3f scale;
     box.getSize(scale[0],scale[1], scale[2]);
     for (i = 0; i < 3; i++)
-	scale[i] = (scale[i] == 0.0 ? 1.0 : 1.0 / scale[i]);
+	scale[i] = (scale[i] == 0.0 ? 1.0f : 1.0f / scale[i]);
 
     // Create a new field in which to store the uniquified coordinates
     SoMFVec3f uniqueCoords;

@@ -30,8 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \**************************************************************************/
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <Inventor/SoDB.h>
 #include <Inventor/SoInteraction.h>
 #include <Inventor/nodekits/SoNodeKit.h>
@@ -47,10 +47,9 @@
 #include <unistd.h> // getopt(), isatty()
 #endif /* HAVE_UNISTD_H */
 
-#ifdef HAVE_GETOPT
-/* These two externs are for interfacing against getopt(). */
-extern int optind;
-extern char * optarg;
+#ifdef HAVE_LOCAL_GETOPT_H
+  #include "getopt.h"
+#endif
 
 void
 usage(const char * argv_0)
@@ -73,7 +72,6 @@ usage(const char * argv_0)
   fprintf(stderr,
           "  Use ``-'' or no input files to read from stdin.\n\n");
 }
-#endif // !HAVE_GETOPT
 
 
 #ifdef HAVE_ISATTY
@@ -100,7 +98,6 @@ main(int argc, char * argv[])
   int flattentextures = 0;
   const char * outname = NULL;
 
-#ifdef HAVE_GETOPT
   /* Parse command line. */
   int getoptchar;
   while ((getoptchar = getopt(argc, argv, "bftho:")) != EOF) {
@@ -133,9 +130,6 @@ main(int argc, char * argv[])
     }
   }
   int i = optind;
-#else // !HAVE_GETOPT
-  int i = 1;
-#endif // !HAVE_GETOPT
 
   SoDB::init();
   SoNodeKit::init();
