@@ -53,26 +53,8 @@
  _____________________________________________________________
  */
 
-#ifdef WIN32
-#  include <windows.h>
-#else
-#  include <GL/glx.h>
-#  ifdef HAVE_GETOPT
-#    include <getopt.h>
-#  endif
-#endif
-#ifdef HAVE_LOCAL_GETOPT_H
-  #include "getopt.h"
-#endif
-
+// Open Inventor includes
 #include <Inventor/system/gl.h>
-#include <GL/glu.h>
-#ifdef HAVE_UNISTD_H
-  #include <unistd.h>
-#endif
-#include <cstdio>
-#include <cstdlib>
-
 #include <Inventor/Sb.h>
 #include <Inventor/SbTime.h>
 #include <Inventor/SbViewportRegion.h>
@@ -103,6 +85,29 @@
 #include <Inventor/nodes/SoShapeHints.h>
 #include <Inventor/nodes/SoTexture2.h>
 #include <Inventor/nodes/SoTransform.h>
+
+// OS specific includes
+#ifdef WIN32
+#  include <windows.h>
+#else
+#  include <GL/glx.h>
+#  ifdef HAVE_GETOPT
+#    include <getopt.h>
+#  endif
+#endif
+#ifdef HAVE_LOCAL_GETOPT_H
+  #include "getopt.h"
+#endif
+
+// OpenGL includes
+#include <GL/glu.h>
+
+// standard C and C++ includes
+#ifdef HAVE_UNISTD_H
+  #include <unistd.h>
+#endif
+#include <cstdio>
+#include <cstdlib>
 
 // default window size
 #define WINDOW_X        400
@@ -322,6 +327,8 @@ parseArgs(int argc, char *argv[], Options &options)
         system("hinv -c processor"); printf("\n");
         system("hinv -t memory"); printf("\n");
         system("hinv -c graphics"); printf("\n");
+#else
+        system("@HINV_CMD@"); printf("\n");
 #endif
         printf("Reading graph from %s\n", options.inputFileName);
         printf("Number of frames: %d\n", options.numFrames);
@@ -370,19 +377,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 }
 #endif // WIN32
 
+
+#ifdef WIN32
 //////////////////////////////////////////////////////////////
 //
 // Description:
-//    Creates and initializes GL/X window.
+//    Creates and initializes Windows window.
 //
-
 static void
 openWindow(@GUIDISPLAY@ &display, @GUIWINDOW@ &window, unsigned int windowX,
            unsigned int windowY, char *title)
 //
 //////////////////////////////////////////////////////////////
 {
-#ifdef WIN32
     // Register class for OpenGL window
     WNDCLASS wndclass;
     wndclass.style = CS_HREDRAW | CS_VREDRAW;
@@ -475,6 +482,17 @@ openWindow(@GUIDISPLAY@ &display, @GUIWINDOW@ &window, unsigned int windowX,
     window = hwnd;
 
 #else //Motif
+//////////////////////////////////////////////////////////////
+//
+// Description:
+//    Creates and initializes GL/X window.
+//
+static void
+openWindow(Display *&display, Window &window, unsigned int windowX,
+           unsigned int windowY, char *title)
+//
+//////////////////////////////////////////////////////////////
+{
     XVisualInfo                 *vi;
     Colormap                    cmap;
     XSetWindowAttributes        swa;
@@ -960,8 +978,13 @@ int main(int argc, char **argv)
 {
     Options             options;
     SoSeparator         *root;
+#ifdef WIN32
     @GUIDISPLAY@        display;
     @GUIWINDOW@         window;
+#else // Motif
+    Display             *display;
+    Window              window;
+#endif // WIN32
     float               asisTime, ptsTime, invisTime, freezeTime,
                         noMatTime, noTexTime, noLitTime, noXformTime,
                         noClearTime, oneTexTime;
