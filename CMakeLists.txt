@@ -18,8 +18,26 @@ include(CheckIncludeFileCXX)
 # Provide options to customise the build
 # ############################################################################
 
+function(report_prepare)
+  set(multiValueArgs IF_APPLE IF_WIN32)
+  cmake_parse_arguments(REPORT "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  if (REPORT_IF_APPLE AND APPLE)
+    list(APPEND res ${REPORT_IF_APPLE})
+  endif()
+  if (REPORT_IF_WIN32 AND WIN32)
+    list(APPEND res ${REPORT_IF_WIN32})
+  endif()
+  list(APPEND res ${REPORT_UNPARSED_ARGUMENTS})
+  list(APPEND PACKAGE_OPTIONS ${res})
+  set(PACKAGE_OPTIONS "${PACKAGE_OPTIONS}" PARENT_SCOPE)
+endfunction(report_prepare)
+
 option(HAVE_ASAN             "Link executable with the Address Sanitizer static library")
 option(HAVE_DEBUG            "Add debugging information during the configure process")
+
+report_prepare(
+  HAVE_ASAN
+)
 
 if(POLICY CMP0072)
   # get rid of OpenGL GLVND warning from CMake 3.11
@@ -54,7 +72,7 @@ if (MSVC)
 endif()
 
 find_package(Coin REQUIRED)
-find_package(So${Gui} REQUIRED)
+find_package(So${Gui} REQUIRED COMPONENTS merda)
 
 # ############################################################################
 # Project setup
