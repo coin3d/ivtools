@@ -32,8 +32,9 @@ function(report_prepare)
   set(PACKAGE_OPTIONS "${PACKAGE_OPTIONS}" PARENT_SCOPE)
 endfunction(report_prepare)
 
-option(HAVE_ASAN             "Link executable with the Address Sanitizer static library")
-option(HAVE_DEBUG            "Add debugging information during the configure process")
+option(HAVE_ASAN     "Link executable with the Address Sanitizer static library")
+option(HAVE_DEBUG    "Add debugging information during the configure process")
+option(IVT_USE_CPACK "If enabled the cpack subrepo is mandatory" OFF)
 
 report_prepare(
   HAVE_ASAN
@@ -93,4 +94,6 @@ add_subdirectory(renderos)
 
 ############################################################################
 # New CPACK section, please see the README file inside cpack.d directory.
-add_subdirectory(cpack.d)
+if (IVT_USE_CPACK)
+  add_subdirectory(cpack.d)
+endif()
