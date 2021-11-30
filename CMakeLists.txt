@@ -73,7 +73,7 @@ if (MSVC)
 endif()
 
 find_package(Coin REQUIRED)
-find_package(So${Gui} REQUIRED COMPONENTS merda)
+find_package(So${Gui} REQUIRED)
 
 # ############################################################################
 # Project setup
