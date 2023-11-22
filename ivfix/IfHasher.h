@@ -72,7 +72,7 @@ class IfHasher {
     // Destructor
     ~IfHasher();
 
-    // These add a vector to the field, or re-use an existing value in
+    // These add a vector to the field, or reuse an existing value in
     // it. The index of the value (new or old) is returned. Room is
     // made in the field, if necessary.
     int			addVector(const SbVec2f &newVector);

@@ -202,7 +202,7 @@ IfStripper::createVertexList()
 		break;
 	}
 
-	// If we found a match, re-use the old vertex
+	// If we found a match, reuse the old vertex
 	if (oldVert != NULL)
 	    vertexMap[i] = oldVert->uniqueID;
 

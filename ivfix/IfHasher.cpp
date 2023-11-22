@@ -196,7 +196,7 @@ IfHasher::addIfNotThere(const float *newVector, int &index)
 
 	    ASSERT(entry->index < curEntry);
 
-	    // If the vectors are the same, re-use the old one and stop
+	    // If the vectors are the same, reuse the old one and stop
 	    if (sameVector(newVector, entry->index)) {
 		index = entry->index;
 		return FALSE;

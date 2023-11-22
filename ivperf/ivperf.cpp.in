@@ -639,7 +639,7 @@ setUpGraph(const SbViewportRegion &vpReg,
     else
         options.hasLights = TRUE;
 
-    // check to see if there are any texures in the scene
+    // check to see if there are any textures in the scene
     act.setType(SoTexture2::getClassTypeId());
     act.setInterest(SoSearchAction::FIRST);
     act.apply(inputRoot);

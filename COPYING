@@ -4,6 +4,6 @@ COPYING
 Sources in ivNodeKitStructure, ivcat, ivdefaults, ivhierarchy, renderos 
 are released under BSD license.
 
-Sources in ivfix, ivperf are relased under LGPL license.
+Sources in ivfix, ivperf are released under LGPL license.
 
 In all cases, license text can be found at the top of each source file.
