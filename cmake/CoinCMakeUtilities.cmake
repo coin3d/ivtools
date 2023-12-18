@@ -1,26 +1,11 @@
-macro(coin_project PROJECT_NAME)
-  set(options)
-  set(oneValueArgs VERSION DESCRIPTION)
-  set(multiValueArgs)
-  cmake_parse_arguments(PROJECT "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+macro(coin_setup_gui_project)
   string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
   string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
-  if (${CMAKE_VERSION} VERSION_LESS "3.9") 
-    # 'project' command doesn't support DESCRIPTION, so the value parsed with
-    # cmake_parse_arguments() will be used
-    project(${PROJECT_NAME} VERSION ${PROJECT_VERSION})
-  else()
-    # up to v3.13.5 if DESCRIPTION is not passed to 'project' command, its 
-    # invocation will reset PROJECT_DESCRIPTION
-    # from v3.14 the behaviour changes and if not passed, 'project' leaves any
-    # already set value untouched
-    # so we pass to 'project' the value parsed by 'cmake_parse_arguments'
-    project(${PROJECT_NAME} VERSION ${PROJECT_VERSION} DESCRIPTION ${PROJECT_DESCRIPTION})
-  endif()
+
   # ############################################################################
   # GUI target preliminary setup
   set(Gui "Qt" CACHE STRING "Target GUI for the Open Inventor examples")
-  set(GuiValues "Qt;Xt;Win" CACHE INTERNAL "List of possible values for the GUI cache variable")
+  set(GuiValues "Qt;Xt;Win" CACHE INTERNAL "List of supported values for the Gui cache variable")
   set_property(CACHE Gui PROPERTY STRINGS ${GuiValues})
   message(STATUS "Gui='${Gui}'")
   if (Gui STREQUAL "Qt")
@@ -35,13 +20,18 @@ macro(coin_project PROJECT_NAME)
     set(WINWIDGET HWND)
     set(GUIWINDOW HWND)
     set(GUIDISPLAY HWND)
+  elseif(Gui STREQUAL "Wx")
+    set(WINWIDGET wxWindow*)
+    set(GUIWINDOW wxWindow*)
+    set(GUIDISPLAY wxWindow*)
   else()
-    message(FATAL_ERROR "Only Qt, Xt, and Win are supported: please set Gui to one of these values")
+    message(FATAL_ERROR "Only Qt, Xt, Wx and Win are supported: please set Gui to one of these values")
   endif()
   string(TOUPPER ${Gui} GUI)
   # ############################################################################
+
   string(TIMESTAMP PROJECT_BUILD_YEAR "%Y")
-endmacro(coin_project)
+endmacro()
 
 # option controlled helper for cmake variable dumping during config
 function(dump_variable)
@@ -86,12 +76,7 @@ function(add_tool)
       ${CMAKE_CURRENT_BINARY_DIR}
     )
   endif()
+  set_target_properties(${TOOL_NAME} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
   target_link_libraries(${TOOL_NAME} ${TOOL_LIBS})
-  if (${CMAKE_VERSION} VERSION_LESS "3.14") 
-    # DESTINATION is mandatory
-    install(TARGETS ${TOOL_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT runtime)
-  else()
-    # DESTINATION is defaulted according to its target type (RUNTIME|etc. etc)
-    install(TARGETS ${TOOL_NAME} RUNTIME COMPONENT runtime)
-  endif()
-endfunction(add_tool)
+  install(TARGETS ${TOOL_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT runtime)
+endfunction()
