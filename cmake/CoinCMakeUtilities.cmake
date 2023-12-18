@@ -76,7 +76,7 @@ function(add_tool)
       ${CMAKE_CURRENT_BINARY_DIR}
     )
   endif()
-  set_target_properties(${TOOL_NAME} PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+  set_target_properties(${TOOL_NAME} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
   target_link_libraries(${TOOL_NAME} ${TOOL_LIBS})
   install(TARGETS ${TOOL_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT runtime)
 endfunction()
